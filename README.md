@@ -4,19 +4,13 @@ A simple web application built with Next.js that allows you to create, view, and
 
 ## Features
 
-* **Live Preview:** See your Mermaid diagram update instantly as you type.
-* **Split View:** Code editor and diagram preview side-by-side.
-* **Syntax Highlighting:** (If using Monaco or similar editor)
-* **Responsive Design:** Adapts to different screen sizes.
-* **Dark/Light Theme Support:** (If implemented)
-* **Debounced Rendering:** Efficiently updates the diagram without lagging.
+- **Live Preview:**
+- **Split View:**
+- **Syntax Highlighting:**
+- **Responsive Design:**
+- **Debounced Rendering:**
 
 ## Getting Started
-
-### Prerequisites
-
-* Node.js (Version X.X.X or later recommended)
-* npm, yarn, pnpm, or bun
 
 ### Installation
 
@@ -51,21 +45,20 @@ The editor panel is on the left (or top on small screens), and the diagram previ
 
 ## How It Works
 
-* The application uses `react-split` for the adjustable panels.
-* The editor uses `@monaco-editor/react` (or your chosen editor component) for code input.
-* Mermaid code changes trigger a debounced update to the diagram panel.
-* The `DiagramPanel` component renders the Mermaid code using the Mermaid.js library.
+- The application uses `react-split` for the adjustable panels.
+- The editor uses `@monaco-editor/react` (or your chosen editor component) for code input.
+- Mermaid code changes trigger a debounced update to the diagram panel.
+- The `DiagramPanel` component renders the Mermaid code using the Mermaid.js library.
 
 ## Technology Stack
 
-* [Next.js](https://nextjs.org/)
-* [React](https://reactjs.org/)
-* [TypeScript](https://www.typescriptlang.org/)
-* [Mermaid.js](https://mermaid.js.org/)
-* [Material UI (MUI)](https://mui.com/) (for UI components and styling)
-* `react-split`
-* `lodash.debounce`
-* (Add other key libraries like Monaco Editor if used)
+- [Next.js](https://nextjs.org/)
+- [React](https://reactjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Mermaid.js](https://mermaid.js.org/)
+- [Material UI (MUI)](https://mui.com/) (for UI components and styling)
+- `react-split`
+- `lodash.debounce`
 
 ## Contributing
 
