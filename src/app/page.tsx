@@ -1,95 +1,88 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+
+import React, { useState, useEffect, useMemo } from "react";
+import Split from "react-split";
+import EditorPanel from "@/components/EditorPanel";
+import DiagramPanel from "@/components/DiagramPanel";
+import { Box, useTheme, useMediaQuery } from "@mui/material";
+import debounce from "lodash.debounce";
+
+const initialMermaidCode = `graph TD
+  A[Start] --> B{Is it Friday?};
+  B -- Yes --> C[Party!];
+  B -- No --> D[Code];
+  D --> E[Coffee];
+  E --> D;
+  C --> F[Sleep];
+`;
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [mermaidCode, setMermaidCode] = useState<string>(initialMermaidCode);
+  const [debouncedCode, setDebouncedCode] =
+    useState<string>(initialMermaidCode);
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // Check for small screens (e.g., < 600px)
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  // Debounce the update to the diagram panel
+  // Use useMemo to ensure the debounced function is stable
+  const debouncedSetDiagramCode = useMemo(
+    () =>
+      debounce((code: string) => {
+        setDebouncedCode(code);
+      }, 300),
+    [], // Empty dependency array means this is created once
+  );
+
+  const handleEditorChange = (value: string | undefined) => {
+    const newCode = value || "";
+    setMermaidCode(newCode);
+    debouncedSetDiagramCode(newCode);
+  };
+
+  // Cleanup debounce on unmount
+  useEffect(() => {
+    return () => {
+      debouncedSetDiagramCode.cancel();
+    };
+  }, [debouncedSetDiagramCode]);
+
+  return (
+    <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+      {/* Optional: Add a header/toolbar here */}
+      <Box sx={{ flexGrow: 1, display: "flex", overflow: "hidden" }}>
+        <Split
+          sizes={[50, 50]}
+          minSize={isSmallScreen ? 0 : 100} // Allow collapsing on small screens
+          expandToMin={false}
+          gutterSize={10}
+          gutterAlign="center"
+          snapOffset={30}
+          dragInterval={1}
+          direction={isSmallScreen ? "vertical" : "horizontal"} // Stack vertically on small screens
+          cursor={isSmallScreen ? "row-resize" : "col-resize"}
+          style={{
+            display: "flex",
+            flexDirection: isSmallScreen ? "column" : "row",
+            height: "100%",
+            width: "100%",
+          }} // Ensure Split takes full height/width
+        >
+          {/* Editor Panel */}
+          <Box sx={{ height: "100%", width: "100%", overflow: "hidden" }}>
+            <EditorPanel
+              initialValue={mermaidCode}
+              onChange={handleEditorChange}
+              theme={isDarkMode ? "vs-dark" : "light"}
             />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          </Box>
+
+          {/* Diagram Panel */}
+          <Box sx={{ height: "100%", width: "100%", overflow: "hidden" }}>
+            <DiagramPanel mermaidCode={debouncedCode} />
+          </Box>
+        </Split>
+      </Box>
+    </Box>
   );
 }
