@@ -3,7 +3,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import mermaid from "mermaid";
-import { Box, CircularProgress, Alert } from "@mui/material";
+import { Box, CircularProgress, Alert, Button } from "@mui/material";
 
 interface DiagramPanelProps {
   mermaidCode: string;
@@ -58,6 +58,20 @@ const DiagramPanel: React.FC<DiagramPanelProps> = ({ mermaidCode }) => {
     renderDiagram();
   }, [mermaidCode]); // Re-render when code changes
 
+  const handleDownload = () => {
+    if (!svgContent || typeof window === "undefined") return;
+
+    const blob = new Blob([svgContent], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "mermaid-diagram.svg";
+    document.body.appendChild(link); // Required for Firefox
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url); // Clean up
+  };
+
   return (
     <Box
       sx={{
@@ -69,6 +83,24 @@ const DiagramPanel: React.FC<DiagramPanelProps> = ({ mermaidCode }) => {
         bgcolor: "background.paper",
       }}
     >
+      {/* Download Button - Positioned top-right */}
+      {svgContent && !isLoading && !error && (
+        <Button
+          variant="outlined"
+          onClick={handleDownload}
+          size="small"
+          sx={{
+            position: "absolute",
+            top: 20,
+            right: 20,
+            zIndex: 10, // Ensure it's above the diagram content
+          }}
+          aria-label="Download SVG"
+        >
+          Download SVG
+        </Button>
+      )}
+
       {isLoading && (
         <Box
           sx={{
