@@ -160,34 +160,57 @@ const DiagramPanel: React.FC<DiagramPanelProps> = ({ mermaidCode }) => {
           minScale={0.05} // Allow zooming out further
           maxScale={50} // Allow zooming in further
         >
-          <TransformComponent
-            wrapperStyle={{ width: "100%", height: "100%" }}
-            contentStyle={{
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {/* Render the SVG content using sx prop */}
-            <Box
-              ref={svgContainerRef}
-              dangerouslySetInnerHTML={{ __html: svgContent }}
-              sx={{
-                width: "auto", // Let content determine width
-                height: "auto", // Let content determine height
-                maxWidth: "100%",
-                maxHeight: "100%",
-                "& svg": {
-                  // Style the SVG element directly if needed
-                  display: "block", // Prevent extra space below SVG
-                  maxWidth: "100%",
-                  height: "auto", // Maintain aspect ratio
-                },
-              }}
-            />
-          </TransformComponent>
+          {({ resetTransform }) => (
+            <>
+              {/* Reset view button */}
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 20,
+                  left: 20,
+                  zIndex: 10,
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  onClick={() => resetTransform()}
+                  size="small"
+                  aria-label="Reset View"
+                >
+                  Reset View
+                </Button>
+              </Box>
+
+              <TransformComponent
+                wrapperStyle={{ width: "100%", height: "100%" }}
+                contentStyle={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                {/* Render the SVG content using sx prop */}
+                <Box
+                  ref={svgContainerRef}
+                  dangerouslySetInnerHTML={{ __html: svgContent }}
+                  sx={{
+                    width: "auto", // Let content determine width
+                    height: "auto", // Let content determine height
+                    maxWidth: "100%",
+                    maxHeight: "100%",
+                    "& svg": {
+                      // Style the SVG element directly if needed
+                      display: "block", // Prevent extra space below SVG
+                      maxWidth: "100%",
+                      height: "auto", // Maintain aspect ratio
+                    },
+                  }}
+                />
+              </TransformComponent>
+            </>
+          )}
         </TransformWrapper>
       )}
       {!isLoading && !error && !svgContent && !mermaidCode && (
