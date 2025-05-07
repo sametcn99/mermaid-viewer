@@ -122,9 +122,12 @@ const DiagramPanel: React.FC<DiagramPanelProps> = ({ mermaidCode }) => {
         <TransformWrapper
           initialScale={1}
           centerOnInit={true}
-          wheel={{ step: 0.1 }}
+          wheel={{ step: 0.5 }}
           pinch={{ step: 5 }}
           doubleClick={{ disabled: true }} // Optional: disable double click zoom
+          limitToBounds={false} // Allow zooming out beyond initial bounds
+          minScale={0.05} // Allow zooming out further
+          maxScale={50} // Allow zooming in further
         >
           <TransformComponent
             wrapperStyle={{ width: "100%", height: "100%" }}
