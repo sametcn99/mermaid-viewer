@@ -1,3 +1,5 @@
+import pako from "pako";
+
 export interface SavedDiagram {
   id: string;
   name: string;
@@ -25,7 +27,19 @@ export function saveDiagramToStorage(name: string, code: string): SavedDiagram {
   };
 
   diagrams.push(newDiagram);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(diagrams));
+  try {
+    const stringifiedData = JSON.stringify(diagrams);
+    const compressedData = pako.deflate(stringifiedData);
+    // Convert Uint8Array to base64 string for localStorage
+    const base64Data = btoa(
+      String.fromCharCode.apply(null, Array.from(compressedData)),
+    );
+    localStorage.setItem(STORAGE_KEY, base64Data);
+  } catch (error) {
+    console.error("Failed to save and compress diagrams:", error);
+    // Fallback to uncompressed storage if compression fails
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(diagrams));
+  }
 
   return newDiagram;
 }
@@ -39,13 +53,40 @@ export function getAllDiagramsFromStorage(): SavedDiagram[] {
   if (typeof window === "undefined") return [];
 
   try {
-    const storedData = localStorage.getItem(STORAGE_KEY);
-    if (!storedData) return [];
+    const base64Data = localStorage.getItem(STORAGE_KEY);
+    if (!base64Data) return [];
 
-    return JSON.parse(storedData);
+    // Convert base64 string back to Uint8Array
+    const compressedData = new Uint8Array(
+      atob(base64Data)
+        .split("")
+        .map((char) => char.charCodeAt(0)),
+    );
+    const decompressedData = pako.inflate(compressedData, { to: "string" });
+    return JSON.parse(decompressedData);
   } catch (error) {
-    console.error("Failed to parse diagrams from local storage:", error);
-    return [];
+    console.warn(
+      "Failed to parse compressed diagrams from local storage, attempting fallback:",
+      error,
+    );
+    // Fallback to reading as uncompressed JSON (e.g. for data stored before compression)
+    try {
+      const storedData = localStorage.getItem(STORAGE_KEY);
+      if (!storedData) return [];
+      // Check if it's likely JSON (starts with [ or {) before trying to parse
+      if (storedData.startsWith("[") || storedData.startsWith("{")) {
+        return JSON.parse(storedData);
+      }
+      // If it's not JSON and not valid compressed data, return empty or handle error
+      console.error("Fallback failed: Data is not valid JSON.", storedData);
+      return [];
+    } catch (fallbackError) {
+      console.error(
+        "Failed to parse diagrams from local storage (fallback JSON parse):",
+        fallbackError,
+      );
+      return [];
+    }
   }
 }
 
@@ -82,7 +123,18 @@ export function updateDiagram(
     timestamp: Date.now(), // Always update timestamp on edits
   };
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(diagrams));
+  try {
+    const stringifiedData = JSON.stringify(diagrams);
+    const compressedData = pako.deflate(stringifiedData);
+    const base64Data = btoa(
+      String.fromCharCode.apply(null, Array.from(compressedData)),
+    );
+    localStorage.setItem(STORAGE_KEY, base64Data);
+  } catch (error) {
+    console.error("Failed to update and compress diagrams:", error);
+    // Fallback to uncompressed storage if compression fails
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(diagrams));
+  }
   return diagrams[index];
 }
 
