@@ -9,6 +9,7 @@ A simple web application built with Next.js that allows you to create, view, and
 - **Syntax Highlighting:**
 - **Responsive Design:**
 - **Debounced Rendering:**
+- **Quickly Share Diagrams**
 
 ## Getting Started
 
