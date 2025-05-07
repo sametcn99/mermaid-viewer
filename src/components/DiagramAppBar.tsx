@@ -143,7 +143,7 @@ const DiagramAppBar: React.FC<DiagramAppBarProps> = ({
             </Tooltip>
           </Box>
 
-          <Link href="https://sametcc.me/mermaid-viewer" passHref>
+          <Link href="https://sametcc.me/mermaid-viewer" target="_blank">
             <Tooltip title="View on GitHub">
               <IconButton component="a" target="_blank">
                 <svg

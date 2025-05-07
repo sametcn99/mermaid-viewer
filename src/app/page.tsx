@@ -257,7 +257,15 @@ export default function Home() {
                   handleLoadDiagram(diagram);
                   setOpenLoadDialog(false);
                 }}
-                sx={{ borderRadius: 1, mb: 1, cursor: "pointer" }}
+                sx={{
+                  borderRadius: 1,
+                  mb: 1,
+                  cursor: "pointer",
+                  transition: "background-color 0.3s",
+                  "&:hover": {
+                    backgroundColor: "action.hover",
+                  },
+                }}
               >
                 <ListItemText
                   primary={diagram.name}
