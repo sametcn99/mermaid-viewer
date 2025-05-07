@@ -1,16 +1,16 @@
 "use client";
 
-import {
-  Alert,
-  Box,
-  CircularProgress,
-  IconButton,
-  Snackbar,
-} from "@mui/material";
-import { Download, RotateCcw, Share2 } from "lucide-react";
+import { Box } from "@mui/material";
 import mermaid from "mermaid";
 import { useEffect, useRef, useState } from "react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
+import CopyNotification from "./CopyNotification";
+import DiagramEmpty from "./DiagramEmpty";
+import DiagramError from "./DiagramError";
+import DiagramLoading from "./DiagramLoading";
+import DiagramSVGViewer from "./DiagramSVGViewer";
+import DiagramToolbar from "./DiagramToolbar";
+import ResetViewButton from "./ResetViewButton";
 
 interface DiagramPanelProps {
   mermaidCode: string;
@@ -103,50 +103,14 @@ export default function DiagramPanel({ mermaidCode }: DiagramPanelProps) {
       }}
     >
       {svgContent && !isLoading && !error && (
-        <Box
-          sx={{
-            position: "absolute",
-            top: 20,
-            right: 20,
-            zIndex: 10,
-            display: "flex",
-            gap: 1,
-          }}
-        >
-          <IconButton
-            onClick={handleShareUrl}
-            size="small"
-            aria-label="Share URL"
-          >
-            <Share2 />
-          </IconButton>
-          <IconButton
-            onClick={handleDownload}
-            size="small"
-            aria-label="Download SVG"
-          >
-            <Download />
-          </IconButton>
-        </Box>
+        <DiagramToolbar
+          onShareUrl={handleShareUrl}
+          onDownload={handleDownload}
+        />
       )}
 
-      {isLoading && (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100%",
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      )}
-      {error && (
-        <Alert severity="error" sx={{ m: 2 }}>
-          {error}
-        </Alert>
-      )}
+      {isLoading && <DiagramLoading />}
+      {error && <DiagramError error={error} />}
       {!isLoading && !error && svgContent && (
         <TransformWrapper
           initialScale={1}
@@ -160,23 +124,7 @@ export default function DiagramPanel({ mermaidCode }: DiagramPanelProps) {
         >
           {({ resetTransform }) => (
             <>
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: 20,
-                  left: 20,
-                  zIndex: 10,
-                }}
-              >
-                <IconButton
-                  onClick={() => resetTransform()}
-                  size="small"
-                  aria-label="Reset View"
-                >
-                  <RotateCcw />
-                </IconButton>
-              </Box>
-
+              <ResetViewButton onReset={resetTransform} />
               <TransformComponent
                 wrapperStyle={{ width: "100%", height: "100%" }}
                 contentStyle={{
@@ -187,46 +135,20 @@ export default function DiagramPanel({ mermaidCode }: DiagramPanelProps) {
                   alignItems: "center",
                 }}
               >
-                <Box
-                  ref={svgContainerRef}
-                  dangerouslySetInnerHTML={{ __html: svgContent }}
-                  sx={{
-                    width: "auto",
-                    height: "auto",
-                    maxWidth: "100%",
-                    maxHeight: "100%",
-                    "& svg": {
-                      display: "block",
-                      maxWidth: "100%",
-                      height: "auto",
-                    },
-                  }}
+                <DiagramSVGViewer
+                  svgContent={svgContent}
+                  svgContainerRef={svgContainerRef}
                 />
               </TransformComponent>
             </>
           )}
         </TransformWrapper>
       )}
-      {!isLoading && !error && !svgContent && !mermaidCode && (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100%",
-            color: "text.secondary",
-          }}
-        >
-          Enter Mermaid code in the editor.
-        </Box>
-      )}
+      {!isLoading && !error && !svgContent && !mermaidCode && <DiagramEmpty />}
 
-      <Snackbar
+      <CopyNotification
         open={showCopyNotification}
-        autoHideDuration={3000}
         onClose={() => setShowCopyNotification(false)}
-        message="URL copied to clipboard!"
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       />
     </Box>
   );
