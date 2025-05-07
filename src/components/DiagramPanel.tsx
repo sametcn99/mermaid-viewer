@@ -121,8 +121,6 @@ const DiagramPanel: React.FC<DiagramPanelProps> = ({ mermaidCode }) => {
       {!isLoading && !error && svgContent && (
         <TransformWrapper
           initialScale={1}
-          minScale={0.2}
-          maxScale={5}
           centerOnInit={true}
           wheel={{ step: 0.1 }}
           pinch={{ step: 5 }}
