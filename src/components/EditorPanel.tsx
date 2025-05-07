@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
 import Editor from "@monaco-editor/react";
-import { CircularProgress, Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
+import React from "react";
 import { updateUrlWithMermaidCode } from "../lib/urlUtils";
 
 interface EditorPanelProps {

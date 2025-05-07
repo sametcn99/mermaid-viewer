@@ -1,37 +1,37 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
-import Split from "react-split";
-import EditorPanel from "@/components/EditorPanel";
-import DiagramPanel from "@/components/DiagramPanel";
 import DiagramAppBar from "@/components/DiagramAppBar";
+import DiagramPanel from "@/components/DiagramPanel";
+import EditorPanel from "@/components/EditorPanel";
 import {
-  Box,
-  useTheme,
-  useMediaQuery,
-  Snackbar,
-  Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  Typography,
-} from "@mui/material";
-import debounce from "lodash.debounce";
+  findMatchingDiagramId,
+  getAllDiagramsFromStorage,
+  SavedDiagram,
+  updateDiagram,
+} from "@/lib/storageUtils";
 import {
   getMermaidCodeFromUrl,
   updateUrlWithMermaidCode,
 } from "@/lib/urlUtils";
 import {
-  getAllDiagramsFromStorage,
-  updateDiagram,
-  findMatchingDiagramId,
-  SavedDiagram,
-} from "@/lib/storageUtils";
+  Alert,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  List,
+  ListItem,
+  ListItemText,
+  Snackbar,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+import debounce from "lodash.debounce";
+import { useEffect, useMemo, useState } from "react";
+import Split from "react-split";
 
 const initialMermaidCode = `graph TD
   A[Start] --> B{Is it Friday?};

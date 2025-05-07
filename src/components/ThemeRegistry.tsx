@@ -1,7 +1,7 @@
 "use client";
 
+import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import React from "react";
-import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
 
 // Koyu tema oluştur
 const darkTheme = createTheme({
