@@ -39,13 +39,13 @@ interface DiagramAppBarProps {
   onSaveDiagram: (diagramId: string | undefined) => void;
 }
 
-const DiagramAppBar: React.FC<DiagramAppBarProps> = ({
+export default function DiagramAppBar({
   currentDiagram,
   savedDiagramId,
   onLoadDiagram,
   onNewDiagram,
   onSaveDiagram,
-}) => {
+}: DiagramAppBarProps) {
   const [savedDiagrams, setSavedDiagrams] = useState<SavedDiagram[]>([]);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [openLoadDialog, setOpenLoadDialog] = useState<boolean>(false);
@@ -253,6 +253,4 @@ const DiagramAppBar: React.FC<DiagramAppBarProps> = ({
       </Dialog>
     </>
   );
-};
-
-export default DiagramAppBar;
+}

@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { Download, RotateCcw, Share2 } from "lucide-react";
 import mermaid from "mermaid";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 
 interface DiagramPanelProps {
@@ -23,7 +23,7 @@ if (typeof window !== "undefined") {
   });
 }
 
-const DiagramPanel: React.FC<DiagramPanelProps> = ({ mermaidCode }) => {
+export default function DiagramPanel({ mermaidCode }: DiagramPanelProps) {
   const svgContainerRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -230,6 +230,4 @@ const DiagramPanel: React.FC<DiagramPanelProps> = ({ mermaidCode }) => {
       />
     </Box>
   );
-};
-
-export default DiagramPanel;
+}

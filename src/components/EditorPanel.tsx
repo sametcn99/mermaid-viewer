@@ -2,7 +2,6 @@
 
 import Editor from "@monaco-editor/react";
 import { Box, CircularProgress } from "@mui/material";
-import React from "react";
 import { updateUrlWithMermaidCode } from "../lib/url.utils";
 
 interface EditorPanelProps {
@@ -11,11 +10,11 @@ interface EditorPanelProps {
   theme?: "vs-dark" | "light";
 }
 
-const EditorPanel: React.FC<EditorPanelProps> = ({
+export default function EditorPanel({
   initialValue,
   onChange,
   theme = "light",
-}) => {
+}: EditorPanelProps) {
   const handleEditorChange = (value: string | undefined) => {
     onChange(value);
 
@@ -47,6 +46,4 @@ const EditorPanel: React.FC<EditorPanelProps> = ({
       />
     </Box>
   );
-};
-
-export default EditorPanel;
+}
