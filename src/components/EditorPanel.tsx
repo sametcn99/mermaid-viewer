@@ -3,7 +3,7 @@
 import Editor from "@monaco-editor/react";
 import { Box, CircularProgress } from "@mui/material";
 import React from "react";
-import { updateUrlWithMermaidCode } from "../lib/urlUtils";
+import { updateUrlWithMermaidCode } from "../lib/url.utils";
 
 interface EditorPanelProps {
   initialValue: string;

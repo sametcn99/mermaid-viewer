@@ -8,11 +8,11 @@ import {
   getAllDiagramsFromStorage,
   SavedDiagram,
   updateDiagram,
-} from "@/lib/storageUtils";
+} from "@/lib/storage.utils";
 import {
   getMermaidCodeFromUrl,
   updateUrlWithMermaidCode,
-} from "@/lib/urlUtils";
+} from "@/lib/url.utils";
 import {
   Alert,
   Box,

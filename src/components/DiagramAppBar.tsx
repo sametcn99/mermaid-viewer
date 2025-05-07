@@ -5,7 +5,7 @@ import {
   deleteDiagram,
   getAllDiagramsFromStorage,
   saveDiagramToStorage,
-} from "@/lib/storageUtils";
+} from "@/lib/storage.utils";
 import {
   Box,
   Button,
