@@ -7,14 +7,11 @@ import { deflate, inflate } from "pako";
  */
 export function encodeMermaid(code: string): string {
   if (!code) return "";
-  // Compress the code using pako
   const compressed = deflate(code);
-  // Convert Uint8Array to binary string
   let binaryString = "";
   for (let i = 0; i < compressed.length; i++) {
     binaryString += String.fromCharCode(compressed[i]);
   }
-  // Base64 encode the binary string
   const encoded = btoa(binaryString);
   return encoded;
 }
@@ -27,14 +24,11 @@ export function encodeMermaid(code: string): string {
 export function decodeMermaid(encoded: string): string {
   if (!encoded) return "";
   try {
-    // Decode the base64 encoded string to binary string
     const binaryString = atob(encoded);
-    // Convert binary string to Uint8Array
     const compressed = new Uint8Array(binaryString.length);
     for (let i = 0; i < binaryString.length; i++) {
       compressed[i] = binaryString.charCodeAt(i);
     }
-    // Decompress the data using pako
     return inflate(compressed, { to: "string" });
   } catch (error) {
     console.error("Failed to decode Mermaid code from URL:", error);

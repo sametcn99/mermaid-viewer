@@ -16,12 +16,10 @@ interface DiagramPanelProps {
   mermaidCode: string;
 }
 
-// Initialize Mermaid (only once)
 if (typeof window !== "undefined") {
   mermaid.initialize({
-    startOnLoad: false, // We'll render manually
-    theme: "default", // Base theme, can be customized
-    // securityLevel: 'loose', // Consider security implications if needed
+    startOnLoad: false,
+    theme: "default",
   });
 }
 
@@ -42,11 +40,9 @@ const DiagramPanel: React.FC<DiagramPanelProps> = ({ mermaidCode }) => {
 
       setIsLoading(true);
       setError(null);
-      setSvgContent(""); // Clear previous diagram
+      setSvgContent("");
 
       try {
-        // Ensure mermaid is initialized (might be redundant but safe)
-        // Use a unique ID for rendering to avoid conflicts if multiple diagrams exist
         const uniqueId = `mermaid-diagram-${Date.now()}`;
         const { svg } = await mermaid.render(uniqueId, mermaidCode);
         setSvgContent(svg);
@@ -57,14 +53,14 @@ const DiagramPanel: React.FC<DiagramPanelProps> = ({ mermaidCode }) => {
         } else {
           setError("An unknown error occurred during Mermaid rendering.");
         }
-        setSvgContent(""); // Clear on error
+        setSvgContent("");
       } finally {
         setIsLoading(false);
       }
     };
 
     renderDiagram();
-  }, [mermaidCode]); // Re-render when code changes
+  }, [mermaidCode]);
 
   const handleDownload = () => {
     if (!svgContent || typeof window === "undefined") return;
@@ -74,19 +70,17 @@ const DiagramPanel: React.FC<DiagramPanelProps> = ({ mermaidCode }) => {
     const link = document.createElement("a");
     link.href = url;
     link.download = "mermaid-diagram.svg";
-    document.body.appendChild(link); // Required for Firefox
+    document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    URL.revokeObjectURL(url); // Clean up
+    URL.revokeObjectURL(url);
   };
 
   const handleShareUrl = () => {
     if (typeof window === "undefined") return;
 
-    // Get current URL with diagram parameter
     const currentUrl = window.location.href;
 
-    // Copy to clipboard
     navigator.clipboard
       .writeText(currentUrl)
       .then(() => {
@@ -108,7 +102,6 @@ const DiagramPanel: React.FC<DiagramPanelProps> = ({ mermaidCode }) => {
         bgcolor: "background.paper",
       }}
     >
-      {/* Controls - Positioned top-right */}
       {svgContent && !isLoading && !error && (
         <Box
           sx={{
@@ -160,14 +153,13 @@ const DiagramPanel: React.FC<DiagramPanelProps> = ({ mermaidCode }) => {
           centerOnInit={true}
           wheel={{ step: 0.5 }}
           pinch={{ step: 5 }}
-          doubleClick={{ disabled: true }} // Optional: disable double click zoom
-          limitToBounds={false} // Allow zooming out beyond initial bounds
-          minScale={0.05} // Allow zooming out further
-          maxScale={50} // Allow zooming in further
+          doubleClick={{ disabled: true }}
+          limitToBounds={false}
+          minScale={0.05}
+          maxScale={50}
         >
           {({ resetTransform }) => (
             <>
-              {/* Reset view button */}
               <Box
                 sx={{
                   position: "absolute",
@@ -195,20 +187,18 @@ const DiagramPanel: React.FC<DiagramPanelProps> = ({ mermaidCode }) => {
                   alignItems: "center",
                 }}
               >
-                {/* Render the SVG content using sx prop */}
                 <Box
                   ref={svgContainerRef}
                   dangerouslySetInnerHTML={{ __html: svgContent }}
                   sx={{
-                    width: "auto", // Let content determine width
-                    height: "auto", // Let content determine height
+                    width: "auto",
+                    height: "auto",
                     maxWidth: "100%",
                     maxHeight: "100%",
                     "& svg": {
-                      // Style the SVG element directly if needed
-                      display: "block", // Prevent extra space below SVG
+                      display: "block",
                       maxWidth: "100%",
-                      height: "auto", // Maintain aspect ratio
+                      height: "auto",
                     },
                   }}
                 />
@@ -231,7 +221,6 @@ const DiagramPanel: React.FC<DiagramPanelProps> = ({ mermaidCode }) => {
         </Box>
       )}
 
-      {/* Copy notification */}
       <Snackbar
         open={showCopyNotification}
         autoHideDuration={3000}

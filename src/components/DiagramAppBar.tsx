@@ -16,7 +16,7 @@ import {
   IconButton,
   List,
   ListItemButton,
-  ListItemSecondaryAction, // Added ListItemButton
+  ListItemSecondaryAction,
   ListItemText,
   Menu,
   MenuItem,
@@ -52,42 +52,34 @@ const DiagramAppBar: React.FC<DiagramAppBarProps> = ({
   const [diagramName, setDiagramName] = useState<string>("");
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  // Load saved diagrams from localStorage
   useEffect(() => {
     const diagrams = getAllDiagramsFromStorage();
     setSavedDiagrams(diagrams);
   }, []);
 
-  // Refresh saved diagrams list whenever a diagram is saved/deleted
   const refreshSavedDiagrams = () => {
     const diagrams = getAllDiagramsFromStorage();
     setSavedDiagrams(diagrams);
   };
 
-  // Handle opening the menu
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  // Handle closing the menu
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
 
-  // Handle saving a new diagram
   const handleSave = () => {
     if (savedDiagramId) {
-      // Already saved, just update
       onSaveDiagram(savedDiagramId);
       return;
     }
 
-    // New save - open dialog
     setOpenDialog(true);
     setDiagramName(`Untitled Diagram ${savedDiagrams.length + 1}`);
   };
 
-  // Handle submitting the save dialog
   const handleSaveSubmit = () => {
     const diagram = saveDiagramToStorage(diagramName, currentDiagram);
     refreshSavedDiagrams();
@@ -95,14 +87,12 @@ const DiagramAppBar: React.FC<DiagramAppBarProps> = ({
     onSaveDiagram(diagram.id);
   };
 
-  // Handle deleting a diagram
   const handleDeleteDiagram = (id: string, event: React.MouseEvent) => {
     event.stopPropagation();
     deleteDiagram(id);
     refreshSavedDiagrams();
   };
 
-  // Format timestamp for display
   const formatTimestamp = (timestamp: number) => {
     return new Date(timestamp).toLocaleString();
   };
@@ -138,7 +128,7 @@ const DiagramAppBar: React.FC<DiagramAppBarProps> = ({
 
             <Tooltip title="More Options">
               <IconButton onClick={handleMenuOpen}>
-                <MoreVertical /> {/* Changed MoreVert to MoreVertical */}
+                <MoreVertical />
               </IconButton>
             </Tooltip>
           </Box>
@@ -183,7 +173,6 @@ const DiagramAppBar: React.FC<DiagramAppBarProps> = ({
         </Toolbar>
       </MuiAppBar>
 
-      {/* Save Dialog */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Save Diagram</DialogTitle>
         <DialogContent>
@@ -208,7 +197,6 @@ const DiagramAppBar: React.FC<DiagramAppBarProps> = ({
         </DialogActions>
       </Dialog>
 
-      {/* Load Dialog */}
       <Dialog
         open={openLoadDialog}
         onClose={() => setOpenLoadDialog(false)}
@@ -224,9 +212,8 @@ const DiagramAppBar: React.FC<DiagramAppBarProps> = ({
           ) : (
             <List>
               {savedDiagrams.map((diagram) => (
-                <ListItemButton // Changed ListItem to ListItemButton
+                <ListItemButton
                   key={diagram.id}
-                  // button prop removed as ListItemButton implies this behavior
                   onClick={() => {
                     onLoadDiagram(diagram);
                     setOpenLoadDialog(false);
@@ -246,7 +233,7 @@ const DiagramAppBar: React.FC<DiagramAppBarProps> = ({
                       <Trash />
                     </IconButton>
                   </ListItemSecondaryAction>
-                </ListItemButton> // Changed ListItem to ListItemButton
+                </ListItemButton>
               ))}
             </List>
           )}

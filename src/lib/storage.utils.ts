@@ -30,14 +30,12 @@ export function saveDiagramToStorage(name: string, code: string): SavedDiagram {
   try {
     const stringifiedData = JSON.stringify(diagrams);
     const compressedData = pako.deflate(stringifiedData);
-    // Convert Uint8Array to base64 string for localStorage
     const base64Data = btoa(
       String.fromCharCode.apply(null, Array.from(compressedData)),
     );
     localStorage.setItem(STORAGE_KEY, base64Data);
   } catch (error) {
     console.error("Failed to save and compress diagrams:", error);
-    // Fallback to uncompressed storage if compression fails
     localStorage.setItem(STORAGE_KEY, JSON.stringify(diagrams));
   }
 
@@ -51,12 +49,9 @@ export function saveDiagramToStorage(name: string, code: string): SavedDiagram {
  */
 export function getAllDiagramsFromStorage(): SavedDiagram[] {
   if (typeof window === "undefined") return [];
-
   try {
     const base64Data = localStorage.getItem(STORAGE_KEY);
     if (!base64Data) return [];
-
-    // Convert base64 string back to Uint8Array
     const compressedData = new Uint8Array(
       atob(base64Data)
         .split("")
@@ -69,15 +64,12 @@ export function getAllDiagramsFromStorage(): SavedDiagram[] {
       "Failed to parse compressed diagrams from local storage, attempting fallback:",
       error,
     );
-    // Fallback to reading as uncompressed JSON (e.g. for data stored before compression)
     try {
       const storedData = localStorage.getItem(STORAGE_KEY);
       if (!storedData) return [];
-      // Check if it's likely JSON (starts with [ or {) before trying to parse
       if (storedData.startsWith("[") || storedData.startsWith("{")) {
         return JSON.parse(storedData);
       }
-      // If it's not JSON and not valid compressed data, return empty or handle error
       console.error("Fallback failed: Data is not valid JSON.", storedData);
       return [];
     } catch (fallbackError) {
@@ -120,7 +112,7 @@ export function updateDiagram(
   diagrams[index] = {
     ...diagrams[index],
     ...updates,
-    timestamp: Date.now(), // Always update timestamp on edits
+    timestamp: Date.now(),
   };
 
   try {
@@ -132,7 +124,6 @@ export function updateDiagram(
     localStorage.setItem(STORAGE_KEY, base64Data);
   } catch (error) {
     console.error("Failed to update and compress diagrams:", error);
-    // Fallback to uncompressed storage if compression fails
     localStorage.setItem(STORAGE_KEY, JSON.stringify(diagrams));
   }
   return diagrams[index];
@@ -149,7 +140,7 @@ export function deleteDiagram(id: string): boolean {
   const filteredDiagrams = diagrams.filter((diagram) => diagram.id !== id);
 
   if (filteredDiagrams.length === diagrams.length) {
-    return false; // Nothing was removed
+    return false;
   }
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredDiagrams));

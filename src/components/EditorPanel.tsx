@@ -8,7 +8,7 @@ import { updateUrlWithMermaidCode } from "../lib/url.utils";
 interface EditorPanelProps {
   initialValue: string;
   onChange: (value: string | undefined) => void;
-  theme?: "vs-dark" | "light"; // Allow theme switching
+  theme?: "vs-dark" | "light";
 }
 
 const EditorPanel: React.FC<EditorPanelProps> = ({
@@ -16,16 +16,13 @@ const EditorPanel: React.FC<EditorPanelProps> = ({
   onChange,
   theme = "light",
 }) => {
-  // Update URL when content changes with a debounce
   const handleEditorChange = (value: string | undefined) => {
-    onChange(value); // Pass the value up
+    onChange(value);
 
-    // Update URL with the new mermaid code (debounced)
     if (value !== undefined) {
-      // Use a simple debounce to avoid updating URL on each keystroke
       const timeoutId = setTimeout(() => {
         updateUrlWithMermaidCode(value);
-      }, 1000); // 1 second delay
+      }, 1000);
 
       return () => clearTimeout(timeoutId);
     }
@@ -35,7 +32,7 @@ const EditorPanel: React.FC<EditorPanelProps> = ({
     <Box sx={{ height: "100%", width: "100%" }}>
       <Editor
         height="100%"
-        language="markdown" // Using markdown as base, Mermaid syntax highlighting needs separate setup (advanced)
+        language="markdown"
         theme={theme}
         value={initialValue}
         onChange={handleEditorChange}
@@ -45,7 +42,7 @@ const EditorPanel: React.FC<EditorPanelProps> = ({
           scrollBeyondLastLine: false,
           fontSize: 14,
           wordWrap: "on",
-          automaticLayout: true, // Important for responsive resizing
+          automaticLayout: true,
         }}
       />
     </Box>
