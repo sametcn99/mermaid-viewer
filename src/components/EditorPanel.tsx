@@ -3,6 +3,7 @@
 import React from "react";
 import Editor from "@monaco-editor/react";
 import { CircularProgress, Box } from "@mui/material";
+import { updateUrlWithMermaidCode } from "../lib/urlUtils";
 
 interface EditorPanelProps {
   initialValue: string;
@@ -15,6 +16,21 @@ const EditorPanel: React.FC<EditorPanelProps> = ({
   onChange,
   theme = "light",
 }) => {
+  // Update URL when content changes with a debounce
+  const handleEditorChange = (value: string | undefined) => {
+    onChange(value); // Pass the value up
+
+    // Update URL with the new mermaid code (debounced)
+    if (value !== undefined) {
+      // Use a simple debounce to avoid updating URL on each keystroke
+      const timeoutId = setTimeout(() => {
+        updateUrlWithMermaidCode(value);
+      }, 1000); // 1 second delay
+
+      return () => clearTimeout(timeoutId);
+    }
+  };
+
   return (
     <Box sx={{ height: "100%", width: "100%" }}>
       <Editor
@@ -22,7 +38,7 @@ const EditorPanel: React.FC<EditorPanelProps> = ({
         language="markdown" // Using markdown as base, Mermaid syntax highlighting needs separate setup (advanced)
         theme={theme}
         value={initialValue}
-        onChange={onChange}
+        onChange={handleEditorChange}
         loading={<CircularProgress />}
         options={{
           minimap: { enabled: false },

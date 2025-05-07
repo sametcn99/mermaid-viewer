@@ -6,6 +6,7 @@ import EditorPanel from "@/components/EditorPanel";
 import DiagramPanel from "@/components/DiagramPanel";
 import { Box, useTheme, useMediaQuery } from "@mui/material";
 import debounce from "lodash.debounce";
+import { getMermaidCodeFromUrl, updateUrlWithMermaidCode } from "@/lib/urlUtils";
 
 const initialMermaidCode = `graph TD
   A[Start] --> B{Is it Friday?};
@@ -17,12 +18,25 @@ const initialMermaidCode = `graph TD
 `;
 
 export default function Home() {
-  const [mermaidCode, setMermaidCode] = useState<string>(initialMermaidCode);
-  const [debouncedCode, setDebouncedCode] =
-    useState<string>(initialMermaidCode);
+  // Initialize with URL mermaid code or fallback to default
+  const [mermaidCode, setMermaidCode] = useState<string>("");
+  const [debouncedCode, setDebouncedCode] = useState<string>("");
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // Check for small screens (e.g., < 600px)
+
+  // Load initial diagram from URL or use default
+  useEffect(() => {
+    const codeFromUrl = getMermaidCodeFromUrl();
+    const initialCode = codeFromUrl || initialMermaidCode;
+    setMermaidCode(initialCode);
+    setDebouncedCode(initialCode);
+
+    // If code was not in URL, set it now
+    if (!codeFromUrl) {
+      updateUrlWithMermaidCode(initialMermaidCode);
+    }
+  }, []);
 
   // Debounce the update to the diagram panel
   // Use useMemo to ensure the debounced function is stable
@@ -31,7 +45,7 @@ export default function Home() {
       debounce((code: string) => {
         setDebouncedCode(code);
       }, 300),
-    [], // Empty dependency array means this is created once
+    [] // Empty dependency array means this is created once
   );
 
   const handleEditorChange = (value: string | undefined) => {

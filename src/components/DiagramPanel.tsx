@@ -3,7 +3,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import mermaid from "mermaid";
-import { Box, CircularProgress, Alert, Button } from "@mui/material";
+import { Box, CircularProgress, Alert, Button, Snackbar } from "@mui/material";
 
 interface DiagramPanelProps {
   mermaidCode: string;
@@ -23,6 +23,7 @@ const DiagramPanel: React.FC<DiagramPanelProps> = ({ mermaidCode }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [svgContent, setSvgContent] = useState<string>("");
+  const [showCopyNotification, setShowCopyNotification] = useState(false);
 
   useEffect(() => {
     const renderDiagram = async () => {
@@ -72,6 +73,23 @@ const DiagramPanel: React.FC<DiagramPanelProps> = ({ mermaidCode }) => {
     URL.revokeObjectURL(url); // Clean up
   };
 
+  const handleShareUrl = () => {
+    if (typeof window === "undefined") return;
+
+    // Get current URL with diagram parameter
+    const currentUrl = window.location.href;
+
+    // Copy to clipboard
+    navigator.clipboard
+      .writeText(currentUrl)
+      .then(() => {
+        setShowCopyNotification(true);
+      })
+      .catch((err) => {
+        console.error("Failed to copy URL:", err);
+      });
+  };
+
   return (
     <Box
       sx={{
@@ -83,22 +101,35 @@ const DiagramPanel: React.FC<DiagramPanelProps> = ({ mermaidCode }) => {
         bgcolor: "background.paper",
       }}
     >
-      {/* Download Button - Positioned top-right */}
+      {/* Controls - Positioned top-right */}
       {svgContent && !isLoading && !error && (
-        <Button
-          variant="outlined"
-          onClick={handleDownload}
-          size="small"
+        <Box
           sx={{
             position: "absolute",
             top: 20,
             right: 20,
-            zIndex: 10, // Ensure it's above the diagram content
+            zIndex: 10,
+            display: "flex",
+            gap: 1,
           }}
-          aria-label="Download SVG"
         >
-          Download SVG
-        </Button>
+          <Button
+            variant="outlined"
+            onClick={handleShareUrl}
+            size="small"
+            aria-label="Share URL"
+          >
+            Share URL
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={handleDownload}
+            size="small"
+            aria-label="Download SVG"
+          >
+            Download SVG
+          </Button>
+        </Box>
       )}
 
       {isLoading && (
@@ -172,6 +203,15 @@ const DiagramPanel: React.FC<DiagramPanelProps> = ({ mermaidCode }) => {
           Enter Mermaid code in the editor.
         </Box>
       )}
+
+      {/* Copy notification */}
+      <Snackbar
+        open={showCopyNotification}
+        autoHideDuration={3000}
+        onClose={() => setShowCopyNotification(false)}
+        message="URL copied to clipboard!"
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      />
     </Box>
   );
 };
