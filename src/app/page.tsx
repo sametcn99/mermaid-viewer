@@ -6,7 +6,10 @@ import EditorPanel from "@/components/EditorPanel";
 import DiagramPanel from "@/components/DiagramPanel";
 import { Box, useTheme, useMediaQuery } from "@mui/material";
 import debounce from "lodash.debounce";
-import { getMermaidCodeFromUrl, updateUrlWithMermaidCode } from "@/lib/urlUtils";
+import {
+  getMermaidCodeFromUrl,
+  updateUrlWithMermaidCode,
+} from "@/lib/urlUtils";
 
 const initialMermaidCode = `graph TD
   A[Start] --> B{Is it Friday?};
@@ -45,7 +48,7 @@ export default function Home() {
       debounce((code: string) => {
         setDebouncedCode(code);
       }, 300),
-    [] // Empty dependency array means this is created once
+    [], // Empty dependency array means this is created once
   );
 
   const handleEditorChange = (value: string | undefined) => {

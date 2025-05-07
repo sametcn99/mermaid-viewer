@@ -16,6 +16,7 @@
     "@mui/icons-material": "^7.1.0",
     "@mui/material": "^7.1.0",
     "lodash.debounce": "^4.0.8",
+    "lucide-react": "^0.508.0",
     "mermaid": "^11.6.0",
     "minizlib": "^3.0.2",
     "next": "15.3.1",

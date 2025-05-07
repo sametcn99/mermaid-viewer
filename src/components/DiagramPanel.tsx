@@ -3,7 +3,14 @@
 import React, { useRef, useEffect, useState } from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import mermaid from "mermaid";
-import { Box, CircularProgress, Alert, Button, Snackbar } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  Alert,
+  Snackbar,
+  IconButton,
+} from "@mui/material";
+import { Share2, Download, RotateCcw } from "lucide-react";
 
 interface DiagramPanelProps {
   mermaidCode: string;
@@ -113,22 +120,20 @@ const DiagramPanel: React.FC<DiagramPanelProps> = ({ mermaidCode }) => {
             gap: 1,
           }}
         >
-          <Button
-            variant="outlined"
+          <IconButton
             onClick={handleShareUrl}
             size="small"
             aria-label="Share URL"
           >
-            Share URL
-          </Button>
-          <Button
-            variant="outlined"
+            <Share2 />
+          </IconButton>
+          <IconButton
             onClick={handleDownload}
             size="small"
             aria-label="Download SVG"
           >
-            Download SVG
-          </Button>
+            <Download />
+          </IconButton>
         </Box>
       )}
 
@@ -171,14 +176,13 @@ const DiagramPanel: React.FC<DiagramPanelProps> = ({ mermaidCode }) => {
                   zIndex: 10,
                 }}
               >
-                <Button
-                  variant="outlined"
+                <IconButton
                   onClick={() => resetTransform()}
                   size="small"
                   aria-label="Reset View"
                 >
-                  Reset View
-                </Button>
+                  <RotateCcw />
+                </IconButton>
               </Box>
 
               <TransformComponent
