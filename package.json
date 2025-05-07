@@ -24,7 +24,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-split": "^2.0.14",
-    "react-zoom-pan-pinch": "^3.7.0"
+    "react-zoom-pan-pinch": "^3.7.0",
+    "simple-icons": "^14.12.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

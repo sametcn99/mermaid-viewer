@@ -245,7 +245,7 @@ export default function Home() {
       >
         <DialogTitle>Mermaid Viewer</DialogTitle>
         <DialogContent>
-          <Typography paragraph>
+          <Typography>
             You have previously saved diagrams. Would you like to load one or
             create a new diagram?
           </Typography>

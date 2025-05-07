@@ -21,13 +21,15 @@ import {
   Box,
   Tooltip,
 } from "@mui/material";
-import { Save, FolderOpen, Plus, Trash, MoreVertical } from "lucide-react"; // Changed MoreVert to MoreVertical
+import { Save, FolderOpen, Plus, Trash, MoreVertical } from "lucide-react";
+import { siGithub } from "simple-icons/icons";
 import {
   SavedDiagram,
   getAllDiagramsFromStorage,
   saveDiagramToStorage,
   deleteDiagram,
 } from "@/lib/storageUtils";
+import Link from "next/link";
 
 interface DiagramAppBarProps {
   currentDiagram: string;
@@ -140,6 +142,24 @@ const DiagramAppBar: React.FC<DiagramAppBarProps> = ({
               </IconButton>
             </Tooltip>
           </Box>
+
+          <Link href="https://sametcc.me/mermaid-viewer" passHref>
+            <Tooltip title="View on GitHub">
+              <IconButton component="a" target="_blank">
+                <svg
+                  role="img"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  height="24"
+                  width="24"
+                >
+                  <title>{siGithub.title}</title>
+                  <path d={siGithub.path} />
+                </svg>
+              </IconButton>
+            </Tooltip>
+          </Link>
 
           <Menu
             anchorEl={anchorEl}
