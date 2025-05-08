@@ -12,14 +12,13 @@ export default function ResizablePanels() {
   const {
     panelSize,
     isPanelResizing,
-    panelIsVertical,
     startPanelResize,
     stopPanelResize,
-    updatePanelSizeWithConstraints,
     initializePanelSettings,
     mermaidCode,
     handleEditorChange,
     debouncedCode,
+    handlePanelMouseMove,
   } = useMermaidStore();
 
   useEffect(() => {
@@ -29,7 +28,7 @@ export default function ResizablePanels() {
   }, [isSmallScreen, initializePanelSettings]);
 
   useEffect(() => {
-    const handleMouseMove = (event: MouseEvent | TouchEvent) => {
+    const onMouseMove = (event: MouseEvent | TouchEvent) => {
       if (!isPanelResizing || !containerRef.current) return;
 
       const clientX =
@@ -38,46 +37,25 @@ export default function ResizablePanels() {
         "touches" in event ? event.touches[0].clientY : event.clientY;
 
       const rect = containerRef.current.getBoundingClientRect();
-      let newSizePct;
-
-      if (panelIsVertical) {
-        const height = rect.height;
-        if (height === 0) return;
-        newSizePct = ((clientY - rect.top) / height) * 100;
-      } else {
-        const width = rect.width;
-        if (width === 0) return;
-        newSizePct = ((clientX - rect.left) / width) * 100;
-      }
-      updatePanelSizeWithConstraints(newSizePct);
-    };
-
-    const handleMouseUp = () => {
-      stopPanelResize();
+      handlePanelMouseMove(clientX, clientY, rect);
     };
 
     if (isPanelResizing) {
-      document.addEventListener("mousemove", handleMouseMove);
-      document.addEventListener("touchmove", handleMouseMove, {
+      document.addEventListener("mousemove", onMouseMove);
+      document.addEventListener("touchmove", onMouseMove, {
         passive: false,
       });
-      document.addEventListener("mouseup", handleMouseUp);
-      document.addEventListener("touchend", handleMouseUp);
+      document.addEventListener("mouseup", stopPanelResize);
+      document.addEventListener("touchend", stopPanelResize);
     }
 
     return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("touchmove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
-      document.removeEventListener("touchend", handleMouseUp);
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("touchmove", onMouseMove);
+      document.removeEventListener("mouseup", stopPanelResize);
+      document.removeEventListener("touchend", stopPanelResize);
     };
-  }, [
-    isPanelResizing,
-    panelIsVertical,
-    stopPanelResize,
-    updatePanelSizeWithConstraints,
-    containerRef,
-  ]);
+  }, [isPanelResizing, stopPanelResize, handlePanelMouseMove]);
 
   return (
     <Box

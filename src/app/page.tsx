@@ -8,10 +8,7 @@ import useMermaidStore from "@/hooks/useMermaidStore";
 import { Box } from "@mui/material";
 
 export default function Home() {
-  const {
-    alertMessage,
-    handleAlertClose,
-  } = useMermaidStore();
+  const { alertMessage, handleAlertClose } = useMermaidStore();
 
   return (
     <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>

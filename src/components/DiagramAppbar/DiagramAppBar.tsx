@@ -92,7 +92,9 @@ export default function DiagramAppBar() {
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Tooltip title="New Diagram">
-              <IconButton onClick={handleNewDiagram}> {/* Changed from onNewDiagram */}
+              <IconButton onClick={handleNewDiagram}>
+                {" "}
+                {/* Changed from onNewDiagram */}
                 <Plus />
               </IconButton>
             </Tooltip>

@@ -61,6 +61,12 @@ interface MermaidState {
   startPanelResize: () => void;
   stopPanelResize: () => void;
   updatePanelSizeWithConstraints: (newPotentialSize: number) => void;
+  handlePanelMouseMove: (
+    // Added new action
+    clientX: number,
+    clientY: number,
+    containerRect: { top: number; left: number; width: number; height: number },
+  ) => void;
 }
 
 const useMermaidStore = create<MermaidState>((set, get) => {
@@ -208,6 +214,28 @@ const useMermaidStore = create<MermaidState>((set, get) => {
         );
       }
       set({ panelSize: constrainedSize });
+    },
+    handlePanelMouseMove: (clientX, clientY, containerRect) => {
+      const {
+        panelIsVertical,
+        updatePanelSizeWithConstraints,
+        isPanelResizing,
+      } = get();
+
+      if (!isPanelResizing) return;
+
+      let newSizePct;
+
+      if (panelIsVertical) {
+        const height = containerRect.height;
+        if (height === 0) return;
+        newSizePct = ((clientY - containerRect.top) / height) * 100;
+      } else {
+        const width = containerRect.width;
+        if (width === 0) return;
+        newSizePct = ((clientX - containerRect.left) / width) * 100;
+      }
+      updatePanelSizeWithConstraints(newSizePct);
     },
   };
 });
