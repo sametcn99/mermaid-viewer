@@ -4,17 +4,7 @@ import useMermaidStore from "@/hooks/useMermaidStore";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import { useEffect, useRef } from "react";
 
-interface ResizablePanelsProps {
-  mermaidCode: string;
-  debouncedCode: string;
-  handleEditorChange: (value: string) => void;
-}
-
-export default function ResizablePanels({
-  mermaidCode,
-  debouncedCode,
-  handleEditorChange,
-}: ResizablePanelsProps) {
+export default function ResizablePanels() {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -27,6 +17,9 @@ export default function ResizablePanels({
     stopPanelResize,
     updatePanelSizeWithConstraints,
     initializePanelSettings,
+    mermaidCode,
+    handleEditorChange,
+    debouncedCode,
   } = useMermaidStore();
 
   useEffect(() => {

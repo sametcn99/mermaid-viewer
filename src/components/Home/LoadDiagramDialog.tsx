@@ -1,4 +1,5 @@
-import { SavedDiagram } from "@/lib/storage.utils";
+import useMermaidStore from "@/hooks/useMermaidStore";
+import { getAllDiagramsFromStorage, SavedDiagram } from "@/lib/storage.utils";
 import {
   Button,
   Dialog,
@@ -11,23 +12,21 @@ import {
   Typography,
 } from "@mui/material";
 
-interface LoadDiagramDialogProps {
-  open: boolean;
-  onClose: () => void;
-  diagrams: SavedDiagram[];
-  onLoadDiagram: (diagram: SavedDiagram) => void;
-  onNewDiagram: () => void;
-}
-
-export default function LoadDiagramDialog({
-  open,
-  onClose,
-  diagrams,
-  onLoadDiagram,
-  onNewDiagram,
-}: LoadDiagramDialogProps) {
+export default function LoadDiagramDialog() {
+  const {
+    openLoadDialog,
+    handleLoadDiagram,
+    handleNewDiagram,
+    handleCloseLoadDialog,
+  } = useMermaidStore();
+  const diagrams = getAllDiagramsFromStorage();
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={openLoadDialog}
+      onClose={handleCloseLoadDialog}
+      maxWidth="sm"
+      fullWidth
+    >
       <DialogTitle>Load Diagram</DialogTitle>
       <DialogContent>
         <Typography>
@@ -38,7 +37,7 @@ export default function LoadDiagramDialog({
           {diagrams.map((diagram: SavedDiagram) => (
             <ListItem
               key={diagram.id}
-              onClick={() => onLoadDiagram(diagram)}
+              onClick={() => handleLoadDiagram(diagram)}
               sx={{
                 borderRadius: 1,
                 mb: 1,
@@ -58,8 +57,8 @@ export default function LoadDiagramDialog({
         </List>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button variant="contained" onClick={onNewDiagram}>
+        <Button onClick={handleCloseLoadDialog}>Cancel</Button>
+        <Button variant="contained" onClick={handleNewDiagram}>
           Create New Diagram
         </Button>
       </DialogActions>
