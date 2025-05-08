@@ -1,5 +1,6 @@
 "use client";
 
+import useMermaidStore from "@/hooks/useMermaidStore";
 import {
   SavedDiagram,
   deleteDiagram,
@@ -21,26 +22,20 @@ import GitHubButton from "./GitHubButton";
 import LoadDiagramDialog from "./LoadDiagramDialog";
 import SaveDiagramDialog from "./SaveDiagramDialog";
 
-interface DiagramAppBarProps {
-  currentDiagram: string;
-  savedDiagramId?: string;
-  onLoadDiagram: (diagram: SavedDiagram) => void;
-  onNewDiagram: () => void;
-  onSaveDiagram: (diagramId: string | undefined) => void;
-}
-
-export default function DiagramAppBar({
-  currentDiagram,
-  savedDiagramId,
-  onLoadDiagram,
-  onNewDiagram,
-  onSaveDiagram,
-}: DiagramAppBarProps) {
+export default function DiagramAppBar() {
   const [savedDiagrams, setSavedDiagrams] = useState<SavedDiagram[]>([]);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [openLoadDialog, setOpenLoadDialog] = useState<boolean>(false);
   const [diagramName, setDiagramName] = useState<string>("");
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const {
+    mermaidCode,
+    currentDiagramId, // Changed from mermaidCodeId
+    // Removed unused variables: debouncedCode, alertMessage, handleEditorChange, handleCloseLoadDialog, handleAlertClose
+    handleLoadDiagram,
+    handleNewDiagram,
+    handleSaveDiagram,
+  } = useMermaidStore();
 
   useEffect(() => {
     const diagrams = getAllDiagramsFromStorage();
@@ -61,8 +56,8 @@ export default function DiagramAppBar({
   };
 
   const handleSave = () => {
-    if (savedDiagramId) {
-      onSaveDiagram(savedDiagramId);
+    if (currentDiagramId) {
+      handleSaveDiagram(currentDiagramId); // Changed from onSaveDiagram
       return;
     }
 
@@ -71,10 +66,10 @@ export default function DiagramAppBar({
   };
 
   const handleSaveSubmit = () => {
-    const diagram = saveDiagramToStorage(diagramName, currentDiagram);
+    const diagram = saveDiagramToStorage(diagramName, mermaidCode);
     refreshSavedDiagrams();
     setOpenDialog(false);
-    onSaveDiagram(diagram.id);
+    handleSaveDiagram(diagram.id); // Changed from onSaveDiagram
   };
 
   const handleDeleteDiagram = (id: string, event: React.MouseEvent) => {
@@ -97,7 +92,7 @@ export default function DiagramAppBar({
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Tooltip title="New Diagram">
-              <IconButton onClick={onNewDiagram}>
+              <IconButton onClick={handleNewDiagram}> {/* Changed from onNewDiagram */}
                 <Plus />
               </IconButton>
             </Tooltip>
@@ -109,7 +104,7 @@ export default function DiagramAppBar({
             </Tooltip>
 
             <Tooltip
-              title={savedDiagramId ? "Update Saved Diagram" : "Save Diagram"}
+              title={currentDiagramId ? "Update Saved Diagram" : "Save Diagram"}
             >
               <IconButton onClick={handleSave}>
                 <Save />
@@ -144,13 +139,13 @@ export default function DiagramAppBar({
       <LoadDiagramDialog
         open={openLoadDialog}
         savedDiagrams={savedDiagrams}
-        savedDiagramId={savedDiagramId}
+        // currentDiagramId prop removed
         onLoadDiagram={(diagram) => {
-          onLoadDiagram(diagram);
+          handleLoadDiagram(diagram); // Changed from onLoadDiagram
           setOpenLoadDialog(false);
         }}
         onNewDiagram={() => {
-          onNewDiagram();
+          handleNewDiagram(); // Changed from onNewDiagram
           setOpenLoadDialog(false);
         }}
         onDeleteDiagram={handleDeleteDiagram}
