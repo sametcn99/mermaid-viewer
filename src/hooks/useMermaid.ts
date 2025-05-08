@@ -109,6 +109,7 @@ export const useMermaid = (): UseMermaidReturn => {
     updateUrlWithMermaidCode(diagram.code);
     setHasUnsavedChanges(false);
     setAlertMessage(`Loaded diagram: ${diagram.name}`);
+    handleCloseLoadDialog();
   };
 
   const handleNewDiagram = () => {
@@ -118,6 +119,7 @@ export const useMermaid = (): UseMermaidReturn => {
     updateUrlWithMermaidCode(initialMermaidCode);
     setHasUnsavedChanges(false);
     setAlertMessage("Created new diagram");
+    handleCloseLoadDialog();
   };
 
   const handleSaveDiagram = (diagramId: string | undefined) => {
