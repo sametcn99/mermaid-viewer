@@ -1,4 +1,5 @@
-import { SavedDiagram } from "@/lib/storage.utils";
+import useMermaidStore from "@/hooks/useMermaidStore";
+import { getAllDiagramsFromStorage, SavedDiagram } from "@/lib/storage.utils";
 import {
   Button,
   Dialog,
@@ -10,60 +11,57 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-import React from "react";
 
-interface LoadDiagramDialogProps {
-  open: boolean;
-  onClose: () => void;
-  onLoadDiagram: (diagram: SavedDiagram) => void;
-  onNewDiagram: () => void;
-  diagrams: SavedDiagram[];
+export default function LoadDiagramDialog() {
+  const {
+    openLoadDialog,
+    handleLoadDiagram,
+    handleNewDiagram,
+    handleCloseLoadDialog,
+  } = useMermaidStore();
+  const diagrams = getAllDiagramsFromStorage();
+  return (
+    <Dialog
+      open={openLoadDialog}
+      onClose={handleCloseLoadDialog}
+      maxWidth="sm"
+      fullWidth
+    >
+      <DialogTitle>Load Diagram</DialogTitle>
+      <DialogContent>
+        <Typography>
+          You have previously saved diagrams. Would you like to load one or
+          create a new diagram?
+        </Typography>
+        <List>
+          {diagrams.map((diagram: SavedDiagram) => (
+            <ListItem
+              key={diagram.id}
+              onClick={() => handleLoadDiagram(diagram)}
+              sx={{
+                borderRadius: 1,
+                mb: 1,
+                cursor: "pointer",
+                transition: "background-color 0.3s",
+                "&:hover": {
+                  backgroundColor: "action.hover",
+                },
+              }}
+            >
+              <ListItemText
+                primary={diagram.name}
+                secondary={new Date(diagram.timestamp).toLocaleString()}
+              />
+            </ListItem>
+          ))}
+        </List>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCloseLoadDialog}>Cancel</Button>
+        <Button variant="contained" onClick={handleNewDiagram}>
+          Create New Diagram
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
 }
-
-const LoadDiagramDialog: React.FC<LoadDiagramDialogProps> = ({
-  open,
-  onClose,
-  onLoadDiagram,
-  onNewDiagram,
-  diagrams,
-}) => (
-  <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-    <DialogTitle>Mermaid Viewer</DialogTitle>
-    <DialogContent>
-      <Typography>
-        You have previously saved diagrams. Would you like to load one or create
-        a new diagram?
-      </Typography>
-      <List>
-        {diagrams.map((diagram) => (
-          <ListItem
-            key={diagram.id}
-            onClick={() => onLoadDiagram(diagram)}
-            sx={{
-              borderRadius: 1,
-              mb: 1,
-              cursor: "pointer",
-              transition: "background-color 0.3s",
-              "&:hover": {
-                backgroundColor: "action.hover",
-              },
-            }}
-          >
-            <ListItemText
-              primary={diagram.name}
-              secondary={new Date(diagram.timestamp).toLocaleString()}
-            />
-          </ListItem>
-        ))}
-      </List>
-    </DialogContent>
-    <DialogActions>
-      <Button onClick={onClose}>Cancel</Button>
-      <Button variant="contained" onClick={onNewDiagram}>
-        Create New Diagram
-      </Button>
-    </DialogActions>
-  </Dialog>
-);
-
-export default LoadDiagramDialog;

@@ -10,7 +10,6 @@ import DiagramError from "./DiagramError";
 import DiagramLoading from "./DiagramLoading";
 import DiagramSVGViewer from "./DiagramSVGViewer";
 import DiagramToolbar from "./DiagramToolbar";
-import ResetViewButton from "./ResetViewButton";
 
 interface DiagramPanelProps {
   mermaidCode: string;
@@ -122,9 +121,8 @@ export default function DiagramPanel({ mermaidCode }: DiagramPanelProps) {
           minScale={0.05}
           maxScale={50}
         >
-          {({ resetTransform }) => (
+          {() => (
             <>
-              <ResetViewButton onReset={resetTransform} />
               <TransformComponent
                 wrapperStyle={{ width: "100%", height: "100%" }}
                 contentStyle={{
