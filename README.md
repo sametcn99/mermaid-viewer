@@ -7,7 +7,6 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9.2-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Mermaid](https://img.shields.io/badge/Mermaid-11.11.0-FF3670?logo=mermaid&logoColor=white)](https://mermaid.js.org/)
 [![MUI](https://img.shields.io/badge/MUI-7.3.2-007FFF?logo=mui&logoColor=white)](https://mui.com/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 **🚀 Create, edit, and share beautiful Mermaid diagrams in real-time!**
 
@@ -322,12 +321,6 @@ We welcome contributions from the community! Here's how you can help:
 - Add tests for new features
 - Update documentation as needed
 - Test on multiple browsers/devices
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
 ---
 
