@@ -5,7 +5,7 @@ import { siGithub } from "simple-icons/icons";
 
 const GitHubButton: React.FC = () => (
   <Link
-    href="https://sametcc.me/mermaid-viewer"
+    href="https://sametcc.me/repo/mermaid-viewer"
     target="_blank"
     rel="noopener noreferrer"
     passHref
