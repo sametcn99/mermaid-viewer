@@ -22,8 +22,9 @@ export async function POST(request: NextRequest) {
 
 		// Use user API key if provided, otherwise use server API key
 		const apiKey = userApiKey || process.env.GEMINI_API_KEY;
-		// Use selected model or default to gemini-2.0-flash-exp
-		const model = selectedModel || "gemini-2.0-flash-exp";
+		// Use selected model or default to gemini-2.5-flash
+		console.log("Selected Model:", selectedModel);
+		const model = selectedModel || "gemini-2.5-flash";
 
 		if (!apiKey) {
 			return NextResponse.json(

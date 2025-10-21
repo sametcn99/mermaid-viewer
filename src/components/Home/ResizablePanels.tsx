@@ -3,6 +3,7 @@ import EditorPanel from "@/components/EditorPanel/EditorPanel";
 import { Box } from "@mui/material";
 import type React from "react";
 import type { RefObject } from "react";
+import type { AiAssistantConfig } from "@/types/ai-assistant.types";
 
 interface ResizablePanelsProps {
 	editorPanelSize: number;
@@ -13,6 +14,11 @@ interface ResizablePanelsProps {
 	debouncedCode: string;
 	handleEditorChange: (value: string) => void;
 	isDarkMode: boolean;
+	ai?: {
+		config: AiAssistantConfig;
+		onRequestConsent: () => void;
+		onRequestFix: (errorMessage: string, code: string) => Promise<void>;
+	};
 }
 
 const ResizablePanels: React.FC<ResizablePanelsProps> = ({
@@ -24,6 +30,7 @@ const ResizablePanels: React.FC<ResizablePanelsProps> = ({
 	debouncedCode,
 	handleEditorChange,
 	isDarkMode,
+	ai,
 }) => (
 	<Box
 		ref={containerRef}
@@ -85,7 +92,7 @@ const ResizablePanels: React.FC<ResizablePanelsProps> = ({
 				overflow: "hidden",
 			}}
 		>
-			<DiagramPanel mermaidCode={debouncedCode} />
+			<DiagramPanel mermaidCode={debouncedCode} ai={ai} />
 		</Box>
 	</Box>
 );

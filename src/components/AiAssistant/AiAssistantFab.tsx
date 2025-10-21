@@ -35,6 +35,23 @@ export default function AiAssistantFab({
 		}
 	}, []);
 
+	// Listen for open AI assistant events
+	useEffect(() => {
+		const handleOpenAiAssistant = () => {
+			if (!config.consentGiven) {
+				setShowConsentDialog(true);
+			} else {
+				setChatOpen(true);
+				setChatMinimized(false);
+			}
+		};
+
+		window.addEventListener("openAiAssistant", handleOpenAiAssistant);
+		return () => {
+			window.removeEventListener("openAiAssistant", handleOpenAiAssistant);
+		};
+	}, [config.consentGiven]);
+
 	const handleFabClick = useCallback(() => {
 		if (!config.consentGiven) {
 			setShowConsentDialog(true);
@@ -51,6 +68,8 @@ export default function AiAssistantFab({
 		};
 		setConfig(newConfig);
 		saveAiAssistantConfig(newConfig);
+		// Notify other components about the config change
+		window.dispatchEvent(new CustomEvent("aiConfigChanged"));
 		setShowConsentDialog(false);
 		setChatOpen(true);
 		setChatMinimized(false);
@@ -76,6 +95,8 @@ export default function AiAssistantFab({
 	const handleUpdateConfig = useCallback((newConfig: AiAssistantConfig) => {
 		setConfig(newConfig);
 		saveAiAssistantConfig(newConfig);
+		// Notify other components about the config change
+		window.dispatchEvent(new CustomEvent("aiConfigChanged"));
 	}, []);
 
 	return (

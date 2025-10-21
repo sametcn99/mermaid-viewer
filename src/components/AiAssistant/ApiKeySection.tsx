@@ -31,6 +31,7 @@ const GEMINI_MODELS = [
 	{ value: "gemini-2.5-flash-lite", label: "Gemini 2.5 Flash Lite" },
 	{ value: "gemini-2.0-flash", label: "Gemini 2.0 Flash" },
 	{ value: "gemini-2.0-flash-lite", label: "Gemini 2.0 Flash Lite" },
+	{ value: "gemini-flash-latest", label: "Gemini Flash (Latest)" },
 	{ value: "custom", label: "Custom Model" },
 ];
 
@@ -43,7 +44,7 @@ export default function ApiKeySection({
 }: ApiKeySectionProps) {
 	const modelSelectId = useId();
 	const [apiKey, setApiKey] = useState(currentApiKey || "");
-	const [model, setModel] = useState(currentModel || "gemini-2.5-pro");
+	const [model, setModel] = useState(currentModel || "gemini-2.5-flash");
 	const [customModel, setCustomModel] = useState("");
 	const [isCustomModel, setIsCustomModel] = useState(false);
 	const [testing, setTesting] = useState(false);

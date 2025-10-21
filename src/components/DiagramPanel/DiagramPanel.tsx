@@ -13,9 +13,15 @@ import DiagramSettings from "./DiagramSettings";
 import DiagramSVGViewer from "./DiagramSVGViewer";
 import DiagramToolbar from "./DiagramToolbar";
 import ResetViewButton from "./ResetViewButton";
+import type { AiAssistantConfig } from "@/types/ai-assistant.types";
 
 interface DiagramPanelProps {
 	mermaidCode: string;
+	ai?: {
+		config: AiAssistantConfig;
+		onRequestConsent: () => void;
+		onRequestFix: (errorMessage: string, code: string) => Promise<void>;
+	};
 }
 
 const defaultMermaidConfig: MermaidConfig = {
@@ -27,14 +33,14 @@ if (typeof window !== "undefined") {
 	mermaid.initialize(defaultMermaidConfig);
 }
 
-export default function DiagramPanel({ mermaidCode }: DiagramPanelProps) {
+export default function DiagramPanel({ mermaidCode, ai }: DiagramPanelProps) {
 	const svgContainerRef = useRef<HTMLDivElement>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [svgContent, setSvgContent] = useState<string>("");
 	const [showCopyNotification, setShowCopyNotification] = useState(false);
 	const [mermaidConfig, setMermaidConfig] = useState<MermaidConfig>(() => {
-		// localStorage'dan config yükle
+		// Load config from localStorage
 		const savedConfig = getMermaidConfig();
 		if (savedConfig && typeof savedConfig === "object") {
 			return savedConfig as MermaidConfig;
@@ -43,6 +49,12 @@ export default function DiagramPanel({ mermaidCode }: DiagramPanelProps) {
 	});
 	const [openSettings, setOpenSettings] = useState(false);
 	const [zoomLevel, setZoomLevel] = useState(1);
+	const [aiConfig, setAiConfig] = useState(ai?.config);
+
+	// Listen for AI config changes
+	useEffect(() => {
+		setAiConfig(ai?.config);
+	}, [ai?.config]);
 
 	useEffect(() => {
 		const renderDiagram = async () => {
@@ -78,7 +90,7 @@ export default function DiagramPanel({ mermaidCode }: DiagramPanelProps) {
 		renderDiagram();
 	}, [mermaidCode, mermaidConfig]);
 
-	// Config değiştiğinde localStorage'a kaydet
+	// Save to localStorage when config changes
 	useEffect(() => {
 		saveMermaidConfig(mermaidConfig);
 	}, [mermaidConfig]);
@@ -155,7 +167,22 @@ export default function DiagramPanel({ mermaidCode }: DiagramPanelProps) {
 			)}
 
 			{isLoading && <DiagramLoading />}
-			{error && <DiagramError error={error} />}
+			{error && (
+				<DiagramError
+					error={error}
+					currentCode={mermaidCode}
+					onRequestFix={ai?.onRequestFix}
+					ai={
+						ai
+							? {
+									consentGiven:
+										aiConfig?.consentGiven || ai.config.consentGiven,
+									onRequestConsent: ai.onRequestConsent,
+								}
+							: undefined
+					}
+				/>
+			)}
 			{!isLoading && !error && svgContent && (
 				<TransformWrapper
 					initialScale={1}

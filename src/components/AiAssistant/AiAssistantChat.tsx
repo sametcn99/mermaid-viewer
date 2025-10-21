@@ -160,11 +160,14 @@ export default function AiAssistantChat({
 
 	const handleSaveApiKey = useCallback(
 		(apiKey: string, model: string) => {
-			onUpdateConfig({
+			const newConfig = {
 				...config,
 				userApiKey: apiKey,
 				selectedModel: model,
-			});
+			};
+			onUpdateConfig(newConfig);
+			// Notify other components about the config change
+			window.dispatchEvent(new CustomEvent("aiConfigChanged"));
 			setApiKeyDialogOpen(false);
 			setError(null);
 		},
