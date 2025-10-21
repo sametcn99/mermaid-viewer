@@ -41,10 +41,12 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 			onClose={onClose}
 			maxWidth="md"
 			fullWidth
-			PaperProps={{
-				sx: {
-					borderRadius: 2,
-					maxHeight: "90vh",
+			slotProps={{
+				paper: {
+					sx: {
+						borderRadius: 2,
+						maxHeight: "90vh",
+					},
 				},
 			}}
 		>
@@ -73,7 +75,7 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 
 			<DialogContent dividers>
 				<Box sx={{ mb: 3 }}>
-					<Typography variant="body1" color="text.secondary" paragraph>
+					<Typography variant="body1" paragraph>
 						Mermaid Viewer is a powerful tool for creating and visualizing
 						Mermaid diagrams in real-time. Follow these steps to get started:
 					</Typography>
