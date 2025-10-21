@@ -33,6 +33,7 @@ export interface UseMermaidReturn {
 	handleLoadDiagram: (diagram: SavedDiagram) => void;
 	handleNewDiagram: () => void;
 	handleSaveDiagram: (diagramId: string | undefined) => void;
+	handleSelectTemplate: (code: string, name: string) => void;
 	handleCloseLoadDialog: () => void;
 	handleAlertClose: () => void;
 	setOpenLoadDialog: (open: boolean) => void;
@@ -132,6 +133,15 @@ export const useMermaid = (): UseMermaidReturn => {
 		}
 	};
 
+	const handleSelectTemplate = (code: string, name: string) => {
+		setMermaidCode(code);
+		setDebouncedCode(code);
+		setCurrentDiagramId(undefined);
+		updateUrlWithMermaidCode(code);
+		setHasUnsavedChanges(true);
+		setAlertMessage(`Template loaded: ${name}`);
+	};
+
 	useEffect(() => {
 		const handleBeforeUnload = (event: BeforeUnloadEvent) => {
 			if (hasUnsavedChanges) {
@@ -179,6 +189,7 @@ export const useMermaid = (): UseMermaidReturn => {
 		handleLoadDiagram,
 		handleNewDiagram,
 		handleSaveDiagram,
+		handleSelectTemplate,
 		handleCloseLoadDialog,
 		handleAlertClose,
 		setOpenLoadDialog,

@@ -14,13 +14,14 @@ import {
 	Tooltip,
 	Typography,
 } from "@mui/material";
-import { FolderOpen, Plus, Save, HelpCircle } from "lucide-react";
+import { FolderOpen, Plus, Save, HelpCircle, FileText } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import GitHubButton from "./GitHubButton";
 import LoadDiagramDialog from "./LoadDiagramDialog";
 import SaveDiagramDialog from "./SaveDiagramDialog";
 import HowToUseDialog from "./HowToUseDialog";
+import TemplateDialog from "./TemplateDialog";
 
 interface DiagramAppBarProps {
 	currentDiagram: string;
@@ -28,6 +29,7 @@ interface DiagramAppBarProps {
 	onLoadDiagram: (diagram: SavedDiagram) => void;
 	onNewDiagram: () => void;
 	onSaveDiagram: (diagramId: string | undefined) => void;
+	onSelectTemplate?: (code: string, name: string) => void;
 }
 
 export default function DiagramAppBar({
@@ -36,12 +38,14 @@ export default function DiagramAppBar({
 	onLoadDiagram,
 	onNewDiagram,
 	onSaveDiagram,
+	onSelectTemplate,
 }: DiagramAppBarProps) {
 	const [savedDiagrams, setSavedDiagrams] = useState<SavedDiagram[]>([]);
 	const [openDialog, setOpenDialog] = useState<boolean>(false);
 	const [openLoadDialog, setOpenLoadDialog] = useState<boolean>(false);
 	const [diagramName, setDiagramName] = useState<string>("");
 	const [openHowToUse, setOpenHowToUse] = useState<boolean>(false);
+	const [openTemplateDialog, setOpenTemplateDialog] = useState<boolean>(false);
 
 	useEffect(() => {
 		const diagrams = getAllDiagramsFromStorage();
@@ -98,6 +102,15 @@ export default function DiagramAppBar({
 						<Tooltip title="New Diagram">
 							<IconButton onClick={onNewDiagram} aria-label="New Diagram">
 								<Plus />
+							</IconButton>
+						</Tooltip>
+
+						<Tooltip title="Browse Templates">
+							<IconButton
+								onClick={() => setOpenTemplateDialog(true)}
+								aria-label="Browse Templates"
+							>
+								<FileText />
 							</IconButton>
 						</Tooltip>
 
@@ -164,6 +177,16 @@ export default function DiagramAppBar({
 			<HowToUseDialog
 				open={openHowToUse}
 				onClose={() => setOpenHowToUse(false)}
+			/>
+
+			<TemplateDialog
+				open={openTemplateDialog}
+				onClose={() => setOpenTemplateDialog(false)}
+				onSelectTemplate={(code, name) => {
+					if (onSelectTemplate) {
+						onSelectTemplate(code, name);
+					}
+				}}
 			/>
 		</>
 	);

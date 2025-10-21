@@ -24,7 +24,8 @@
 ### 🔥 **Core Features**
 
 - **⚡ Live Preview:** See your diagrams update instantly as you type
-- **📱 Responsive Split View:** Adjustable panels that work perfectly on all devices
+- **� 40+ Ready-Made Templates:** Comprehensive template library with 18 diagram categories
+- **�📱 Responsive Split View:** Adjustable panels that work perfectly on all devices
 - **🎨 Syntax Highlighting:** Monaco Editor with intelligent code completion
 - **🚀 Fast Rendering:** Debounced updates for smooth performance
 - **📤 Quick Sharing:** Generate shareable links with URL encoding
@@ -32,7 +33,8 @@
 ### 💎 **Advanced Features**
 
 - **🔍 Zoom & Pan:** Interactive diagram navigation with mouse and touch
-- **💾 Auto-Save:** Your work is automatically saved in browser storage
+- **� Smart Template Search:** Filter and search through templates by category, name, or tags
+- **�💾 Auto-Save:** Your work is automatically saved in browser storage
 - **🎨 Persistent Settings:** Diagram configuration (theme, colors, fonts) saved to localStorage
 - **📋 One-Click Copy:** Copy diagrams as SVG or share links instantly
 - **🔄 Real-time Validation:** Immediate feedback on syntax errors
@@ -41,7 +43,7 @@
 
 ---
 
-## 🚀 Quick Start
+## �🚀 Quick Start
 
 ### 📋 Prerequisites
 

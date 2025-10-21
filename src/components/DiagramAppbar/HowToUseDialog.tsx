@@ -19,6 +19,7 @@ import {
 	Download,
 	Edit3,
 	Eye,
+	FileText,
 	FolderOpen,
 	Palette,
 	Save,
@@ -109,6 +110,17 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 
 						<ListItem>
 							<ListItemIcon>
+								<FileText size={20} />
+							</ListItemIcon>
+							<ListItemText
+								primary="Browse 40+ Ready-Made Templates"
+								secondary="Click the template icon to explore our extensive collection of 18 diagram categories including Flowcharts, Sequence diagrams, C4 Architecture, Sankey flows, Network diagrams, and more!"
+								slotProps={{ primary: { fontWeight: 500 } }}
+							/>
+						</ListItem>
+
+						<ListItem>
+							<ListItemIcon>
 								<Eye size={20} />
 							</ListItemIcon>
 							<ListItemText
@@ -136,6 +148,40 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 							<ListItemText
 								primary="Load Saved Diagrams"
 								secondary="Use the folder icon to open and manage your previously saved diagrams."
+								slotProps={{ primary: { fontWeight: 500 } }}
+							/>
+						</ListItem>
+					</List>
+				</Box>
+
+				<Divider sx={{ my: 3 }} />
+
+				<Box sx={{ mb: 4 }}>
+					<Typography
+						variant="h3"
+						component="h3"
+						gutterBottom
+						fontWeight="600"
+						sx={{
+							display: "flex",
+							alignItems: "center",
+							gap: 1,
+							mb: 2,
+							fontSize: "1.25rem",
+						}}
+					>
+						<FileText size={20} />
+						Template Library
+					</Typography>
+
+					<List>
+						<ListItem>
+							<ListItemIcon>
+								<FileText size={20} />
+							</ListItemIcon>
+							<ListItemText
+								primary="Search & Filter Templates"
+								secondary="Use the search bar and category filters to quickly find the perfect template for your needs. Templates include detailed descriptions and tags."
 								slotProps={{ primary: { fontWeight: 500 } }}
 							/>
 						</ListItem>

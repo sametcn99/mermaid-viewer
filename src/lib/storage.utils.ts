@@ -191,3 +191,82 @@ export function getMermaidConfig(): unknown | null {
 		return null;
 	}
 }
+
+// Favorite Templates Storage
+
+export interface FavoriteTemplate {
+	templateId: string;
+	timestamp: number;
+}
+
+const FAVORITE_TEMPLATES_KEY = "mermaid-viewer-favorite-templates";
+
+/**
+ * Save a template to favorites
+ *
+ * @param templateId The ID of the template to favorite
+ */
+export function saveFavoriteTemplate(templateId: string): void {
+	if (typeof window === "undefined") return;
+	try {
+		const favorites = getFavoriteTemplates();
+		if (!favorites.find((fav) => fav.templateId === templateId)) {
+			favorites.push({
+				templateId,
+				timestamp: Date.now(),
+			});
+			localStorage.setItem(FAVORITE_TEMPLATES_KEY, JSON.stringify(favorites));
+		}
+	} catch (error) {
+		console.error("Failed to save favorite template:", error);
+	}
+}
+
+/**
+ * Get all favorite templates
+ *
+ * @returns Array of favorite templates
+ */
+export function getFavoriteTemplates(): FavoriteTemplate[] {
+	if (typeof window === "undefined") return [];
+	try {
+		const storedFavorites = localStorage.getItem(FAVORITE_TEMPLATES_KEY);
+		if (!storedFavorites) return [];
+		return JSON.parse(storedFavorites);
+	} catch (error) {
+		console.error("Failed to parse favorite templates:", error);
+		return [];
+	}
+}
+
+/**
+ * Remove a template from favorites
+ *
+ * @param templateId The ID of the template to remove
+ */
+export function removeFavoriteTemplate(templateId: string): void {
+	if (typeof window === "undefined") return;
+	try {
+		const favorites = getFavoriteTemplates();
+		const filteredFavorites = favorites.filter(
+			(fav) => fav.templateId !== templateId,
+		);
+		localStorage.setItem(
+			FAVORITE_TEMPLATES_KEY,
+			JSON.stringify(filteredFavorites),
+		);
+	} catch (error) {
+		console.error("Failed to remove favorite template:", error);
+	}
+}
+
+/**
+ * Check if a template is favorited
+ *
+ * @param templateId The ID of the template to check
+ * @returns true if favorited, false otherwise
+ */
+export function isTemplateFavorited(templateId: string): boolean {
+	const favorites = getFavoriteTemplates();
+	return favorites.some((fav) => fav.templateId === templateId);
+}

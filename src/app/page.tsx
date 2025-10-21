@@ -33,6 +33,7 @@ export default function Home() {
 		handleLoadDiagram,
 		handleNewDiagram,
 		handleSaveDiagram,
+		handleSelectTemplate,
 		handleCloseLoadDialog,
 		handleAlertClose,
 	} = useMermaid();
@@ -45,6 +46,7 @@ export default function Home() {
 				onLoadDiagram={handleLoadDiagram}
 				onNewDiagram={handleNewDiagram}
 				onSaveDiagram={handleSaveDiagram}
+				onSelectTemplate={handleSelectTemplate}
 			/>
 			<ResizablePanels
 				editorPanelSize={editorPanelSize}
