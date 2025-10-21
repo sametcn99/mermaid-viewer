@@ -7,7 +7,7 @@ export const sankeyTemplates: DiagramTemplate[] = [
 		category: "Sankey",
 		description: "Energy flow diagram showing energy sources and consumption",
 		tags: ["sankey", "energy", "flow", "consumption"],
-		code: `sankey-beta
+		code: `sankey
 
     Agricultural 'waste',Bio-conversion,124.729
     Bio-conversion,Liquid,0.597
@@ -40,27 +40,21 @@ export const sankeyTemplates: DiagramTemplate[] = [
 		category: "Sankey",
 		description: "Budget allocation and spending flow diagram",
 		tags: ["sankey", "budget", "money", "allocation"],
-		code: `sankey-beta
-
+		code: `sankey
     Revenue,Sales,100000
     Revenue,Investments,25000
     Revenue,Other,15000
-    
     Sales,Product A,45000
     Sales,Product B,30000
     Sales,Product C,25000
-    
     Investments,Stocks,15000
     Investments,Bonds,10000
-    
     Product A,Marketing,15000
     Product A,Development,20000
     Product A,Operations,10000
-    
     Product B,Marketing,10000
     Product B,Development,12000
     Product B,Operations,8000
-    
     Product C,Marketing,8000
     Product C,Development,10000
     Product C,Operations,7000`,
@@ -71,28 +65,24 @@ export const sankeyTemplates: DiagramTemplate[] = [
 		category: "Sankey",
 		description: "Website visitor flow and conversion analysis",
 		tags: ["sankey", "traffic", "website", "conversion"],
-		code: `sankey-beta
-
+		code: `sankey
     Organic Search,Homepage,1200
     Social Media,Homepage,800
     Direct Traffic,Homepage,600
     Paid Ads,Homepage,400
     Email Campaign,Homepage,300
-    
     Homepage,Product Pages,1500
     Homepage,Blog,900
     Homepage,About,400
     Homepage,Contact,200
     Homepage,Bounce,500
-    
     Product Pages,Cart,300
     Product Pages,Wishlist,200
     Product Pages,Bounce,1000
-    
     Cart,Checkout,250
     Cart,Abandon,50
-    
     Checkout,Purchase,200
-    Checkout,Abandon,50`,
+    Checkout,Abandon,50
+`,
 	},
 ];

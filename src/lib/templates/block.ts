@@ -7,7 +7,7 @@ export const blockTemplates: DiagramTemplate[] = [
 		category: "Block",
 		description: "Simple block diagram showing system components",
 		tags: ["block", "basic", "components", "system"],
-		code: `block-beta
+		code: `block
   columns 3
   A["Input"] B["Process"] C["Output"]
   D["Feedback Loop"] E["Control"] F["Monitor"]
@@ -26,7 +26,7 @@ export const blockTemplates: DiagramTemplate[] = [
 		category: "Block",
 		description: "System architecture with layered components",
 		tags: ["block", "architecture", "layers", "system"],
-		code: `block-beta
+		code: `block
   columns 4
   
   subgraph "Frontend Layer"
@@ -71,7 +71,7 @@ export const blockTemplates: DiagramTemplate[] = [
 		category: "Block",
 		description: "Network infrastructure block diagram",
 		tags: ["block", "network", "infrastructure", "topology"],
-		code: `block-beta
+		code: `block
   columns 5
   
   Internet["Internet"]
