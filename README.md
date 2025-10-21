@@ -2,10 +2,11 @@
 
 # 🧜‍♀️ Mermaid Live Editor & Viewer
 
-[![Next.js](https://img.shields.io/badge/Next.js-15.5.2-black?logo=next.js&logoColor=white)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9.2-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Mermaid](https://img.shields.io/badge/Mermaid-11.11.0-FF3670?logo=mermaid&logoColor=white)](https://mermaid.js.org/)
-[![MUI](https://img.shields.io/badge/MUI-7.3.2-007FFF?logo=mui&logoColor=white)](https://mui.com/)
+**🚀 Create, edit, and share beautiful Mermaid diagrams in real-time!**
+
+*A powerful, modern web application that transforms your ideas into stunning diagrams with live preview and instant sharing capabilities.*
+
+[✨ **Live Demo**](https://mermaid-viewer-alpha.vercel.app) • [🐛 **Report Bug**](https://github.com/sametcn99/mermaid-viewer/issues) • [💡 **Request Feature**](https://github.com/sametcn99/mermaid-viewer/issues) • [🏠 **GitHub Repository**](https://sametcc.me/repo/mermaid-viewer)
 
 ## 📈 Stats
 
@@ -13,12 +14,6 @@
 ![GitHub forks](https://img.shields.io/github/forks/sametcn99/mermaid-viewer?style=social)
 ![GitHub issues](https://img.shields.io/github/issues/sametcn99/mermaid-viewer)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/sametcn99/mermaid-viewer)
-
-**🚀 Create, edit, and share beautiful Mermaid diagrams in real-time!**
-
-*A powerful, modern web application that transforms your ideas into stunning diagrams with live preview and instant sharing capabilities.*
-
-[✨ **Live Demo**](https://mermaid-viewer-alpha.vercel.app) • [🐛 **Report Bug**](https://github.com/sametcn99/mermaid-viewer/issues) • [💡 **Request Feature**](https://github.com/sametcn99/mermaid-viewer/issues)
 
 </div>
 
@@ -139,32 +134,10 @@ We welcome contributions from the community! Here's how you can help:
 - ⚡ **Performance:** Optimize for speed
 - 🧪 **Testing:** Add test coverage
 
-### 📋 **Development Guidelines**
-
-- Follow existing code style (Prettier + ESLint)
-- Write meaningful commit messages
-- Add tests for new features
-- Update documentation as needed
-- Test on multiple browsers/devices
-
----
-
-## 🙏 Acknowledgments
-
-- **[Mermaid.js](https://mermaid.js.org/)** - For the amazing diagram rendering engine
-- **[Monaco Editor](https://microsoft.github.io/monaco-editor/)** - For the powerful code editor
-- **[Next.js](https://nextjs.org/)** - For the excellent React framework
-- **[Material-UI](https://mui.com/)** - For the beautiful component library
-- **[Vercel](https://vercel.com/)** - For seamless deployment and hosting
-
----
-
 ---
 
 <div align="center">
 
 ⭐ **Star this repo if you found it helpful!** ⭐
-
-[🔝 Back to top](#-mermaid-live-editor--viewer)
 
 </div>
