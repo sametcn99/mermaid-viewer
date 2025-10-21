@@ -8,20 +8,27 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  ...appMetadata,
+	...appMetadata,
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ThemeRegistry>{children}</ThemeRegistry>
-        <Analytics />
-      </body>
-    </html>
-  );
+	return (
+		<html lang="en" suppressHydrationWarning>
+			<head>
+				<script
+					defer
+					src="https://umami.sametcc.me/script.js"
+					data-website-id="f676397a-e4dd-4a55-92ca-d676057d269c"
+				></script>
+			</head>
+			<body className={inter.className}>
+				<ThemeRegistry>{children}</ThemeRegistry>
+				<Analytics />
+			</body>
+		</html>
+	);
 }

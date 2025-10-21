@@ -1,27 +1,27 @@
 import { Menu, MenuItem } from "@mui/material";
-import React from "react";
+import type React from "react";
 
 interface AppBarMenuProps {
-  anchorEl: null | HTMLElement;
-  onClose: () => void;
-  onManageSavedDiagrams: () => void;
+	anchorEl: null | HTMLElement;
+	onClose: () => void;
+	onManageSavedDiagrams: () => void;
 }
 
 const AppBarMenu: React.FC<AppBarMenuProps> = ({
-  anchorEl,
-  onClose,
-  onManageSavedDiagrams,
+	anchorEl,
+	onClose,
+	onManageSavedDiagrams,
 }) => (
-  <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={onClose}>
-    <MenuItem
-      onClick={() => {
-        onClose();
-        onManageSavedDiagrams();
-      }}
-    >
-      Manage Saved Diagrams
-    </MenuItem>
-  </Menu>
+	<Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={onClose}>
+		<MenuItem
+			onClick={() => {
+				onClose();
+				onManageSavedDiagrams();
+			}}
+		>
+			Manage Saved Diagrams
+		</MenuItem>
+	</Menu>
 );
 
 export default AppBarMenu;

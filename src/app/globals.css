@@ -2,50 +2,50 @@
 
 html,
 body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden; /* Prevent body scrollbars */
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	overflow: hidden; /* Prevent body scrollbars */
 }
 
 #__next {
-  height: 100%;
+	height: 100%;
 }
 
 /* Styles for react-split */
 .gutter {
-  background-color: #eee; /* Light grey gutter */
-  background-repeat: no-repeat;
-  background-position: 50%;
+	background-color: #eee; /* Light grey gutter */
+	background-repeat: no-repeat;
+	background-position: 50%;
 }
 
 .gutter.gutter-horizontal {
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeAAPRUQMYQVJNAAAAAElFTkSuQmCC");
-  cursor: col-resize;
+	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeAAPRUQMYQVJNAAAAAElFTkSuQmCC");
+	cursor: col-resize;
 }
 
 .gutter.gutter-vertical {
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=");
-  cursor: row-resize;
+	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=");
+	cursor: row-resize;
 }
 
 /* Dark mode gutter */
 body[data-theme="dark"] .gutter {
-  /* You might need a different way to detect dark mode based on your theme setup */
-  background-color: #333;
+	/* You might need a different way to detect dark mode based on your theme setup */
+	background-color: #333;
 }
 
 /* Ensure Box fills Split pane */
 .split > div {
-  height: 100%;
-  width: 100%;
-  overflow: hidden; /* Prevent scrollbars within panes */
+	height: 100%;
+	width: 100%;
+	overflow: hidden; /* Prevent scrollbars within panes */
 }
 
 .split.split-horizontal > div {
-  height: 100%;
+	height: 100%;
 }
 
 .split.split-vertical > div {
-  width: 100%;
+	width: 100%;
 }

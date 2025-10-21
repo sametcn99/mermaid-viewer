@@ -1,14 +1,14 @@
 import { Alert } from "@mui/material";
-import React from "react";
+import type React from "react";
 
 interface DiagramErrorProps {
-  error: string;
+	error: string;
 }
 
 const DiagramError: React.FC<DiagramErrorProps> = ({ error }) => (
-  <Alert severity="error" sx={{ m: 2 }}>
-    {error}
-  </Alert>
+	<Alert severity="error" sx={{ m: 2 }}>
+		{error}
+	</Alert>
 );
 
 export default DiagramError;

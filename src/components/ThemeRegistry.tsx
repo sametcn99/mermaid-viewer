@@ -1,23 +1,23 @@
 "use client";
 
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
-import React from "react";
+import type React from "react";
 
 const darkTheme = createTheme({
-  palette: {
-    mode: "dark",
-  },
+	palette: {
+		mode: "dark",
+	},
 });
 
 export default function ThemeRegistry({
-  children,
+	children,
 }: {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }) {
-  return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
-      {children}
-    </ThemeProvider>
-  );
+	return (
+		<ThemeProvider theme={darkTheme}>
+			<CssBaseline />
+			{children}
+		</ThemeProvider>
+	);
 }

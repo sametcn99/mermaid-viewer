@@ -9,11 +9,11 @@ import { decodeMermaid, encodeMermaid } from "./utils";
  * @param code The Mermaid diagram code
  */
 export function updateUrlWithMermaidCode(code: string): void {
-  if (typeof window === "undefined") return;
-  const url = new URL(window.location.href);
-  if (code) url.searchParams.set("diagram", encodeMermaid(code));
-  else url.searchParams.delete("diagram");
-  window.history.replaceState({}, "", url.toString());
+	if (typeof window === "undefined") return;
+	const url = new URL(window.location.href);
+	if (code) url.searchParams.set("diagram", encodeMermaid(code));
+	else url.searchParams.delete("diagram");
+	window.history.replaceState({}, "", url.toString());
 }
 
 /**
@@ -21,9 +21,9 @@ export function updateUrlWithMermaidCode(code: string): void {
  * @returns The decoded Mermaid code or empty string
  */
 export function getMermaidCodeFromUrl(): string {
-  if (typeof window === "undefined") return "";
-  const url = new URL(window.location.href);
-  const encoded = url.searchParams.get("diagram");
-  if (!encoded) return "";
-  return decodeMermaid(encoded);
+	if (typeof window === "undefined") return "";
+	const url = new URL(window.location.href);
+	const encoded = url.searchParams.get("diagram");
+	if (!encoded) return "";
+	return decodeMermaid(encoded);
 }
