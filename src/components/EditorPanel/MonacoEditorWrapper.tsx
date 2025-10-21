@@ -27,6 +27,9 @@ export default function MonacoEditorWrapper({
 				wordWrap: "on",
 				automaticLayout: true,
 				domReadOnly: false,
+				readOnly: false,
+				contextmenu: true,
+				quickSuggestions: false,
 			}}
 		/>
 	);
