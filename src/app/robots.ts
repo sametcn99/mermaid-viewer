@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
-	const baseUrl = "https://mermaid-viewer-alpha.vercel.app";
+	const baseUrl = "https://mermaid.sametcc.me";
 
 	return {
 		rules: [
