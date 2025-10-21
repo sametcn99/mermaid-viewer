@@ -102,6 +102,11 @@ export default function DiagramAppBar({
 							userSelect: "none",
 							MozUserSelect: "none",
 							WebkitUserSelect: "none",
+							fontWeight: 700,
+							fontSize: "1.5rem",
+							color: "#ffffff",
+							letterSpacing: "-0.02em",
+							fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
 						}}
 					>
 						Mermaid Viewer
