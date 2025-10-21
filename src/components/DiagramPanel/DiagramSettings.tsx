@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import type { MermaidConfig } from "mermaid";
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { saveMermaidConfig } from "@/lib/storage.utils";
 
 interface DiagramSettingsProps {
@@ -33,6 +33,12 @@ const DiagramSettings: React.FC<DiagramSettingsProps> = ({
 	onApply,
 }) => {
 	const [config, setConfig] = useState<MermaidConfig>(currentConfig);
+
+	useEffect(() => {
+		if (open) {
+			setConfig(currentConfig);
+		}
+	}, [open, currentConfig]);
 
 	const handleThemeChange = (event: SelectChangeEvent<string>) => {
 		setConfig({
