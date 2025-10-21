@@ -21,10 +21,22 @@ const DiagramSVGViewer: React.FC<DiagramSVGViewerProps> = ({
 			height: "auto",
 			maxWidth: "100%",
 			maxHeight: "100%",
+			// Touch optimization
+			touchAction: "none", // Let react-zoom-pan-pinch handle all touch events
+			userSelect: "none", // Prevent text selection
 			"& svg": {
 				display: "block",
 				maxWidth: "100%",
 				height: "auto",
+				// Ensure SVG is touch-friendly
+				touchAction: "none",
+				userSelect: "none",
+				pointerEvents: "none", // Prevent SVG from interfering with pan/zoom
+			},
+			// Mobile-specific optimizations
+			"@media (max-width: 600px)": {
+				minWidth: "100vw", // Ensure full width on small screens
+				minHeight: "50vh", // Minimum height for better visibility
 			},
 		}}
 	/>

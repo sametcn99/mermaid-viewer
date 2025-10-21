@@ -1,7 +1,6 @@
 "use client";
 
 import AiAssistantFab from "@/components/AiAssistant/AiAssistantFab";
-import DiagramAppBar from "@/components/DiagramAppbar/DiagramAppBar";
 import AlertSnackbar from "@/components/Home/AlertSnackbar";
 import LoadDiagramDialog from "@/components/Home/LoadDiagramDialog";
 import ResizablePanels from "@/components/Home/ResizablePanels";
@@ -14,6 +13,7 @@ import {
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import type { AiAssistantConfig } from "@/types/ai-assistant.types";
 import { useCallback, useEffect, useState } from "react";
+import AppBar from "@/components/AppBar";
 
 export default function Home() {
 	const theme = useTheme();
@@ -142,7 +142,7 @@ export default function Home() {
 
 	return (
 		<Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-			<DiagramAppBar
+			<AppBar
 				currentDiagram={mermaidCode}
 				savedDiagramId={currentDiagramId}
 				onLoadDiagram={handleLoadDiagram}

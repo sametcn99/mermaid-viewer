@@ -35,13 +35,22 @@
 
 - **🤖 AI-Powered Diagram Generation:** Generate and modify diagrams using conversational AI
 - **🔒 Privacy-First AI:** Your Gemini API key is stored locally and never sent to our servers
-- **🔍 Zoom & Pan:** Interactive diagram navigation with mouse and touch
+- **🔍 Enhanced Zoom & Pan:** Advanced navigation with touch-optimized gestures:
+  - **🖱️ Mouse wheel:** Precise zoom control for desktop users
+  - **🤏 Pinch-to-zoom:** Natural mobile gesture support
+  - **👆 Double-tap:** Quick zoom functionality on touch devices
+  - **📱 Momentum panning:** Smooth scrolling with velocity-based movement
 - **🔍 Smart Template Search:** Filter and search through templates by category, name, or tags
 - **💾 Auto-Save:** Your work is automatically saved in browser storage
 - **🎨 Persistent Settings:** Diagram configuration (theme, colors, fonts) saved to localStorage
 - **📋 One-Click Copy:** Copy diagrams as SVG or share links instantly
 - **🔄 Real-time Validation:** Immediate feedback on syntax errors
-- **📱 Mobile Optimized:** Perfect experience on phones and tablets
+- **📱 Mobile Touch Optimized:** Perfect experience on phones and tablets with:
+  - **👆 Enhanced Touch Targets:** All buttons sized 44px+ for easy tapping
+  - **🎯 Speed Dial Interface:** Mobile-friendly floating action button with gesture support
+  - **🤏 Pinch to Zoom:** Native mobile gesture support with momentum scrolling
+  - **📳 Haptic Feedback:** Tactile responses on supported devices
+  - **🔄 Smart Auto-Reset:** Automatic view optimization for mobile screens
 - **⌨️ Keyboard Shortcuts:** Power user shortcuts for faster workflow
 
 ---

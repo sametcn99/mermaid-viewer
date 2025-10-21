@@ -5,6 +5,7 @@ import mermaid, { type MermaidConfig } from "mermaid";
 import { useEffect, useRef, useState } from "react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import { getMermaidConfig, saveMermaidConfig } from "@/lib/storage.utils";
+import { useMobileTouch } from "@/hooks/useTouchDevice";
 import CopyNotification from "./CopyNotification";
 import DiagramEmpty from "./DiagramEmpty";
 import DiagramError from "./DiagramError";
@@ -12,7 +13,6 @@ import DiagramLoading from "./DiagramLoading";
 import DiagramSettings from "./DiagramSettings";
 import DiagramSVGViewer from "./DiagramSVGViewer";
 import DiagramToolbar from "./DiagramToolbar";
-import ResetViewButton from "./ResetViewButton";
 import type { AiAssistantConfig } from "@/types/ai-assistant.types";
 
 interface DiagramPanelProps {
@@ -50,6 +50,10 @@ export default function DiagramPanel({ mermaidCode, ai }: DiagramPanelProps) {
 	const [openSettings, setOpenSettings] = useState(false);
 	const [zoomLevel, setZoomLevel] = useState(1);
 	const [aiConfig, setAiConfig] = useState(ai?.config);
+	const resetTransformRef = useRef<(() => void) | null>(null);
+
+	// Mobile touch detection
+	const { isMobileTouch, isTouchDevice } = useMobileTouch();
 
 	// Listen for AI config changes
 	useEffect(() => {
@@ -157,11 +161,12 @@ export default function DiagramPanel({ mermaidCode, ai }: DiagramPanelProps) {
 				bgcolor: "background.paper",
 			}}
 		>
-			{svgContent && !isLoading && !error && (
+			{svgContent && !isLoading && !error && !isMobileTouch && (
 				<DiagramToolbar
 					onShareUrl={handleShareUrl}
 					onDownload={handleDownload}
 					onOpenSettings={() => setOpenSettings(true)}
+					onResetView={() => resetTransformRef.current?.()}
 					zoomLevel={zoomLevel}
 				/>
 			)}
@@ -187,19 +192,46 @@ export default function DiagramPanel({ mermaidCode, ai }: DiagramPanelProps) {
 				<TransformWrapper
 					initialScale={1}
 					centerOnInit={true}
-					wheel={{ step: 0.5 }}
-					pinch={{ step: 5 }}
-					doubleClick={{ disabled: true }}
+					wheel={{
+						step: isTouchDevice ? 0.3 : 0.5, // Smaller steps for touch devices
+						wheelDisabled: isMobileTouch, // Disable wheel on mobile touch
+					}}
+					pinch={{
+						step: isTouchDevice ? 3 : 5,
+						disabled: !isTouchDevice, // Only enable pinch on touch devices
+					}}
+					panning={{
+						disabled: false,
+						activationKeys: [], // Allow panning without modifier keys
+						velocityDisabled: !isTouchDevice, // Enable momentum only on touch
+						lockAxisX: false,
+						lockAxisY: false,
+					}}
+					doubleClick={{
+						disabled: !isTouchDevice, // Enable double-tap only on touch devices
+						step: 1.5, // Better zoom step for double tap
+						mode: "zoomIn",
+						animationTime: 200,
+					}}
 					limitToBounds={false}
-					minScale={0.05}
-					maxScale={50}
+					minScale={isMobileTouch ? 0.2 : 0.1} // Higher minimum for mobile
+					maxScale={isMobileTouch ? 5 : 10} // Lower maximum for mobile performance
 					onTransformed={(ref) => {
 						setZoomLevel(ref.state.scale);
 					}}
+					// Mobile optimizations
+					disablePadding={true}
+					alignmentAnimation={{
+						disabled: !isTouchDevice,
+						sizeX: 0,
+						sizeY: 0,
+					}}
 				>
-					{({ resetTransform }) => (
-						<>
-							<ResetViewButton onReset={resetTransform} />
+					{({ resetTransform: resetFn }) => {
+						// Store the reset function for toolbar use
+						resetTransformRef.current = resetFn;
+
+						return (
 							<TransformComponent
 								wrapperStyle={{ width: "100%", height: "100%" }}
 								contentStyle={{
@@ -215,8 +247,8 @@ export default function DiagramPanel({ mermaidCode, ai }: DiagramPanelProps) {
 									svgContainerRef={svgContainerRef}
 								/>
 							</TransformComponent>
-						</>
-					)}
+						);
+					}}
 				</TransformWrapper>
 			)}
 			{!isLoading && !error && !svgContent && !mermaidCode && <DiagramEmpty />}

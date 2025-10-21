@@ -6,6 +6,11 @@ body {
 	margin: 0;
 	padding: 0;
 	overflow: hidden; /* Prevent body scrollbars */
+	/* Touch optimizations */
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
 }
 
 #__next {
@@ -48,4 +53,56 @@ body[data-theme="dark"] .gutter {
 
 .split.split-vertical > div {
 	width: 100%;
+}
+
+/* Mobile touch optimizations */
+@media (max-width: 768px) {
+	/* Increase gutter size for touch */
+	.gutter {
+		background-size: 12px;
+	}
+
+	/* Use a slightly more specific selector so we don't need !important */
+	.split .gutter.gutter-horizontal,
+	.split > .gutter.gutter-horizontal {
+		width: 12px;
+		min-width: 12px;
+	}
+
+	.split .gutter.gutter-vertical,
+	.split > .gutter.gutter-vertical {
+		height: 12px;
+		min-height: 12px;
+	}
+
+	/* Improve touch targets */
+	button,
+	.MuiIconButton-root,
+	.MuiChip-root {
+		min-height: 44px;
+		min-width: 44px;
+	}
+}
+
+/* Touch feedback animations */
+@media (hover: none) and (pointer: coarse) {
+	/* Only apply to touch devices */
+	.MuiIconButton-root:active {
+		transform: scale(0.95);
+		transition: transform 0.1s ease-in-out;
+	}
+
+	.MuiChip-root:active {
+		transform: scale(0.98);
+		transition: transform 0.1s ease-in-out;
+	}
+}
+
+/* Prevent zoom on input focus for iOS: use standard min-resolution and avoid !important */
+@media screen and (min-resolution: 2dppx) {
+	input,
+	textarea,
+	select {
+		font-size: 16px;
+	}
 }
