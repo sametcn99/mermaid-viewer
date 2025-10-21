@@ -76,13 +76,35 @@ export default function DiagramPanel({ mermaidCode }: DiagramPanelProps) {
 		URL.revokeObjectURL(url);
 	};
 
-	const handleShareUrl = () => {
+	const handleShareUrl = async () => {
 		if (typeof window === "undefined") return;
 
 		const currentUrl = window.location.href;
 
+		// Check if Web Share API is supported
+		if (navigator.share) {
+			try {
+				await navigator.share({
+					title: "Mermaid Diagram",
+					text: "Check out this Mermaid diagram",
+					url: currentUrl,
+				});
+			} catch (err) {
+				// User cancelled the share or an error occurred
+				if (err instanceof Error && err.name !== "AbortError") {
+					// Fallback to copy if share fails (but not if user cancelled)
+					fallbackToCopy(currentUrl);
+				}
+			}
+		} else {
+			// Fallback to copying URL if Web Share API is not supported
+			fallbackToCopy(currentUrl);
+		}
+	};
+
+	const fallbackToCopy = (url: string) => {
 		navigator.clipboard
-			.writeText(currentUrl)
+			.writeText(url)
 			.then(() => {
 				setShowCopyNotification(true);
 			})

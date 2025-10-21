@@ -14,13 +14,13 @@ import {
 	Tooltip,
 	Typography,
 } from "@mui/material";
-import { FolderOpen, MoreVertical, Plus, Save } from "lucide-react";
+import { FolderOpen, Plus, Save, HelpCircle } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
-import AppBarMenu from "./AppBarMenu";
 import GitHubButton from "./GitHubButton";
 import LoadDiagramDialog from "./LoadDiagramDialog";
 import SaveDiagramDialog from "./SaveDiagramDialog";
+import HowToUseDialog from "./HowToUseDialog";
 
 interface DiagramAppBarProps {
 	currentDiagram: string;
@@ -41,24 +41,23 @@ export default function DiagramAppBar({
 	const [openDialog, setOpenDialog] = useState<boolean>(false);
 	const [openLoadDialog, setOpenLoadDialog] = useState<boolean>(false);
 	const [diagramName, setDiagramName] = useState<string>("");
-	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+	const [openHowToUse, setOpenHowToUse] = useState<boolean>(false);
 
 	useEffect(() => {
 		const diagrams = getAllDiagramsFromStorage();
 		setSavedDiagrams(diagrams);
+
+		// Check if user has seen the welcome modal
+		const hasSeenWelcome = localStorage.getItem("hasSeenWelcome");
+		if (!hasSeenWelcome) {
+			setOpenHowToUse(true);
+			localStorage.setItem("hasSeenWelcome", "true");
+		}
 	}, []);
 
 	const refreshSavedDiagrams = () => {
 		const diagrams = getAllDiagramsFromStorage();
 		setSavedDiagrams(diagrams);
-	};
-
-	const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-		setAnchorEl(event.currentTarget);
-	};
-
-	const handleMenuClose = () => {
-		setAnchorEl(null);
 	};
 
 	const handleSave = () => {
@@ -117,20 +116,14 @@ export default function DiagramAppBar({
 							</IconButton>
 						</Tooltip>
 
-						<Tooltip title="More Options">
-							<IconButton onClick={handleMenuOpen}>
-								<MoreVertical />
+						<Tooltip title="How to Use">
+							<IconButton onClick={() => setOpenHowToUse(true)}>
+								<HelpCircle />
 							</IconButton>
 						</Tooltip>
 					</Box>
 
 					<GitHubButton />
-
-					<AppBarMenu
-						anchorEl={anchorEl}
-						onClose={handleMenuClose}
-						onManageSavedDiagrams={() => setOpenLoadDialog(true)}
-					/>
 				</Toolbar>
 			</MuiAppBar>
 
@@ -157,6 +150,11 @@ export default function DiagramAppBar({
 				onDeleteDiagram={handleDeleteDiagram}
 				onClose={() => setOpenLoadDialog(false)}
 				formatTimestamp={formatTimestamp}
+			/>
+
+			<HowToUseDialog
+				open={openHowToUse}
+				onClose={() => setOpenHowToUse(false)}
 			/>
 		</>
 	);
