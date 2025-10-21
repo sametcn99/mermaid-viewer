@@ -15,7 +15,7 @@ export default function MonacoEditorWrapper({
 	return (
 		<Editor
 			height="100%"
-			language="markdown"
+			language="mermaid"
 			theme={theme}
 			value={value}
 			onChange={onChange}
