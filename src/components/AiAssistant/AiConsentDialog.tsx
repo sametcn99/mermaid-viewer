@@ -66,7 +66,7 @@ export default function AiConsentDialog({
 					component="ul"
 					sx={{ pl: 2 }}
 				>
-					<li>Uses free Google Gemini 1.5 Flash API</li>
+					<li>Uses free Google Gemini API</li>
 					<li>Can create and edit your diagrams</li>
 					<li>All changes are applied automatically (you can undo them)</li>
 					<li>Your chat history is stored on your device</li>
