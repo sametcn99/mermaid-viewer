@@ -130,9 +130,20 @@ export default function ChatMessages({
 		return null;
 	});
 
+	// Compute the newest assistant message id synchronously from the messages array.
+	// This lets us decide during the first render whether the newest AI message
+	// is "new" (different from lastAiMessageId) and should animate.
+	const derivedNewestAiMessageId: string | null = (() => {
+		const aiMessages = messages.filter((m) => m.role === "assistant");
+		if (aiMessages.length === 0) return null;
+		return aiMessages[aiMessages.length - 1].id;
+	})();
+
 	// Initialize lastAiMessageId on mount if not set
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Only run on mount
 	useEffect(() => {
+		// On first mount, if we don't have a stored lastAiMessageId, set it to the
+		// current newest assistant message so older messages don't animate.
 		if (!lastAiMessageId && messages.length > 0) {
 			const aiMessages = messages.filter((m) => m.role === "assistant");
 			if (aiMessages.length > 0) {
@@ -152,16 +163,37 @@ export default function ChatMessages({
 			messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 		}, 100);
 
-		// Find newest AI message to animate only when a NEW message arrives
-		if (messages.length > 0) {
-			const aiMessages = messages.filter((m) => m.role === "assistant");
-			if (aiMessages.length > 0) {
-				const newestAiMessage = aiMessages[aiMessages.length - 1];
-				// Only update if this is a truly new message (not on remount)
-				if (newestAiMessage.id !== lastAiMessageId) {
-					setLastAiMessageId(newestAiMessage.id);
-					localStorage.setItem("lastAiMessageId", newestAiMessage.id);
-				}
+		// When messages length changes and a new assistant message appears, wait until
+		// the typing animation completes (we set a localStorage flag `typing-completed-<id>`)
+		// before updating the stored lastAiMessageId. This avoids flipping the stored
+		// id too early and preventing the animation from running.
+		if (
+			derivedNewestAiMessageId &&
+			derivedNewestAiMessageId !== lastAiMessageId
+		) {
+			const storageKey = `typing-completed-${derivedNewestAiMessageId}`;
+
+			// If already completed (unlikely), update immediately
+			if (
+				typeof window !== "undefined" &&
+				localStorage.getItem(storageKey) === "true"
+			) {
+				setLastAiMessageId(derivedNewestAiMessageId);
+				localStorage.setItem("lastAiMessageId", derivedNewestAiMessageId);
+			} else {
+				// Otherwise poll briefly to detect when the typing animation finishes.
+				const interval = setInterval(() => {
+					if (
+						typeof window !== "undefined" &&
+						localStorage.getItem(storageKey) === "true"
+					) {
+						setLastAiMessageId(derivedNewestAiMessageId);
+						localStorage.setItem("lastAiMessageId", derivedNewestAiMessageId);
+						clearInterval(interval);
+					}
+				}, 100);
+				// Stop polling after a reasonable timeout (10s)
+				setTimeout(() => clearInterval(interval), 10000);
 			}
 		}
 	}, [messages.length]); // Only depend on message count, not entire messages array
@@ -266,7 +298,14 @@ export default function ChatMessages({
 				{messages.map((message) => {
 					const snapshot = getSnapshotForMessage(message.id);
 					const isUser = message.role === "user";
-					const isNewestAiMessage = message.id === lastAiMessageId;
+					// Only animate typing when this message is the newest assistant message
+					// in the current messages array and it's different from the last
+					// stored assistant message id (i.e. it's truly new).
+					const shouldAnimateTyping =
+						!isUser &&
+						derivedNewestAiMessageId !== null &&
+						derivedNewestAiMessageId !== lastAiMessageId &&
+						message.id === derivedNewestAiMessageId;
 
 					return (
 						<ListItem
@@ -327,7 +366,10 @@ export default function ChatMessages({
 							>
 								<TypingText
 									content={message.content}
-									isComplete={isUser || !isNewestAiMessage}
+									// If user message or not the (new) newest AI message,
+									// consider it complete immediately. Otherwise allow
+									// the typing animation to run.
+									isComplete={isUser || !shouldAnimateTyping}
 									messageId={message.id}
 								/>{" "}
 								{message.diagramCode && (

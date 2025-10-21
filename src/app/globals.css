@@ -7,8 +7,6 @@ body {
 	padding: 0;
 	overflow: hidden; /* Prevent body scrollbars */
 	/* Touch optimizations */
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
 	-webkit-tap-highlight-color: transparent;
 	touch-action: manipulation;
 }
