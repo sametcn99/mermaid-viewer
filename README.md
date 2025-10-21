@@ -23,18 +23,21 @@
 
 ### 🔥 **Core Features**
 
+- **🤖 AI Assistant:** Chat with Google Gemini AI to create, modify, and fix diagrams using natural language
 - **⚡ Live Preview:** See your diagrams update instantly as you type
-- **� 40+ Ready-Made Templates:** Comprehensive template library with 18 diagram categories
-- **�📱 Responsive Split View:** Adjustable panels that work perfectly on all devices
+- **📝 40+ Ready-Made Templates:** Comprehensive template library with 18 diagram categories
+- **📱 Responsive Split View:** Adjustable panels that work perfectly on all devices
 - **🎨 Syntax Highlighting:** Monaco Editor with intelligent code completion
 - **🚀 Fast Rendering:** Debounced updates for smooth performance
 - **📤 Quick Sharing:** Generate shareable links with URL encoding
 
 ### 💎 **Advanced Features**
 
+- **🤖 AI-Powered Diagram Generation:** Generate and modify diagrams using conversational AI
+- **🔒 Privacy-First AI:** Your Gemini API key is stored locally and never sent to our servers
 - **🔍 Zoom & Pan:** Interactive diagram navigation with mouse and touch
-- **� Smart Template Search:** Filter and search through templates by category, name, or tags
-- **�💾 Auto-Save:** Your work is automatically saved in browser storage
+- **🔍 Smart Template Search:** Filter and search through templates by category, name, or tags
+- **💾 Auto-Save:** Your work is automatically saved in browser storage
 - **🎨 Persistent Settings:** Diagram configuration (theme, colors, fonts) saved to localStorage
 - **📋 One-Click Copy:** Copy diagrams as SVG or share links instantly
 - **🔄 Real-time Validation:** Immediate feedback on syntax errors

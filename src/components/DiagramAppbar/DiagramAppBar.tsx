@@ -95,7 +95,15 @@ export default function DiagramAppBar({
 		<>
 			<MuiAppBar position="static" color="default" elevation={1}>
 				<Toolbar variant="dense">
-					<Typography variant="h6" sx={{ flexGrow: 1 }}>
+					<Typography
+						variant="h6"
+						sx={{
+							flexGrow: 1,
+							userSelect: "none",
+							MozUserSelect: "none",
+							WebkitUserSelect: "none",
+						}}
+					>
 						Mermaid Viewer
 					</Typography>
 					<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>

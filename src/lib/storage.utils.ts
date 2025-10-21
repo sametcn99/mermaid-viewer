@@ -270,3 +270,186 @@ export function isTemplateFavorited(templateId: string): boolean {
 	const favorites = getFavoriteTemplates();
 	return favorites.some((fav) => fav.templateId === templateId);
 }
+
+// AI Assistant Storage
+
+import type {
+	AiAssistantConfig,
+	ChatHistory,
+	ChatMessage,
+	DiagramSnapshot,
+} from "@/types/ai-assistant.types";
+
+const AI_CHAT_HISTORY_KEY = "mermaid-viewer-ai-chat-history";
+const AI_ASSISTANT_CONFIG_KEY = "mermaid-viewer-ai-config";
+const AI_DIAGRAM_SNAPSHOTS_KEY = "mermaid-viewer-ai-snapshots";
+
+/**
+ * Save AI chat history to local storage
+ *
+ * @param history The chat history to save
+ */
+export function saveAiChatHistory(history: ChatHistory): void {
+	if (typeof window === "undefined") return;
+	try {
+		const stringifiedData = JSON.stringify(history);
+		const compressedData = pako.deflate(stringifiedData);
+		const base64Data = btoa(
+			String.fromCharCode.apply(null, Array.from(compressedData)),
+		);
+		localStorage.setItem(AI_CHAT_HISTORY_KEY, base64Data);
+	} catch (error) {
+		console.error("Failed to save AI chat history:", error);
+		localStorage.setItem(AI_CHAT_HISTORY_KEY, JSON.stringify(history));
+	}
+}
+
+/**
+ * Get AI chat history from local storage
+ *
+ * @returns The chat history or null if not found
+ */
+export function getAiChatHistory(): ChatHistory | null {
+	if (typeof window === "undefined") return null;
+	try {
+		const base64Data = localStorage.getItem(AI_CHAT_HISTORY_KEY);
+		if (!base64Data) return null;
+
+		const compressedData = new Uint8Array(
+			atob(base64Data)
+				.split("")
+				.map((char) => char.charCodeAt(0)),
+		);
+		const decompressedData = pako.inflate(compressedData, { to: "string" });
+		return JSON.parse(decompressedData);
+	} catch (error) {
+		console.warn(
+			"Failed to parse compressed chat history, attempting fallback:",
+			error,
+		);
+		try {
+			const storedData = localStorage.getItem(AI_CHAT_HISTORY_KEY);
+			if (!storedData) return null;
+			return JSON.parse(storedData);
+		} catch (fallbackError) {
+			console.error("Failed to parse chat history:", fallbackError);
+			return null;
+		}
+	}
+}
+
+/**
+ * Clear AI chat history from local storage
+ */
+export function clearAiChatHistory(): void {
+	if (typeof window === "undefined") return;
+	localStorage.removeItem(AI_CHAT_HISTORY_KEY);
+}
+
+/**
+ * Add a message to AI chat history
+ *
+ * @param message The message to add
+ */
+export function addMessageToAiChatHistory(message: ChatMessage): void {
+	const history = getAiChatHistory() || {
+		messages: [],
+		lastUpdated: Date.now(),
+	};
+	history.messages.push(message);
+	history.lastUpdated = Date.now();
+	saveAiChatHistory(history);
+}
+
+/**
+ * Save AI assistant configuration
+ *
+ * @param config The configuration to save
+ */
+export function saveAiAssistantConfig(config: AiAssistantConfig): void {
+	if (typeof window === "undefined") return;
+	try {
+		localStorage.setItem(AI_ASSISTANT_CONFIG_KEY, JSON.stringify(config));
+	} catch (error) {
+		console.error("Failed to save AI assistant config:", error);
+	}
+}
+
+/**
+ * Get AI assistant configuration
+ *
+ * @returns The configuration or null if not found
+ */
+export function getAiAssistantConfig(): AiAssistantConfig | null {
+	if (typeof window === "undefined") return null;
+	try {
+		const storedConfig = localStorage.getItem(AI_ASSISTANT_CONFIG_KEY);
+		if (!storedConfig) return null;
+		return JSON.parse(storedConfig);
+	} catch (error) {
+		console.error("Failed to parse AI assistant config:", error);
+		return null;
+	}
+}
+
+/**
+ * Save diagram snapshots for version history
+ *
+ * @param snapshots The snapshots to save
+ */
+export function saveDiagramSnapshots(snapshots: DiagramSnapshot[]): void {
+	if (typeof window === "undefined") return;
+	try {
+		const stringifiedData = JSON.stringify(snapshots);
+		const compressedData = pako.deflate(stringifiedData);
+		const base64Data = btoa(
+			String.fromCharCode.apply(null, Array.from(compressedData)),
+		);
+		localStorage.setItem(AI_DIAGRAM_SNAPSHOTS_KEY, base64Data);
+	} catch (error) {
+		console.error("Failed to save diagram snapshots:", error);
+		localStorage.setItem(AI_DIAGRAM_SNAPSHOTS_KEY, JSON.stringify(snapshots));
+	}
+}
+
+/**
+ * Get diagram snapshots from local storage
+ *
+ * @returns Array of diagram snapshots
+ */
+export function getDiagramSnapshots(): DiagramSnapshot[] {
+	if (typeof window === "undefined") return [];
+	try {
+		const base64Data = localStorage.getItem(AI_DIAGRAM_SNAPSHOTS_KEY);
+		if (!base64Data) return [];
+
+		const compressedData = new Uint8Array(
+			atob(base64Data)
+				.split("")
+				.map((char) => char.charCodeAt(0)),
+		);
+		const decompressedData = pako.inflate(compressedData, { to: "string" });
+		return JSON.parse(decompressedData);
+	} catch (error) {
+		console.warn(
+			"Failed to parse compressed snapshots, attempting fallback:",
+			error,
+		);
+		try {
+			const storedData = localStorage.getItem(AI_DIAGRAM_SNAPSHOTS_KEY);
+			if (!storedData) return [];
+			return JSON.parse(storedData);
+		} catch (fallbackError) {
+			console.error("Failed to parse diagram snapshots:", fallbackError);
+			return [];
+		}
+	}
+}
+
+/**
+ * Clear diagram snapshots from local storage
+ */
+export function clearDiagramSnapshots(): void {
+	if (typeof window === "undefined") return;
+	localStorage.removeItem(AI_DIAGRAM_SNAPSHOTS_KEY);
+}

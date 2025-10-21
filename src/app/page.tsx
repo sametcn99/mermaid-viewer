@@ -1,5 +1,6 @@
 "use client";
 
+import AiAssistantFab from "@/components/AiAssistant/AiAssistantFab";
 import DiagramAppBar from "@/components/DiagramAppbar/DiagramAppBar";
 import AlertSnackbar from "@/components/Home/AlertSnackbar";
 import LoadDiagramDialog from "@/components/Home/LoadDiagramDialog";
@@ -69,6 +70,10 @@ export default function Home() {
 				open={!!alertMessage}
 				message={alertMessage || ""}
 				onClose={handleAlertClose}
+			/>
+			<AiAssistantFab
+				currentDiagramCode={mermaidCode}
+				onUpdateDiagram={handleEditorChange}
 			/>
 		</Box>
 	);

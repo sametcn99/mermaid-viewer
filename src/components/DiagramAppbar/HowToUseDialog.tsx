@@ -16,6 +16,7 @@ import {
 	Typography,
 } from "@mui/material";
 import {
+	Bot,
 	Download,
 	Edit3,
 	Eye,
@@ -77,7 +78,6 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 						Mermaid diagrams in real-time. Follow these steps to get started:
 					</Typography>
 				</Box>
-
 				<Box sx={{ mb: 4 }}>
 					<Typography
 						variant="h3"
@@ -151,11 +151,20 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 								slotProps={{ primary: { fontWeight: 500 } }}
 							/>
 						</ListItem>
+
+						<ListItem>
+							<ListItemIcon>
+								<Bot size={20} />
+							</ListItemIcon>
+							<ListItemText
+								primary="AI Assistant (Powered by Gemini)"
+								secondary="Click the AI assistant button to get help creating, modifying, or fixing your Mermaid diagrams using Google's Gemini AI. The assistant can generate diagrams from descriptions, fix syntax errors, and suggest improvements."
+								slotProps={{ primary: { fontWeight: 500 } }}
+							/>
+						</ListItem>
 					</List>
-				</Box>
-
+				</Box>{" "}
 				<Divider sx={{ my: 3 }} />
-
 				<Box sx={{ mb: 4 }}>
 					<Typography
 						variant="h3"
@@ -187,9 +196,7 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 						</ListItem>
 					</List>
 				</Box>
-
 				<Divider sx={{ my: 3 }} />
-
 				<Box sx={{ mb: 4 }}>
 					<Typography
 						variant="h3"
@@ -232,9 +239,7 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 						</ListItem>
 					</List>
 				</Box>
-
 				<Divider sx={{ my: 3 }} />
-
 				<Box sx={{ mb: 4 }}>
 					<Typography
 						variant="h3"
@@ -277,9 +282,61 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 						</ListItem>
 					</List>
 				</Box>
-
 				<Divider sx={{ my: 3 }} />
+				<Box sx={{ mb: 4 }}>
+					<Typography
+						variant="h3"
+						component="h3"
+						gutterBottom
+						fontWeight="600"
+						sx={{
+							display: "flex",
+							alignItems: "center",
+							gap: 1,
+							mb: 2,
+							fontSize: "1.25rem",
+						}}
+					>
+						<Bot size={20} />
+						AI Assistant
+					</Typography>
 
+					<List>
+						<ListItem>
+							<ListItemIcon>
+								<Bot size={20} />
+							</ListItemIcon>
+							<ListItemText
+								primary="Powered by Google Gemini"
+								secondary="Chat with an AI assistant that understands Mermaid syntax and can help you create diagrams from natural language descriptions."
+								slotProps={{ primary: { fontWeight: 500 } }}
+							/>
+						</ListItem>
+
+						<ListItem>
+							<ListItemIcon>
+								<Edit3 size={20} />
+							</ListItemIcon>
+							<ListItemText
+								primary="Generate & Modify Diagrams"
+								secondary="Ask the AI to create new diagrams, modify existing ones, fix syntax errors, or suggest improvements. It understands your current diagram content."
+								slotProps={{ primary: { fontWeight: 500 } }}
+							/>
+						</ListItem>
+
+						<ListItem>
+							<ListItemIcon>
+								<Save size={20} />
+							</ListItemIcon>
+							<ListItemText
+								primary="Free to Use with Optional Personal API Key"
+								secondary="The AI assistant works out of the box using our default API key. If you prefer to use your own key or if the default key reaches its limit, you can easily add your personal Gemini API key. Your key is stored securely in your browser and never sent to our servers."
+								slotProps={{ primary: { fontWeight: 500 } }}
+							/>
+						</ListItem>
+					</List>
+				</Box>{" "}
+				<Divider sx={{ my: 3 }} />
 				<Box sx={{ mb: 4 }}>
 					<Typography
 						variant="h3"
@@ -323,9 +380,7 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 						</Link>
 					</Paper>
 				</Box>
-
 				<Divider sx={{ my: 3 }} />
-
 				<Box sx={{ textAlign: "center", pt: 2 }}>
 					<Typography variant="body2" color="text.secondary" gutterBottom>
 						This is an open-source project. Click the link below to explore the
