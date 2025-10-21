@@ -42,6 +42,7 @@ export default function DiagramPanel({ mermaidCode }: DiagramPanelProps) {
 		return defaultMermaidConfig;
 	});
 	const [openSettings, setOpenSettings] = useState(false);
+	const [zoomLevel, setZoomLevel] = useState(1);
 
 	useEffect(() => {
 		const renderDiagram = async () => {
@@ -149,6 +150,7 @@ export default function DiagramPanel({ mermaidCode }: DiagramPanelProps) {
 					onShareUrl={handleShareUrl}
 					onDownload={handleDownload}
 					onOpenSettings={() => setOpenSettings(true)}
+					zoomLevel={zoomLevel}
 				/>
 			)}
 
@@ -164,6 +166,9 @@ export default function DiagramPanel({ mermaidCode }: DiagramPanelProps) {
 					limitToBounds={false}
 					minScale={0.05}
 					maxScale={50}
+					onTransformed={(ref) => {
+						setZoomLevel(ref.state.scale);
+					}}
 				>
 					{({ resetTransform }) => (
 						<>
