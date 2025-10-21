@@ -11,7 +11,7 @@ const GitHubButton: React.FC = () => (
 		passHref
 	>
 		<Tooltip title="View on GitHub">
-			<IconButton component="span">
+			<IconButton component="span" aria-label="View on GitHub">
 				<svg
 					role="img"
 					viewBox="0 0 24 24"

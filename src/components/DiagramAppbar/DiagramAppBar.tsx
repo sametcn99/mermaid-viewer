@@ -94,16 +94,18 @@ export default function DiagramAppBar({
 					<Typography variant="h6" sx={{ flexGrow: 1 }}>
 						Mermaid Viewer
 					</Typography>
-
 					<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
 						<Tooltip title="New Diagram">
-							<IconButton onClick={onNewDiagram}>
+							<IconButton onClick={onNewDiagram} aria-label="New Diagram">
 								<Plus />
 							</IconButton>
 						</Tooltip>
 
 						<Tooltip title="Open Saved Diagram">
-							<IconButton onClick={() => setOpenLoadDialog(true)}>
+							<IconButton
+								onClick={() => setOpenLoadDialog(true)}
+								aria-label="Open Saved Diagram"
+							>
 								<FolderOpen />
 							</IconButton>
 						</Tooltip>
@@ -111,18 +113,25 @@ export default function DiagramAppBar({
 						<Tooltip
 							title={savedDiagramId ? "Update Saved Diagram" : "Save Diagram"}
 						>
-							<IconButton onClick={handleSave}>
+							<IconButton
+								onClick={handleSave}
+								aria-label={
+									savedDiagramId ? "Update Saved Diagram" : "Save Diagram"
+								}
+							>
 								<Save />
 							</IconButton>
 						</Tooltip>
 
 						<Tooltip title="How to Use">
-							<IconButton onClick={() => setOpenHowToUse(true)}>
+							<IconButton
+								onClick={() => setOpenHowToUse(true)}
+								aria-label="How to Use"
+							>
 								<HelpCircle />
 							</IconButton>
 						</Tooltip>
-					</Box>
-
+					</Box>{" "}
 					<GitHubButton />
 				</Toolbar>
 			</MuiAppBar>

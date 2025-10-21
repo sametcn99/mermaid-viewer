@@ -60,6 +60,7 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 				<IconButton
 					onClick={onClose}
 					size="small"
+					aria-label="Close dialog"
 					sx={{
 						color: "text.secondary",
 					}}
@@ -78,10 +79,17 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 
 				<Box sx={{ mb: 4 }}>
 					<Typography
-						variant="h6"
+						variant="h3"
+						component="h3"
 						gutterBottom
 						fontWeight="600"
-						sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}
+						sx={{
+							display: "flex",
+							alignItems: "center",
+							gap: 1,
+							mb: 2,
+							fontSize: "1.25rem",
+						}}
 					>
 						<Zap size={20} />
 						Quick Start
@@ -138,10 +146,17 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 
 				<Box sx={{ mb: 4 }}>
 					<Typography
-						variant="h6"
+						variant="h3"
+						component="h3"
 						gutterBottom
 						fontWeight="600"
-						sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}
+						sx={{
+							display: "flex",
+							alignItems: "center",
+							gap: 1,
+							mb: 2,
+							fontSize: "1.25rem",
+						}}
 					>
 						<Download size={20} />
 						Export & Share
@@ -176,10 +191,17 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 
 				<Box sx={{ mb: 4 }}>
 					<Typography
-						variant="h6"
+						variant="h3"
+						component="h3"
 						gutterBottom
 						fontWeight="600"
-						sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}
+						sx={{
+							display: "flex",
+							alignItems: "center",
+							gap: 1,
+							mb: 2,
+							fontSize: "1.25rem",
+						}}
 					>
 						<Palette size={20} />
 						Diagram Settings
@@ -214,10 +236,17 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 
 				<Box sx={{ mb: 4 }}>
 					<Typography
-						variant="h6"
+						variant="h3"
+						component="h3"
 						gutterBottom
 						fontWeight="600"
-						sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}
+						sx={{
+							display: "flex",
+							alignItems: "center",
+							gap: 1,
+							mb: 2,
+							fontSize: "1.25rem",
+						}}
 					>
 						📚 Learn Mermaid Syntax
 					</Typography>

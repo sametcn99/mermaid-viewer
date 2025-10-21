@@ -1,7 +1,7 @@
 import ThemeRegistry from "@/components/ThemeRegistry";
-import appMetadata from "@/lib/metadata";
+import appMetadata, { appViewport } from "@/lib/metadata";
 import { Analytics } from "@vercel/analytics/react";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
@@ -9,6 +9,10 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
 	...appMetadata,
+};
+
+export const viewport: Viewport = {
+	...appViewport,
 };
 
 export default function RootLayout({

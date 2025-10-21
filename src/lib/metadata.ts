@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 const appMetadata: Metadata = {
 	title: "Mermaid Live Editor & Viewer | Real-time Diagramming",
@@ -57,19 +57,20 @@ const appMetadata: Metadata = {
 		description:
 			"Create, view, and edit Mermaid diagrams in real-time. Free online tool for developers and technical writers. Supports flowcharts, sequence diagrams, and more.",
 	},
-	viewport: {
-		width: "device-width",
-		initialScale: 1,
-		maximumScale: 5,
-	},
-	themeColor: [
-		{ media: "(prefers-color-scheme: light)", color: "#ffffff" },
-		{ media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
-	],
 	manifest: "/manifest.json",
 	icons: {
 		icon: "/favicon.ico",
 	},
+};
+
+export const appViewport: Viewport = {
+	width: "device-width",
+	initialScale: 1,
+	maximumScale: 5,
+	themeColor: [
+		{ media: "(prefers-color-scheme: light)", color: "#ffffff" },
+		{ media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+	],
 };
 
 export default appMetadata;

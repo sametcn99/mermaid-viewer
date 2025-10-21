@@ -143,6 +143,7 @@ const LoadDiagramDialog: React.FC<LoadDiagramDialogProps> = ({
 										<Tooltip title="Share diagram" arrow>
 											<IconButton
 												onClick={(e) => handleShareDiagram(diagram.id, e)}
+												aria-label="Share diagram"
 											>
 												<Share2 />
 											</IconButton>
@@ -153,6 +154,7 @@ const LoadDiagramDialog: React.FC<LoadDiagramDialogProps> = ({
 												onClick={(e) =>
 													handleDeleteClick(diagram.id, diagram.name, e)
 												}
+												aria-label="Delete diagram"
 											>
 												<Trash />
 											</IconButton>
