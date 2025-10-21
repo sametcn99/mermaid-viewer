@@ -3,6 +3,7 @@
  * Provides real-time syntax validation using Mermaid parser
  * Debounced at 1000ms to avoid excessive validation calls
  */
+/** biome-ignore-all lint/suspicious/noExplicitAny: . */
 
 import type * as monaco from "monaco-editor";
 import mermaid from "mermaid";
@@ -89,7 +90,11 @@ async function validateMermaidSyntax(
 		// Create helpful error message
 		let message = errorMessage;
 		const expectedToken = errorHash?.expected;
-		if (expectedToken && Array.isArray(expectedToken) && expectedToken.length > 0) {
+		if (
+			expectedToken &&
+			Array.isArray(expectedToken) &&
+			expectedToken.length > 0
+		) {
 			message += `\nExpected: ${expectedToken.slice(0, 5).join(", ")}`;
 		}
 

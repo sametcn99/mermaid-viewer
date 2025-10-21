@@ -46,7 +46,11 @@ export function registerMermaidLanguage(
 		inherit: true,
 		rules: [
 			// Keywords and diagram types
-			{ token: "keyword.diagram-type", foreground: "ce93d8", fontStyle: "bold" }, // Purple
+			{
+				token: "keyword.diagram-type",
+				foreground: "ce93d8",
+				fontStyle: "bold",
+			}, // Purple
 			{ token: "keyword.direction", foreground: "ffa726", fontStyle: "bold" }, // Orange
 			{ token: "keyword", foreground: "90caf9", fontStyle: "bold" }, // Blue
 
@@ -62,7 +66,11 @@ export function registerMermaidLanguage(
 
 			// Operators and links
 			{ token: "operator.link", foreground: "29b6f6", fontStyle: "bold" }, // Cyan
-			{ token: "operator.relationship", foreground: "f48fb1", fontStyle: "bold" }, // Pink
+			{
+				token: "operator.relationship",
+				foreground: "f48fb1",
+				fontStyle: "bold",
+			}, // Pink
 			{ token: "operator", foreground: "81c784" }, // Light green
 
 			// Comments and directives

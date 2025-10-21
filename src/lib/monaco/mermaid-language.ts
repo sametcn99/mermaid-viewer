@@ -62,13 +62,13 @@ export const mermaidLanguageConfig: monaco.languages.LanguageConfiguration = {
 	},
 
 	// Word pattern for word-related editor features
-	wordPattern:
-		/(-?\d*\.\d\w*)|([^`~!@#%^&*()\-=+[{\]}\\|;:'",.<>/?\s]+)/g,
+	wordPattern: /(-?\d*\.\d\w*)|([^`~!@#%^&*()\-=+[{\]}\\|;:'",.<>/?\s]+)/g,
 
 	// Folding rules
 	folding: {
 		markers: {
-			start: /^\s*(subgraph|alt|loop|opt|par|rect|critical|break|section|namespace|state|class)\b/,
+			start:
+				/^\s*(subgraph|alt|loop|opt|par|rect|critical|break|section|namespace|state|class)\b/,
 			end: /^\s*end\s*$/,
 		},
 	},

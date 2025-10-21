@@ -2,6 +2,7 @@
  * Monaco Completion Provider for Mermaid
  * Provides intelligent autocomplete suggestions for all Mermaid diagram types
  */
+/** biome-ignore-all lint/suspicious/noTemplateCurlyInString: . */
 
 import type * as monaco from "monaco-editor";
 
@@ -16,7 +17,6 @@ type MermaidCompletionItem = Omit<monaco.languages.CompletionItem, "range"> & {
  * These are NOT template literals - they're Monaco's snippet format
  */
 
-// biome-ignore lint/suspicious/noTemplateCurlyInString: Monaco snippet placeholders
 const DIAGRAM_TYPES: MermaidCompletionItem[] = [
 	{
 		label: "graph",
@@ -37,9 +37,11 @@ const DIAGRAM_TYPES: MermaidCompletionItem[] = [
 	{
 		label: "sequenceDiagram",
 		kind: 14,
-		insertText: "sequenceDiagram\n    participant ${1:A}\n    participant ${2:B}\n    $0",
+		insertText:
+			"sequenceDiagram\n    participant ${1:A}\n    participant ${2:B}\n    $0",
 		insertTextRules: 4,
-		documentation: "Create a sequence diagram showing interactions between actors",
+		documentation:
+			"Create a sequence diagram showing interactions between actors",
 		detail: "Sequence Diagram",
 	},
 	{
@@ -96,7 +98,8 @@ const DIAGRAM_TYPES: MermaidCompletionItem[] = [
 	{
 		label: "mindmap",
 		kind: 14,
-		insertText: "mindmap\n  root((${1:Central Idea}))\n    ${2:Branch 1}\n    $0",
+		insertText:
+			"mindmap\n  root((${1:Central Idea}))\n    ${2:Branch 1}\n    $0",
 		insertTextRules: 4,
 		documentation: "Create a mindmap diagram",
 		detail: "Mindmap",
@@ -104,7 +107,8 @@ const DIAGRAM_TYPES: MermaidCompletionItem[] = [
 	{
 		label: "timeline",
 		kind: 14,
-		insertText: "timeline\n    title ${1:Timeline}\n    ${2:2024} : ${3:Event}\n    $0",
+		insertText:
+			"timeline\n    title ${1:Timeline}\n    ${2:2024} : ${3:Event}\n    $0",
 		insertTextRules: 4,
 		documentation: "Create a timeline diagram",
 		detail: "Timeline",
@@ -113,7 +117,7 @@ const DIAGRAM_TYPES: MermaidCompletionItem[] = [
 		label: "quadrantChart",
 		kind: 14,
 		insertText:
-			'quadrantChart\n    title ${1:Title}\n    x-axis ${2:Low} --> ${3:High}\n    y-axis ${4:Low} --> ${5:High}\n    ${6:Item}: [${7:0.5}, ${8:0.5}]\n    $0',
+			"quadrantChart\n    title ${1:Title}\n    x-axis ${2:Low} --> ${3:High}\n    y-axis ${4:Low} --> ${5:High}\n    ${6:Item}: [${7:0.5}, ${8:0.5}]\n    $0",
 		insertTextRules: 4,
 		documentation: "Create a quadrant chart for prioritization",
 		detail: "Quadrant Chart",
@@ -122,7 +126,7 @@ const DIAGRAM_TYPES: MermaidCompletionItem[] = [
 		label: "requirementDiagram",
 		kind: 14,
 		insertText:
-			'requirementDiagram\n    requirement ${1:req1} {\n        id: ${2:1}\n        text: ${3:description}\n        risk: ${4|low,medium,high|}\n        verifymethod: ${5|test,inspection,analysis,demonstration|}\n    }\n    $0',
+			"requirementDiagram\n    requirement ${1:req1} {\n        id: ${2:1}\n        text: ${3:description}\n        risk: ${4|low,medium,high|}\n        verifymethod: ${5|test,inspection,analysis,demonstration|}\n    }\n    $0",
 		insertTextRules: 4,
 		documentation: "Create a requirement diagram",
 		detail: "Requirement Diagram",
@@ -157,7 +161,7 @@ const DIAGRAM_TYPES: MermaidCompletionItem[] = [
 	{
 		label: "block-beta",
 		kind: 14,
-		insertText: 'block-beta\n  columns ${1:3}\n  ${2:A} ${3:B} ${4:C}\n  $0',
+		insertText: "block-beta\n  columns ${1:3}\n  ${2:A} ${3:B} ${4:C}\n  $0",
 		insertTextRules: 4,
 		documentation: "Create a block diagram (Beta feature)",
 		detail: "Block Diagram",
@@ -181,7 +185,6 @@ const DIAGRAM_TYPES: MermaidCompletionItem[] = [
 	},
 ];
 
-// biome-ignore lint/suspicious/noTemplateCurlyInString: Monaco snippet placeholders
 const FLOWCHART_KEYWORDS: MermaidCompletionItem[] = [
 	{
 		label: "subgraph",
@@ -241,7 +244,6 @@ const FLOWCHART_KEYWORDS: MermaidCompletionItem[] = [
 	},
 ];
 
-// biome-ignore lint/suspicious/noTemplateCurlyInString: Monaco snippet placeholders
 const SEQUENCE_KEYWORDS: MermaidCompletionItem[] = [
 	{
 		label: "participant",
@@ -324,7 +326,6 @@ const SEQUENCE_KEYWORDS: MermaidCompletionItem[] = [
 	},
 ];
 
-// biome-ignore lint/suspicious/noTemplateCurlyInString: Monaco snippet placeholders
 const GANTT_KEYWORDS: MermaidCompletionItem[] = [
 	{
 		label: "dateFormat",
@@ -388,7 +389,6 @@ const GANTT_KEYWORDS: MermaidCompletionItem[] = [
 	},
 ];
 
-// biome-ignore lint/suspicious/noTemplateCurlyInString: Monaco snippet placeholders
 const GIT_KEYWORDS: MermaidCompletionItem[] = [
 	{
 		label: "commit",
@@ -490,7 +490,6 @@ const ARROWS: MermaidCompletionItem[] = [
 	},
 ];
 
-// biome-ignore lint/suspicious/noTemplateCurlyInString: Monaco snippet placeholders
 const NODE_SHAPES: MermaidCompletionItem[] = [
 	{
 		label: "[Rectangle]",
@@ -566,7 +565,6 @@ const NODE_SHAPES: MermaidCompletionItem[] = [
 	},
 ];
 
-// biome-ignore lint/suspicious/noTemplateCurlyInString: Monaco snippet placeholders
 const DIRECTIVES: MermaidCompletionItem[] = [
 	{
 		label: "%%{init}%%",
@@ -624,7 +622,7 @@ export const mermaidCompletionProvider: monaco.languages.CompletionItemProvider 
 			// Determine diagram type from first line
 			const diagramType = firstLine.split(/\s+/)[0];
 
-			let suggestions: MermaidCompletionItem[] = [
+			const suggestions: MermaidCompletionItem[] = [
 				...DIRECTIVES,
 				...NODE_SHAPES,
 			];
@@ -633,11 +631,7 @@ export const mermaidCompletionProvider: monaco.languages.CompletionItemProvider 
 			switch (diagramType) {
 				case "graph":
 				case "flowchart":
-					suggestions.push(
-						...FLOWCHART_KEYWORDS,
-						...ARROWS,
-						...NODE_SHAPES,
-					);
+					suggestions.push(...FLOWCHART_KEYWORDS, ...ARROWS, ...NODE_SHAPES);
 					break;
 				case "sequenceDiagram":
 					suggestions.push(...SEQUENCE_KEYWORDS, ...ARROWS);
@@ -650,10 +644,7 @@ export const mermaidCompletionProvider: monaco.languages.CompletionItemProvider 
 					break;
 				default:
 					// For other diagram types, provide general keywords
-					suggestions.push(
-						...FLOWCHART_KEYWORDS,
-						...SEQUENCE_KEYWORDS,
-					);
+					suggestions.push(...FLOWCHART_KEYWORDS, ...SEQUENCE_KEYWORDS);
 			}
 
 			return {
