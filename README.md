@@ -27,12 +27,12 @@
 - **🎨 Syntax Highlighting:** Monaco Editor with intelligent code completion
 - **🚀 Fast Rendering:** Debounced updates for smooth performance
 - **📤 Quick Sharing:** Generate shareable links with URL encoding
-- **🌙 Dark/Light Theme:** Beautiful themes that adapt to your preference
 
 ### 💎 **Advanced Features**
 
 - **🔍 Zoom & Pan:** Interactive diagram navigation with mouse and touch
 - **💾 Auto-Save:** Your work is automatically saved in browser storage
+- **🎨 Persistent Settings:** Diagram configuration (theme, colors, fonts) saved to localStorage
 - **📋 One-Click Copy:** Copy diagrams as SVG or share links instantly
 - **🔄 Real-time Validation:** Immediate feedback on syntax errors
 - **📱 Mobile Optimized:** Perfect experience on phones and tablets
@@ -176,6 +176,9 @@ graph LR
     
     F[💾 Local Storage] --> A
     A --> F
+    F --> I[🎨 Diagram Settings]
+    I --> F
+    I --> C
     
     G[🔗 URL Encoding] --> A
     E --> H[📤 Share Function]
@@ -186,9 +189,10 @@ graph LR
 
 - **📝 Editor Panel:** Monaco Editor with TypeScript and Mermaid syntax highlighting
 - **📊 Diagram Panel:** Real-time SVG rendering with interactive zoom and pan
+- **🎨 Diagram Settings:** Customizable themes, colors, fonts, and layout with persistent localStorage storage
 - **🔄 Debounced Updates:** Optimized performance with 300ms debounce
 - **📱 Responsive Layout:** `react-split` for adjustable panels on all devices
-- **💾 Auto-Save:** Browser localStorage for persistent diagram storage
+- **💾 Auto-Save:** Browser localStorage for persistent diagram and configuration storage
 - **🔗 URL Sharing:** Compressed diagram data in shareable URLs
 
 ---

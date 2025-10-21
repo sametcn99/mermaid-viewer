@@ -1,13 +1,15 @@
 "use client";
 
 import { Box } from "@mui/material";
-import mermaid from "mermaid";
+import mermaid, { type MermaidConfig } from "mermaid";
 import { useEffect, useRef, useState } from "react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
+import { getMermaidConfig, saveMermaidConfig } from "@/lib/storage.utils";
 import CopyNotification from "./CopyNotification";
 import DiagramEmpty from "./DiagramEmpty";
 import DiagramError from "./DiagramError";
 import DiagramLoading from "./DiagramLoading";
+import DiagramSettings from "./DiagramSettings";
 import DiagramSVGViewer from "./DiagramSVGViewer";
 import DiagramToolbar from "./DiagramToolbar";
 import ResetViewButton from "./ResetViewButton";
@@ -16,11 +18,13 @@ interface DiagramPanelProps {
 	mermaidCode: string;
 }
 
+const defaultMermaidConfig: MermaidConfig = {
+	startOnLoad: false,
+	theme: "default",
+};
+
 if (typeof window !== "undefined") {
-	mermaid.initialize({
-		startOnLoad: false,
-		theme: "default",
-	});
+	mermaid.initialize(defaultMermaidConfig);
 }
 
 export default function DiagramPanel({ mermaidCode }: DiagramPanelProps) {
@@ -29,6 +33,15 @@ export default function DiagramPanel({ mermaidCode }: DiagramPanelProps) {
 	const [error, setError] = useState<string | null>(null);
 	const [svgContent, setSvgContent] = useState<string>("");
 	const [showCopyNotification, setShowCopyNotification] = useState(false);
+	const [mermaidConfig, setMermaidConfig] = useState<MermaidConfig>(() => {
+		// localStorage'dan config yükle
+		const savedConfig = getMermaidConfig();
+		if (savedConfig && typeof savedConfig === "object") {
+			return savedConfig as MermaidConfig;
+		}
+		return defaultMermaidConfig;
+	});
+	const [openSettings, setOpenSettings] = useState(false);
 
 	useEffect(() => {
 		const renderDiagram = async () => {
@@ -43,6 +56,8 @@ export default function DiagramPanel({ mermaidCode }: DiagramPanelProps) {
 			setSvgContent("");
 
 			try {
+				// Apply current config before rendering
+				mermaid.initialize(mermaidConfig);
 				const uniqueId = `mermaid-diagram-${Date.now()}`;
 				const { svg } = await mermaid.render(uniqueId, mermaidCode);
 				setSvgContent(svg);
@@ -60,7 +75,12 @@ export default function DiagramPanel({ mermaidCode }: DiagramPanelProps) {
 		};
 
 		renderDiagram();
-	}, [mermaidCode]);
+	}, [mermaidCode, mermaidConfig]);
+
+	// Config değiştiğinde localStorage'a kaydet
+	useEffect(() => {
+		saveMermaidConfig(mermaidConfig);
+	}, [mermaidConfig]);
 
 	const handleDownload = () => {
 		if (!svgContent || typeof window === "undefined") return;
@@ -128,6 +148,7 @@ export default function DiagramPanel({ mermaidCode }: DiagramPanelProps) {
 				<DiagramToolbar
 					onShareUrl={handleShareUrl}
 					onDownload={handleDownload}
+					onOpenSettings={() => setOpenSettings(true)}
 				/>
 			)}
 
@@ -171,6 +192,15 @@ export default function DiagramPanel({ mermaidCode }: DiagramPanelProps) {
 			<CopyNotification
 				open={showCopyNotification}
 				onClose={() => setShowCopyNotification(false)}
+			/>
+
+			<DiagramSettings
+				open={openSettings}
+				onClose={() => setOpenSettings(false)}
+				currentConfig={mermaidConfig}
+				onApply={(config) => {
+					setMermaidConfig(config);
+				}}
 			/>
 		</Box>
 	);

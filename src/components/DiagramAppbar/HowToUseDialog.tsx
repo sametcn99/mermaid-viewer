@@ -20,6 +20,7 @@ import {
 	Edit3,
 	Eye,
 	FolderOpen,
+	Palette,
 	Save,
 	Share2,
 	X,
@@ -165,6 +166,44 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 							<ListItemText
 								primary="Share Your Diagram"
 								secondary="Your diagram content is encoded in the URL. Simply copy and share the URL with others to share your work!"
+								slotProps={{ primary: { fontWeight: 500 } }}
+							/>
+						</ListItem>
+					</List>
+				</Box>
+
+				<Divider sx={{ my: 3 }} />
+
+				<Box sx={{ mb: 4 }}>
+					<Typography
+						variant="h6"
+						gutterBottom
+						fontWeight="600"
+						sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}
+					>
+						<Palette size={20} />
+						Diagram Settings
+					</Typography>
+
+					<List>
+						<ListItem>
+							<ListItemIcon>
+								<Palette size={20} />
+							</ListItemIcon>
+							<ListItemText
+								primary="Customize Diagram Appearance"
+								secondary="Click the settings icon in the diagram toolbar to customize theme, colors, fonts, and layout. Your preferences are automatically saved to browser storage."
+								slotProps={{ primary: { fontWeight: 500 } }}
+							/>
+						</ListItem>
+
+						<ListItem>
+							<ListItemIcon>
+								<Save size={20} />
+							</ListItemIcon>
+							<ListItemText
+								primary="Persistent Configuration"
+								secondary="All your diagram settings (theme, colors, spacing, etc.) are saved locally and will be restored when you return to the app."
 								slotProps={{ primary: { fontWeight: 500 } }}
 							/>
 						</ListItem>
