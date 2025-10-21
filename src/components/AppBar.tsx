@@ -188,7 +188,7 @@ export default function AppBar({
 								flexWrap: "wrap",
 							}}
 						>
-							<span>Mermaid Viewer</span>
+							<span>Mermaid Editor</span>
 							{currentDiagramName && !isMobile && (
 								<Chip
 									label={currentDiagramName}
