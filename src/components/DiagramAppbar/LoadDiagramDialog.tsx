@@ -11,9 +11,11 @@ import {
 	ListItemButton,
 	ListItemSecondaryAction,
 	ListItemText,
+	Snackbar,
+	Tooltip,
 	Typography,
 } from "@mui/material";
-import { Plus, Trash } from "lucide-react";
+import { Plus, Share2, Trash } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 
@@ -43,6 +45,7 @@ const LoadDiagramDialog: React.FC<LoadDiagramDialogProps> = ({
 		id: string;
 		name: string;
 	} | null>(null);
+	const [showCopyNotification, setShowCopyNotification] = useState(false);
 
 	const handleDeleteClick = (
 		id: string,
@@ -65,6 +68,50 @@ const LoadDiagramDialog: React.FC<LoadDiagramDialogProps> = ({
 	const handleCancelDelete = () => {
 		setDeleteConfirmOpen(false);
 		setDiagramToDelete(null);
+	};
+
+	const handleShareDiagram = async (
+		diagramId: string,
+		event: React.MouseEvent,
+	) => {
+		event.stopPropagation();
+
+		if (typeof window === "undefined") return;
+
+		// Create URL with the diagram ID
+		const baseUrl = window.location.origin + window.location.pathname;
+		const diagramUrl = `${baseUrl}?id=${diagramId}`;
+
+		// Check if Web Share API is supported
+		if (navigator.share) {
+			try {
+				await navigator.share({
+					title: "Mermaid Diagram",
+					text: "Check out this Mermaid diagram",
+					url: diagramUrl,
+				});
+			} catch (err) {
+				// User cancelled the share or an error occurred
+				if (err instanceof Error && err.name !== "AbortError") {
+					// Fallback to copy if share fails (but not if user cancelled)
+					fallbackToCopy(diagramUrl);
+				}
+			}
+		} else {
+			// Fallback to copying URL if Web Share API is not supported
+			fallbackToCopy(diagramUrl);
+		}
+	};
+
+	const fallbackToCopy = (url: string) => {
+		navigator.clipboard
+			.writeText(url)
+			.then(() => {
+				setShowCopyNotification(true);
+			})
+			.catch((err) => {
+				console.error("Failed to copy URL:", err);
+			});
 	};
 
 	return (
@@ -93,14 +140,23 @@ const LoadDiagramDialog: React.FC<LoadDiagramDialogProps> = ({
 										secondary={formatTimestamp(diagram.timestamp)}
 									/>
 									<ListItemSecondaryAction>
-										<IconButton
-											edge="end"
-											onClick={(e) =>
-												handleDeleteClick(diagram.id, diagram.name, e)
-											}
-										>
-											<Trash />
-										</IconButton>
+										<Tooltip title="Share diagram" arrow>
+											<IconButton
+												onClick={(e) => handleShareDiagram(diagram.id, e)}
+											>
+												<Share2 />
+											</IconButton>
+										</Tooltip>
+										<Tooltip title="Delete diagram" arrow>
+											<IconButton
+												edge="end"
+												onClick={(e) =>
+													handleDeleteClick(diagram.id, diagram.name, e)
+												}
+											>
+												<Trash />
+											</IconButton>
+										</Tooltip>
 									</ListItemSecondaryAction>
 								</ListItemButton>
 							))}
@@ -120,6 +176,14 @@ const LoadDiagramDialog: React.FC<LoadDiagramDialogProps> = ({
 					<Button onClick={onClose}>Close</Button>
 				</DialogActions>
 			</Dialog>
+
+			<Snackbar
+				open={showCopyNotification}
+				autoHideDuration={3000}
+				onClose={() => setShowCopyNotification(false)}
+				message="URL copied to clipboard!"
+				anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+			/>
 
 			<Dialog
 				open={deleteConfirmOpen}
