@@ -7,7 +7,6 @@ import appMetadata, {
 	SITE_URL_STRING,
 	appViewport,
 } from "@/lib/metadata";
-import { Analytics } from "@vercel/analytics/react";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -93,7 +92,6 @@ export default function RootLayout({
 			<body className={inter.className}>
 				<AppRouterCacheProvider options={{ key: "mui" }}>
 					<ThemeRegistry>{children}</ThemeRegistry>
-					<Analytics />
 				</AppRouterCacheProvider>
 			</body>
 		</html>

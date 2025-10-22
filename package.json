@@ -50,7 +50,6 @@
 		"@monaco-editor/react": "^4.7.0",
 		"@mui/material": "^7.3.4",
 		"@mui/material-nextjs": "^7.3.3",
-		"@vercel/analytics": "^1.5.0",
 		"lodash.debounce": "^4.0.8",
 		"lucide-react": "^0.546.0",
 		"mermaid": "^11.12.0",

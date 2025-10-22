@@ -6,7 +6,7 @@
 
 *A powerful, modern web application that transforms your ideas into stunning diagrams with live preview and instant sharing capabilities.*
 
-[✨ **Live Demo**](https://mermaid-viewer-alpha.vercel.app) • [🐛 **Report Bug**](https://github.com/sametcn99/mermaid-viewer/issues) • [💡 **Request Feature**](https://github.com/sametcn99/mermaid-viewer/issues) • [🏠 **GitHub Repository**](https://sametcc.me/repo/mermaid-viewer)
+[✨ **Live Demo**](https://mermaid.sametcc.me) • [🐛 **Report Bug**](https://github.com/sametcn99/mermaid-viewer/issues) • [💡 **Request Feature**](https://github.com/sametcn99/mermaid-viewer/issues) • [🏠 **GitHub Repository**](https://sametcc.me/repo/mermaid-viewer)
 
 ## 📈 Stats
 
