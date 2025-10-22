@@ -83,4 +83,25 @@ export const blockTemplates: DiagramTemplate[] = [
   App2 --> Storage
   Server1 --> Server2`,
 	},
+	{
+		id: "block-data-pipeline",
+		name: "Data Pipeline",
+		category: "Block",
+		description: "Streaming data pipeline from ingestion to analytics",
+		tags: ["block", "data", "pipeline", "streaming"],
+		code: `block
+  columns 4
+
+  Ingest["IoT Devices"] Buffer["Message Queue"] Stream["Stream Processor"] Storage[("Data Lake")]
+  ETL["Batch ETL"] Warehouse[("Analytics Warehouse")] Dashboard["BI Dashboard"] Monitor["Monitoring"]
+
+  Ingest --> Buffer
+  Buffer --> Stream
+  Stream --> Storage
+  Storage --> ETL
+  ETL --> Warehouse
+  Warehouse --> Dashboard
+  Stream --> Monitor
+  Monitor --> Dashboard`,
+	},
 ];

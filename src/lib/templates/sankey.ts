@@ -85,4 +85,26 @@ export const sankeyTemplates: DiagramTemplate[] = [
     Checkout,Abandon,50
 `,
 	},
+	{
+		id: "sankey-supply-chain",
+		name: "Supply Chain Flow",
+		category: "Sankey",
+		description: "End-to-end supply chain from suppliers to customers",
+		tags: ["sankey", "supply chain", "logistics", "distribution"],
+		code: `sankey
+    Suppliers,Manufacturing,500
+    Suppliers,Assembly,300
+    Manufacturing,Assembly,200
+    Manufacturing,Quality Control,450
+    Assembly,Quality Control,300
+    Quality Control,Distribution Center East,320
+    Quality Control,Distribution Center West,250
+    Distribution Center East,Retail Stores,200
+    Distribution Center East,Online Orders,120
+    Distribution Center West,Retail Stores,150
+    Distribution Center West,Online Orders,100
+    Online Orders,Home Delivery,180
+    Retail Stores,Customers,350
+    Home Delivery,Customers,180`,
+	},
 ];

@@ -80,4 +80,55 @@ export const classTemplates: DiagramTemplate[] = [
     PaymentProcessor <|.. CreditCardProcessor
     PaymentProcessor <|.. PayPalProcessor`,
 	},
+	{
+		id: "class-service-layer",
+		name: "Service Layer Architecture",
+		category: "Class",
+		description: "Layered services with repositories and domain entities",
+		tags: ["service", "architecture", "layered", "oop"],
+		code: `classDiagram
+    class Order {
+        +UUID id
+        +OrderStatus status
+        +Money total
+        +List~OrderItem~ items
+        +addItem()
+        +calculateTotal()
+    }
+    class OrderItem {
+        +UUID productId
+        +int quantity
+        +Money unitPrice
+        +subtotal()
+    }
+    class OrderService {
+        +createOrder()
+        +cancelOrder()
+        +checkout()
+    }
+    class PaymentService {
+        +authorizePayment()
+        +capturePayment()
+        +refund()
+    }
+    class OrderRepository {
+        <<interface>>
+        +save()
+        +findById()
+        +findPending()
+    }
+    class PaymentGateway {
+        <<interface>>
+        +authorize()
+        +capture()
+        +refund()
+    }
+
+    Order "1" o-- "*" OrderItem : contains
+    OrderService --> OrderRepository : uses
+    OrderService --> PaymentService : orchestrates
+    PaymentService --> PaymentGateway : delegates
+    OrderRepository --> Order : persists
+    PaymentService --> Order : updates status`,
+	},
 ];

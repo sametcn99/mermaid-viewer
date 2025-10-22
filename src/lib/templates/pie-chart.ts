@@ -27,4 +27,17 @@ export const pieChartTemplates: DiagramTemplate[] = [
     "Research & Development" : 12
     "Operations" : 8`,
 	},
+	{
+		id: "pie-customer-segments",
+		name: "Customer Segments",
+		category: "Pie Chart",
+		description: "Distribution of customers by primary segment",
+		tags: ["customer", "segments", "marketing", "distribution"],
+		code: `pie title Customer Segment Distribution
+    "Enterprise" : 35
+    "Mid-Market" : 25
+    "Small Business" : 20
+    "Startup" : 12
+    "Individual" : 8`,
+	},
 ];

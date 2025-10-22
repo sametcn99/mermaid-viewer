@@ -160,4 +160,39 @@ export const sequenceTemplates: DiagramTemplate[] = [
     Production-->>CI Server: Deployment Success
     CI Server->>Developer: Notify Success`,
 	},
+	{
+		id: "sequence-support-escalation",
+		name: "Support Escalation Flow",
+		category: "Sequence",
+		description: "Customer support triage with chatbot handoff and escalation",
+		tags: ["support", "escalation", "chatbot", "service"],
+		code: `sequenceDiagram
+    participant Customer
+    participant Chatbot
+    participant SupportAgent
+    participant Specialist
+    participant KnowledgeBase
+    participant Ticketing
+
+    Customer->>Chatbot: Initiate support request
+    Chatbot->>KnowledgeBase: Search FAQ
+    KnowledgeBase-->>Chatbot: Suggested solutions
+    Chatbot-->>Customer: Provide top articles
+    Customer->>Chatbot: Request human assistance
+    Chatbot->>Ticketing: Open ticket
+    Ticketing-->>SupportAgent: Assign new ticket
+    SupportAgent->>Customer: Join conversation
+    SupportAgent->>KnowledgeBase: Review history
+    SupportAgent->>Customer: Ask clarifying questions
+    Customer-->>SupportAgent: Provide details
+    SupportAgent->>SupportAgent: Troubleshoot
+    SupportAgent->>Customer: Offer resolution
+    Customer-->>SupportAgent: Issue persists
+    SupportAgent->>Specialist: Request escalation
+    Specialist-->>SupportAgent: Accept escalation
+    Specialist->>Customer: Join bridge call
+    Specialist->>SupportAgent: Share resolution steps
+    SupportAgent->>Ticketing: Update ticket with resolution
+    Ticketing-->>Customer: Send summary email`,
+	},
 ];

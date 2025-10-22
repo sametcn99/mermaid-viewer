@@ -179,4 +179,37 @@ export const flowchartTemplates: DiagramTemplate[] = [
     S --> T[Clean Old Backups]
     T --> U[Notify Success]`,
 	},
+	{
+		id: "flowchart-incident-response",
+		name: "Incident Response Workflow",
+		category: "Flowchart",
+		description:
+			"Operational incident response with escalation and recovery steps",
+		tags: ["incident", "operations", "escalation", "recovery"],
+		code: `graph TD
+    A[Alert Triggered] --> B{Severity Level?}
+    B -->|Critical| C[Page On-Call Engineer]
+    B -->|High| D[Notify Primary Team]
+    B -->|Medium| E[Create Incident Ticket]
+    C --> F{Acknowledged?}
+    F -->|No| G[Escalate to Secondary On-Call]
+    F -->|Yes| H[Start Investigation]
+    D --> H
+    E --> H
+    H --> I{Service Impacting?}
+    I -->|Yes| J[Initiate Incident Bridge]
+    I -->|No| K[Communicate Updates]
+    H --> L[Run Diagnostics]
+    L --> M{Root Cause Found?}
+    M -->|No| N[Engage Subject Matter Expert]
+    N --> L
+    M -->|Yes| O[Implement Mitigation]
+    O --> P{Mitigation Successful?}
+    P -->|No| Q[Rollback Changes]
+    P -->|Yes| R[Monitor Metrics]
+    R --> S{Stable for 30 Minutes?}
+    S -->|No| L
+    S -->|Yes| T[Close Incident]
+    T --> U[Publish Postmortem]`,
+	},
 ];

@@ -59,4 +59,24 @@ export const packetTemplates: DiagramTemplate[] = [
   112-351: "Payload"
   352-383: "Frame Check Sequence"`,
 	},
+	{
+		id: "packet-dns",
+		name: "DNS Query Packet",
+		category: "Packet",
+		description: "DNS query message layout highlighting key fields",
+		tags: ["packet", "dns", "network", "query"],
+		code: `packet-beta
+  title DNS Query Message
+  0-15: "Transaction ID"
+  16-31: "Flags"
+  32-47: "Questions"
+  48-63: "Answer RRs"
+  64-79: "Authority RRs"
+  80-95: "Additional RRs"
+  96-111: "Query Name Ptr"
+  112-127: "Query Type"
+  128-143: "Query Class"
+  144-191: "Query Payload"
+  192-255: "Additional Data"`,
+	},
 ];

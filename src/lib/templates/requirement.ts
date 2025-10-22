@@ -138,4 +138,56 @@ export const requirementTemplates: DiagramTemplate[] = [
     response_time - traces -> api_endpoint
     api_endpoint - satisfies -> api_spec`,
 	},
+	{
+		id: "requirement-hardware",
+		name: "Hardware Safety Requirements",
+		category: "Requirement",
+		description: "Safety-critical hardware requirements with compliance checks",
+		tags: ["requirement", "hardware", "safety", "compliance"],
+		code: `requirementDiagram
+
+    requirement enclosure {
+        id: HR_001
+        text: Enclosure must withstand temperature up to 120C
+        risk: high
+        verifymethod: test
+    }
+
+    functionalRequirement emergency_shutdown {
+        id: HR_002
+        text: System must shut down within 2s after thermal overload
+        risk: high
+        verifymethod: demonstration
+    }
+
+    performanceRequirement sensor_accuracy {
+        id: HR_003
+        text: Temperature sensor accuracy within ±1C
+        risk: medium
+        verifymethod: analysis
+    }
+
+    designConstraint certification {
+        id: HR_004
+        text: "Device must comply with IEC 62368-1"
+        risk: high
+        verifymethod: inspection
+    }
+
+    element control_board {
+        type: "PCB Assembly"
+        docRef: "hardware/control-board"
+    }
+
+    element thermal_test {
+        type: "test"
+        docRef: "qa/thermal-test-plan"
+    }
+
+    enclosure - verifies -> thermal_test
+    emergency_shutdown - satisfies -> control_board
+    sensor_accuracy - traces -> control_board
+    certification - derives -> enclosure
+    certification - derives -> emergency_shutdown`,
+	},
 ];

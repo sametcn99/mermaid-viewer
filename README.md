@@ -25,7 +25,7 @@
 
 - **🤖 AI Assistant:** Chat with Google Gemini AI to create, modify, and fix diagrams using natural language
 - **⚡ Live Preview:** See your diagrams update instantly as you type
-- **📝 40+ Ready-Made Templates:** Comprehensive template library with 18 diagram categories
+- **📝 70+ Ready-Made Templates:** Comprehensive template library with 18 diagram categories
 - **📱 Responsive Split View:** Adjustable panels that work perfectly on all devices
 - **🎨 Syntax Highlighting:** Monaco Editor with intelligent code completion
 - **🚀 Fast Rendering:** Debounced updates for smooth performance

@@ -58,4 +58,38 @@ export const mindmapTemplates: DiagramTemplate[] = [
       Docker
       CI/CD`,
 	},
+	{
+		id: "mindmap-product-strategy",
+		name: "Product Strategy",
+		category: "Mindmap",
+		description: "Strategic pillars for a product roadmap",
+		tags: ["strategy", "product", "planning", "mindmap"],
+		code: `mindmap
+  root((Product Strategy 2025))
+    Vision
+      Unified Experience
+      Global Reach
+      Sustainable Growth
+    Growth
+      Freemium Model
+      Partnerships
+      Community Expansion
+    Product
+      Core Features
+        Collaboration
+        Automation
+        Analytics
+      Differentiators
+        AI Assistant
+        Integrations
+        Templates
+    Operations
+      Hiring Plan
+      Customer Success
+      Incident Response
+    Metrics
+      NPS Target 60+
+      ARR $25M
+      Churn < 4%`,
+	},
 ];

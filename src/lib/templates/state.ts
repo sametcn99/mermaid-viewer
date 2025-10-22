@@ -53,4 +53,33 @@ export const stateTemplates: DiagramTemplate[] = [
     Authenticated --> Anonymous: Logout
     Active --> Anonymous: Logout`,
 	},
+	{
+		id: "state-release-pipeline",
+		name: "Release Pipeline States",
+		category: "State",
+		description:
+			"Continuous delivery release pipeline with approvals and rollback",
+		tags: ["release", "pipeline", "devops", "deployment"],
+		code: `stateDiagram-v2
+    [*] --> BuildQueued
+    BuildQueued --> Building: Worker Assigned
+    Building --> BuildFailed: Tests Fail
+    Building --> AwaitingApproval: Tests Pass
+    BuildFailed --> BuildQueued: Retry
+
+    state "Approval Gate" as Gate {
+        AwaitingApproval --> Approved: Release Manager Approves
+        AwaitingApproval --> Rejected: Changes Requested
+        Rejected --> AwaitingApproval: Resubmit
+    }
+
+    Approved --> Deploying: Start Deployment
+    Deploying --> Rollback: Health Check Failed
+    Deploying --> Deployed: Health Check Passed
+    Rollback --> BuildQueued: Create Hotfix Build
+    Deployed --> Monitoring: Enable Observability
+    Monitoring --> IncidentDetected: Alert Fired
+    Monitoring --> [*]: Stable
+    IncidentDetected --> Rollback`,
+	},
 ];

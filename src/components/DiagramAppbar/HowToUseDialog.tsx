@@ -115,7 +115,7 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 								<FileText size={20} />
 							</ListItemIcon>
 							<ListItemText
-								primary="Browse 40+ Ready-Made Templates"
+								primary="Browse 70+ Ready-Made Templates"
 								secondary="Click the template icon to explore our extensive collection of 18 diagram categories including Flowcharts, Sequence diagrams, C4 Architecture, Sankey flows, Network diagrams, and more!"
 								slotProps={{ primary: { fontWeight: 500 } }}
 							/>

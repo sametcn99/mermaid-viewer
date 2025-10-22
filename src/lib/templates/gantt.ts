@@ -132,4 +132,37 @@ export const ganttTemplates: DiagramTemplate[] = [
     Final Preparations     :final, after staff, 3d
     Event Day              :milestone, event, after final, 0d`,
 	},
+	{
+		id: "gantt-research-and-development",
+		name: "Research & Development Cycle",
+		category: "Gantt",
+		description: "Iterative R&D program with experimental sprints and reviews",
+		tags: ["research", "development", "innovation", "rd"],
+		code: `gantt
+    title R&D Innovation Program
+    dateFormat YYYY-MM-DD
+    excludes weekends
+
+    section Discovery
+    Market Analysis         :disc1, 2024-04-01, 10d
+    Technical Feasibility   :disc2, after disc1, 7d
+    Hypothesis Definition   :disc3, after disc2, 5d
+
+    section Experimentation
+    Prototype Sprint 1      :exp1, after disc3, 14d
+    Prototype Review 1      :milestone, rev1, after exp1, 0d
+    Prototype Sprint 2      :exp2, after rev1, 14d
+    Prototype Review 2      :milestone, rev2, after exp2, 0d
+
+    section Validation
+    User Testing Cohort A   :val1, after rev2, 7d
+    User Testing Cohort B   :val2, 2024-05-20, 7d
+    Data Analysis           :val3, after val1, 6d
+    Engineering Assessment  :val4, after val3, 5d
+
+    section Go/No-Go
+    Executive Review        :milestone, exec, after val4, 0d
+    Production Planning     :plan, after exec, 10d
+    Knowledge Transfer      :kt, after plan, 5d`,
+	},
 ];

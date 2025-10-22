@@ -28,7 +28,7 @@
 		"markdown"
 	],
 	"packageManager": "bun@1.3.0",
-	"displayName": "Mermaid Viewer",
+	"displayName": "Mermaid Editor & Viewer",
 	"publisher": "sametcn99",
 	"repository": {
 		"type": "git",
@@ -71,6 +71,6 @@
 		"@types/react-dom": "^19.2.2",
 		"jsdom": "^27.0.1",
 		"typescript": "^5.9.3",
-		"vitest": "^3.2.4"
+		"vitest": "^4.0.1"
 	}
 }

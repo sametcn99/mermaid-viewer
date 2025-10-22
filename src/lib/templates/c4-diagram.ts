@@ -90,4 +90,45 @@ export const c4DiagramTemplates: DiagramTemplate[] = [
     Rel(ma, sign, "Makes API calls to", "JSON/HTTPS")
     Rel(ma, accounts, "Makes API calls to", "JSON/HTTPS")`,
 	},
+	{
+		id: "c4-deployment",
+		name: "C4 Deployment Diagram",
+		category: "C4 Diagram",
+		description: "Deployment topology for a SaaS analytics platform",
+		tags: ["c4", "deployment", "infrastructure", "architecture"],
+		code: `C4Deployment
+    title Deployment diagram for Analytics Platform
+
+    Person(admin, "Operations Engineer", "Manages deployments and monitoring")
+
+    Deployment_Node(region, "AWS Region", "us-east-1", "Production environment") {
+        Deployment_Node(edge, "Edge Network", "CloudFront", "Content delivery network with global POPs") {
+            Container(edgeFn, "Auth Edge Function", "Lambda@Edge", "Validates tokens and rate limits requests")
+        }
+
+        Deployment_Node(cluster, "Kubernetes Cluster", "EKS", "Microservices runtime") {
+            Container(apiSvc, "API Service", "Node.js", "Handles REST and GraphQL traffic")
+            Container(workerSvc, "Worker Service", "Node.js", "Processes asynchronous jobs")
+            Container(frontendSvc, "Web Frontend", "Next.js", "Serves the single-page application")
+        }
+
+        Deployment_Node(database, "Aurora Cluster", "PostgreSQL", "Highly available transactional database") {
+            ContainerDb(primaryDb, "Primary Database", "Aurora PostgreSQL", "Handles write workload")
+            ContainerDb(readReplica, "Read Replica", "Aurora PostgreSQL", "Serves analytical queries")
+        }
+
+        Deployment_Node(observability, "Observability Stack", "Grafana Cloud", "Monitoring and alerting") {
+            Container(metricsAgent, "Metrics Collector", "Prometheus Agent", "Scrapes and forwards metrics")
+            Container(tracingAgent, "Tracing Collector", "Tempo Agent", "Collects distributed traces")
+        }
+    }
+
+    Rel(admin, edgeFn, "Configures routing rules via", "Console")
+    Rel(edgeFn, apiSvc, "Routes authenticated traffic to", "HTTPS")
+    Rel(frontendSvc, apiSvc, "Makes API calls", "HTTPS")
+    Rel(apiSvc, primaryDb, "Reads/Writes data", "JDBC")
+    Rel(workerSvc, readReplica, "Reads analytics data", "JDBC")
+    Rel(apiSvc, metricsAgent, "Exports metrics", "OTLP")
+    Rel(workerSvc, tracingAgent, "Publishes traces", "OTLP")`,
+	},
 ];

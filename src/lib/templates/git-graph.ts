@@ -45,4 +45,33 @@ export const gitGraphTemplates: DiagramTemplate[] = [
     checkout main
     merge develop tag: "v1.0.0"`,
 	},
+	{
+		id: "git-release-hotfix",
+		name: "Release and Hotfix Workflow",
+		category: "Git Graph",
+		description: "Release branch workflow with emergency hotfix handling",
+		tags: ["git", "release", "hotfix", "workflow"],
+		code: `gitGraph
+    commit id: "Init"
+    branch develop
+    checkout develop
+    commit id: "Feature groundwork"
+    branch feature/search
+    commit id: "Add search API"
+    commit id: "Add search UI"
+    checkout develop
+    merge feature/search
+    branch release/1.1.0
+    commit id: "Prepare release notes"
+    checkout main
+    merge release/1.1.0 tag: "v1.1.0"
+    branch hotfix/critical
+    commit id: "Fix payment bug"
+    checkout main
+    merge hotfix/critical tag: "v1.1.1"
+    checkout develop
+    merge hotfix/critical
+    checkout develop
+    commit id: "Continue development"`,
+	},
 ];

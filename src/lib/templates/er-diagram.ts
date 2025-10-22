@@ -91,4 +91,71 @@ export const erDiagramTemplates: DiagramTemplate[] = [
         datetime created_at
     }`,
 	},
+	{
+		id: "er-saas",
+		name: "SaaS Multi-Tenant Schema",
+		category: "ER Diagram",
+		description: "Software-as-a-service database with multi-tenant isolation",
+		tags: ["database", "multi-tenant", "saas", "schema"],
+		code: `erDiagram
+    ACCOUNT ||--o{ WORKSPACE : owns
+    WORKSPACE ||--o{ MEMBER : has
+    WORKSPACE ||--o{ PROJECT : contains
+    PROJECT ||--|{ TASK : includes
+    MEMBER ||--o{ TASK : assigned_to
+    MEMBER }|..|{ ROLE : uses
+    PERMISSION ||--o{ ROLE : aggregates
+
+    ACCOUNT {
+        uuid account_id PK
+        string company_name
+        string billing_email
+        string plan_tier
+        datetime created_at
+        datetime trial_ends_at
+    }
+    WORKSPACE {
+        uuid workspace_id PK
+        uuid account_id FK
+        string name
+        string subdomain
+        string region
+        datetime created_at
+    }
+    MEMBER {
+        uuid member_id PK
+        uuid workspace_id FK
+        string email
+        string status
+        datetime invited_at
+        datetime last_active_at
+    }
+    PROJECT {
+        uuid project_id PK
+        uuid workspace_id FK
+        string name
+        string status
+        datetime start_date
+        datetime end_date
+    }
+    TASK {
+        uuid task_id PK
+        uuid project_id FK
+        uuid assignee_id FK
+        string title
+        string priority
+        string state
+        datetime due_date
+    }
+    ROLE {
+        uuid role_id PK
+        string name
+        string scope
+    }
+    PERMISSION {
+        uuid permission_id PK
+        string resource
+        string action
+    }`,
+	},
 ];

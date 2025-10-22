@@ -42,4 +42,19 @@ export const xyChartTemplates: DiagramTemplate[] = [
     line "Memory Usage" [30, 55, 70, 85, 40]
     line "Disk Usage" [10, 15, 25, 30, 20]`,
 	},
+	{
+		id: "xy-chart-regional-sales",
+		name: "Regional Sales Comparison",
+		category: "XY Chart",
+		description: "Quarterly revenue comparison across regions with targets",
+		tags: ["xy-chart", "sales", "comparison", "revenue"],
+		code: `xychart-beta
+    title "Quarterly Regional Revenue"
+    x-axis [Q1, Q2, Q3, Q4]
+    y-axis "Revenue (USD)" 0 --> 200
+    bar "Target" [120, 135, 150, 180]
+    line "North America" [130, 140, 160, 175]
+    line "Europe" [110, 125, 145, 165]
+    line "Asia Pacific" [100, 130, 155, 190]`,
+	},
 ];
