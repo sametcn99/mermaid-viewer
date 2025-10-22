@@ -83,53 +83,53 @@ export const requirementTemplates: DiagramTemplate[] = [
 		code: `requirementDiagram
 
     functionalRequirement user_login {
-        id: FR-001
+        id: FR_001
         text: User must be able to log in with username and password
         risk: high
         verifymethod: test
     }
 
     functionalRequirement password_reset {
-        id: FR-002
+        id: FR_002
         text: User must be able to reset forgotten password
         risk: medium
         verifymethod: test
     }
 
     performanceRequirement response_time {
-        id: PR-001
+        id: PR_001
         text: System must respond within 2 seconds
         risk: high
         verifymethod: test
     }
 
     interfaceRequirement api_endpoint {
-        id: IR-001
+        id: IR_001
         text: REST API must support JSON format
         risk: medium
         verifymethod: inspection
     }
 
     designConstraint database_type {
-        id: DC-001
+        id: DC_001
         text: Must use PostgreSQL database
         risk: low
         verifymethod: analysis
     }
 
     element login_module {
-        type: component
-        docRef: src/auth/login.js
+        type: "component"
+        docRef: "src/auth/login.js"
     }
 
     element test_suite {
-        type: test
-        docRef: tests/auth.test.js
+        type: "test"
+        docRef: "tests/auth.test.js"
     }
 
     element api_spec {
-        type: specification
-        docRef: docs/api.md
+        type: "specification"
+        docRef: "docs/api.md"
     }
 
     user_login - satisfies -> login_module

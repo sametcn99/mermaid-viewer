@@ -28,42 +28,27 @@ export const blockTemplates: DiagramTemplate[] = [
 		tags: ["block", "architecture", "layers", "system"],
 		code: `block
   columns 4
-  
-  subgraph "Frontend Layer"
-    A["Web App"]
-    B["Mobile App"]
-  end
-  
-  subgraph "API Layer"
-    C["REST API"]
-    D["GraphQL"]
-  end
-  
-  subgraph "Business Layer"
-    E["User Service"]
-    F["Order Service"]
-    G["Payment Service"]
-  end
-  
-  subgraph "Data Layer"
-    H[("User DB")]
-    I[("Order DB")]
-    J[("Payment DB")]
-  end
-  
-  A --> C
-  B --> C
-  A --> D
-  B --> D
-  C --> E
-  C --> F
-  C --> G
-  D --> E
-  D --> F
-  D --> G
-  E --> H
-  F --> I
-  G --> J`,
+
+  Frontend1["Web App"] Frontend2["Mobile App"]
+  ApiRest["REST API"] ApiGraph["GraphQL"]
+  ServiceUser["User Service"] ServiceOrder["Order Service"] ServicePayment["Payment Service"]
+  DataUser[("User DB")] DataOrder[("Order DB")] DataPayment[("Payment DB")]
+
+  Frontend1 --> ApiRest
+  Frontend2 --> ApiRest
+  Frontend1 --> ApiGraph
+  Frontend2 --> ApiGraph
+
+  ApiRest --> ServiceUser
+  ApiRest --> ServiceOrder
+  ApiRest --> ServicePayment
+  ApiGraph --> ServiceUser
+  ApiGraph --> ServiceOrder
+  ApiGraph --> ServicePayment
+
+  ServiceUser --> DataUser
+  ServiceOrder --> DataOrder
+  ServicePayment --> DataPayment`,
 	},
 	{
 		id: "block-network",
