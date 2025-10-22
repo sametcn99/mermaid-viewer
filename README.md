@@ -30,6 +30,7 @@
 - **🎨 Syntax Highlighting:** Monaco Editor with intelligent code completion
 - **🚀 Fast Rendering:** Debounced updates for smooth performance
 - **📤 Quick Sharing:** Generate shareable links with URL encoding
+- **🌐 Iframe Embedding:** Easily embed your diagrams into any website or blog using the iframe sharing feature. Just click the share button, select 'Embed as iframe', and copy the HTML code to use anywhere.
 
 ### 💎 **Advanced Features**
 
