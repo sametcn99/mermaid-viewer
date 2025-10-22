@@ -14,6 +14,7 @@ import { mermaidTokensProvider } from "./mermaid-tokens";
 import { mermaidLanguageConfig } from "./mermaid-language";
 import { mermaidCompletionProvider } from "./mermaid-completions";
 import { setupMermaidValidation } from "./mermaid-validation";
+import { mermaidHoverProvider } from "./mermaid-hover";
 
 /**
  * Register Mermaid language with Monaco Editor
@@ -38,6 +39,10 @@ export function registerMermaidLanguage(
 	const completionDisposable = monaco.languages.registerCompletionItemProvider(
 		"mermaid",
 		mermaidCompletionProvider,
+	);
+	const hoverDisposable = monaco.languages.registerHoverProvider(
+		"mermaid",
+		mermaidHoverProvider,
 	);
 
 	// Define custom theme colors based on Material-UI dark palette
@@ -126,6 +131,7 @@ export function registerMermaidLanguage(
 	// Return cleanup function
 	return () => {
 		completionDisposable.dispose();
+		hoverDisposable.dispose();
 		modelListener.dispose();
 		disposeListener.dispose();
 
