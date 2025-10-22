@@ -32,7 +32,7 @@ const ShareIframeDialog: React.FC<ShareIframeDialogProps> = ({ open, onClose }) 
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-            <DialogTitle>Share Diagram</DialogTitle>
+            <DialogTitle>Share Iframe</DialogTitle>
             <DialogContent>
                 <Box sx={{ mb: 2, p: 2, borderRadius: 2 }}>
                     <Typography variant="subtitle1" fontWeight="bold" gutterBottom>Direct Link:</Typography>

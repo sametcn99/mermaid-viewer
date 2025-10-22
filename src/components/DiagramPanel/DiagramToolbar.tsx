@@ -126,11 +126,11 @@ const DiagramToolbar: React.FC<DiagramToolbarProps> = ({
 						<Settings size={20} />
 					</IconButton>
 				</Tooltip>
-				<Tooltip title="Share Diagram" arrow>
+				<Tooltip title="Share Iframe" arrow>
 					<IconButton
 						onClick={handleShareClick}
 						size={"medium"}
-						aria-label="Share Diagram"
+						aria-label="Share Iframe"
 						sx={{
 							minHeight: { xs: 44, sm: 40 },
 							minWidth: { xs: 44, sm: 40 },
