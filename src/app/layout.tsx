@@ -23,7 +23,11 @@ export default function RootLayout({
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<head>
-				<script defer src="https://umami.sametcc.me/script.js" data-website-id="ec5d2947-854f-4175-b053-766a35fede0f"></script>
+				<script
+					defer
+					src="https://umami.sametcc.me/script.js"
+					data-website-id="ec5d2947-854f-4175-b053-766a35fede0f"
+				></script>
 			</head>
 			<body className={inter.className}>
 				<ThemeRegistry>{children}</ThemeRegistry>

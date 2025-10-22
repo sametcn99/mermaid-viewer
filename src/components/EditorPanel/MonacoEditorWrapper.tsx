@@ -78,13 +78,11 @@ export default function MonacoEditorWrapper({
 	}, []);
 
 	// Determine Monaco theme based on prop
-	const monacoTheme = theme === "vs-dark" ? "mermaid-dark" : "vs";
-
 	return (
 		<Editor
 			height="100%"
 			language="mermaid"
-			theme={monacoTheme}
+			theme={"vs-dark"}
 			value={value}
 			onChange={onChange}
 			loading={<EditorLoadingSpinner />}
@@ -95,7 +93,7 @@ export default function MonacoEditorWrapper({
 				minimap: { enabled: false },
 				scrollBeyondLastLine: false,
 				fontSize: 14,
-				wordWrap: "on",
+				wordWrap: "off",
 				automaticLayout: true,
 				domReadOnly: false,
 				readOnly: false,

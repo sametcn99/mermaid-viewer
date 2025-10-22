@@ -233,7 +233,7 @@ export default function AiAssistantChat({
 					zIndex: 1200,
 					borderRadius: 2,
 					overflow: "hidden",
-					boxShadow: "0px 4px 12px rgba(0,0,0,0.15)",
+					boxShadow: "0px 4px 12px rgba(255, 255, 255, 0.01)",
 					transition: "transform 0.2s",
 					"&:hover": { transform: "translateY(-3px)" },
 				}}
@@ -241,8 +241,8 @@ export default function AiAssistantChat({
 				<Box
 					sx={{
 						p: 1.5,
-						bgcolor: "primary.main",
-						color: "primary.contrastText",
+						borderRadius: 2,
+						border: (theme) => `1px solid ${theme.palette.divider}`,
 						display: "flex",
 						alignItems: "center",
 						justifyContent: "space-between",
@@ -294,20 +294,20 @@ export default function AiAssistantChat({
 					display: "flex",
 					flexDirection: "column",
 					overflow: "hidden",
-					boxShadow: "0px 8px 24px rgba(0,0,0,0.15)",
+					boxShadow: "0px 8px 24px rgba(255, 255, 255, 0.03)",
 					transition: "all 0.3s ease",
+					border: (theme) => `1px solid ${theme.palette.divider}`,
 				}}
 			>
 				{/* Header */}
 				<Box
 					sx={{
 						p: 1.5,
-						bgcolor: "primary.main",
-						color: "primary.contrastText",
 						display: "flex",
 						alignItems: "center",
 						justifyContent: "space-between",
 						boxShadow: "0px 2px 4px rgba(0,0,0,0.1)",
+						borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
 					}}
 				>
 					<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>

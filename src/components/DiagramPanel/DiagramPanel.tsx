@@ -161,7 +161,7 @@ export default function DiagramPanel({ mermaidCode, ai }: DiagramPanelProps) {
 				bgcolor: "background.paper",
 			}}
 		>
-			{svgContent && !isLoading && !error && !isMobileTouch && (
+			{svgContent && !isLoading && !error && (
 				<DiagramToolbar
 					onShareUrl={handleShareUrl}
 					onDownload={handleDownload}

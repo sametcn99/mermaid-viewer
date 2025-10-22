@@ -240,16 +240,16 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 							/>
 						</ListItem>
 
-		        <ListItem>
-		          <ListItemIcon>
-		            <Share2 size={20} />
-		          </ListItemIcon>
-		          <ListItemText
-		            primary="Embed as Iframe"
-		            secondary="Use the iframe sharing feature to embed your diagram directly into any website or blog. Click the share button and select 'Embed as iframe' to copy the HTML code. Paste it wherever you want to display your diagram."
-		            slotProps={{ primary: { fontWeight: 500 } }}
-		          />
-		        </ListItem>
+						<ListItem>
+							<ListItemIcon>
+								<Share2 size={20} />
+							</ListItemIcon>
+							<ListItemText
+								primary="Embed as Iframe"
+								secondary="Use the iframe sharing feature to embed your diagram directly into any website or blog. Click the share button and select 'Embed as iframe' to copy the HTML code. Paste it wherever you want to display your diagram."
+								slotProps={{ primary: { fontWeight: 500 } }}
+							/>
+						</ListItem>
 					</List>
 				</Box>
 				<Divider sx={{ my: 3 }} />

@@ -19,15 +19,20 @@ const ensureMethod = (
 	});
 };
 
-const svgElementProto = (globalThis as { SVGElement?: typeof SVGElement }).SVGElement?.prototype;
+const svgElementProto = (globalThis as { SVGElement?: typeof SVGElement })
+	.SVGElement?.prototype;
 
 ensureMethod(svgElementProto, "getBBox", function getBBox() {
 	return { ...DEFAULT_BBOX };
 });
 
-ensureMethod(svgElementProto, "getComputedTextLength", function getComputedTextLength() {
-	return DEFAULT_BBOX.width;
-});
+ensureMethod(
+	svgElementProto,
+	"getComputedTextLength",
+	function getComputedTextLength() {
+		return DEFAULT_BBOX.width;
+	},
+);
 
 ensureMethod(svgElementProto, "getCTM", function getCTM() {
 	return new DOMMatrix();
@@ -37,19 +42,25 @@ ensureMethod(svgElementProto, "getScreenCTM", function getScreenCTM() {
 	return new DOMMatrix();
 });
 
-const svgTextProto = (globalThis as { SVGTextContentElement?: typeof SVGTextContentElement })
-	.SVGTextContentElement?.prototype;
+const svgTextProto = (
+	globalThis as { SVGTextContentElement?: typeof SVGTextContentElement }
+).SVGTextContentElement?.prototype;
 
 ensureMethod(svgTextProto, "getBBox", function getBBox() {
 	return { ...DEFAULT_BBOX };
 });
 
-ensureMethod(svgTextProto, "getComputedTextLength", function getComputedTextLength() {
-	return DEFAULT_BBOX.width;
-});
+ensureMethod(
+	svgTextProto,
+	"getComputedTextLength",
+	function getComputedTextLength() {
+		return DEFAULT_BBOX.width;
+	},
+);
 
-const canvasProto = (globalThis as { HTMLCanvasElement?: typeof HTMLCanvasElement })
-	.HTMLCanvasElement?.prototype;
+const canvasProto = (
+	globalThis as { HTMLCanvasElement?: typeof HTMLCanvasElement }
+).HTMLCanvasElement?.prototype;
 
 if (canvasProto) {
 	Reflect.defineProperty(canvasProto, "getContext", {
