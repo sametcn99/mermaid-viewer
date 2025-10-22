@@ -21,7 +21,9 @@ import {
 	Edit3,
 	Eye,
 	FileText,
+	FilePlus,
 	FolderOpen,
+	FolderPlus,
 	Palette,
 	Save,
 	Share2,
@@ -193,6 +195,26 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 							<ListItemText
 								primary="Search & Filter Templates"
 								secondary="Use the search bar and category filters to quickly find the perfect template for your needs. Templates include detailed descriptions and tags."
+								slotProps={{ primary: { fontWeight: 500 } }}
+							/>
+						</ListItem>
+						<ListItem>
+							<ListItemIcon>
+								<FolderPlus size={20} />
+							</ListItemIcon>
+							<ListItemText
+								primary="Organize Personal Collections"
+								secondary="Create named collections to group your favorite templates and reorder them for quick access."
+								slotProps={{ primary: { fontWeight: 500 } }}
+							/>
+						</ListItem>
+						<ListItem>
+							<ListItemIcon>
+								<FilePlus size={20} />
+							</ListItemIcon>
+							<ListItemText
+								primary="Save Your Current Diagram as a Template"
+								secondary="Use the “Save Current Diagram” action in My Collections to capture custom snippets that stay in your browser."
 								slotProps={{ primary: { fontWeight: 500 } }}
 							/>
 						</ListItem>

@@ -46,6 +46,7 @@
 - **🎨 Persistent Settings:** Diagram configuration (theme, colors, fonts) saved to localStorage
 - **📋 One-Click Copy:** Copy diagrams as SVG or share links instantly
 - **🔄 Real-time Validation:** Immediate feedback on syntax errors
+- **📁 Personal Collections:** Organize favorite templates and store custom snippets by saving the current diagram directly into reusable, local-only collections
 - **📱 Mobile Touch Optimized:** Perfect experience on phones and tablets with:
   - **👆 Enhanced Touch Targets:** All buttons sized 44px+ for easy tapping
   - **🎯 Speed Dial Interface:** Mobile-friendly floating action button with gesture support

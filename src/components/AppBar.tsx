@@ -453,6 +453,8 @@ export default function AppBar({
 						onSelectTemplate(code, name);
 					}
 				}}
+				currentDiagramCode={currentDiagram}
+				currentDiagramName={currentDiagramName}
 			/>
 		</>
 	);

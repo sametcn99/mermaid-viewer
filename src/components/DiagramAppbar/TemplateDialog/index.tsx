@@ -1,0 +1,506 @@
+"use client";
+
+import {
+	useCallback,
+	useEffect,
+	useMemo,
+	useState,
+	type MouseEvent,
+} from "react";
+
+import {
+	Box,
+	Button,
+	Dialog,
+	DialogContent,
+	Divider,
+	useMediaQuery,
+	useTheme,
+} from "@mui/material";
+import { ArrowLeft } from "lucide-react";
+
+import {
+	DIAGRAM_TEMPLATES,
+	getTemplateById,
+	searchTemplates,
+	type DiagramTemplate,
+	type TemplateCategory,
+} from "@/lib/templates";
+import type { CustomTemplate, TemplateCollection } from "@/lib/storage.utils";
+import { useTemplateCollections } from "@/hooks/useTemplateCollections";
+
+import { TemplateCollectionMenu } from "./TemplateCollectionMenu";
+import { TemplateCollectionsView } from "./TemplateCollectionsView";
+import { ManageCollectionDialog } from "./ManageCollectionDialog";
+import { SaveCurrentDiagramDialog } from "./SaveCurrentDiagramDialog";
+import { TemplateDialogHeader } from "./TemplateDialogHeader";
+import { TemplateDialogSidebar } from "./TemplateDialogSidebar";
+import { TemplateLibraryView } from "./TemplateLibraryView";
+import { NEW_COLLECTION_OPTION } from "./constants";
+import type {
+	CollectionEntry,
+	CollectionWithEntries,
+	DialogCategory,
+	TemplateDialogProps,
+} from "./types";
+
+export default function TemplateDialog({
+	open,
+	onClose,
+	onSelectTemplate,
+	currentDiagramCode,
+	currentDiagramName,
+}: TemplateDialogProps) {
+	const theme = useTheme();
+	const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+	const {
+		collections,
+		createCollection,
+		renameCollection,
+		deleteCollection: deleteStoredCollection,
+		addTemplate,
+		removeTemplate,
+		addCustomTemplate,
+		removeCustomTemplate,
+	} = useTemplateCollections();
+
+	const [selectedCategory, setSelectedCategory] =
+		useState<DialogCategory>("All");
+	const [searchQuery, setSearchQuery] = useState("");
+
+	const [collectionMenuAnchorEl, setCollectionMenuAnchorEl] =
+		useState<HTMLElement | null>(null);
+	const [templatePendingAssignment, setTemplatePendingAssignment] =
+		useState<DiagramTemplate | null>(null);
+
+	const [collectionDialogOpen, setCollectionDialogOpen] = useState(false);
+	const [collectionDialogMode, setCollectionDialogMode] = useState<
+		"create" | "rename"
+	>("create");
+	const [collectionNameInput, setCollectionNameInput] = useState("");
+	const [collectionBeingEdited, setCollectionBeingEdited] =
+		useState<TemplateCollection | null>(null);
+
+	const [saveCurrentDialogOpen, setSaveCurrentDialogOpen] = useState(false);
+	const [saveCurrentName, setSaveCurrentName] = useState("");
+	const [saveCurrentCollectionId, setSaveCurrentCollectionId] =
+		useState<string>(NEW_COLLECTION_OPTION);
+	const [saveCurrentNewCollectionName, setSaveCurrentNewCollectionName] =
+		useState("");
+
+	const hasCurrentDiagram =
+		Boolean(currentDiagramCode) && Boolean(currentDiagramCode?.trim());
+
+	type LibraryEntry = Extract<CollectionEntry, { kind: "library" }>;
+	type CustomEntry = Extract<CollectionEntry, { kind: "custom" }>;
+
+	const collectionTemplateCount = useMemo(() => {
+		return collections.reduce((total, collection) => {
+			const customCount = collection.customTemplates?.length ?? 0;
+			return total + collection.templateIds.length + customCount;
+		}, 0);
+	}, [collections]);
+
+	const collectionsWithEntries = useMemo<CollectionWithEntries[]>(() => {
+		return collections.map((collection) => {
+			const libraryEntries: LibraryEntry[] = collection.templateIds
+				.map((templateId) => getTemplateById(templateId))
+				.filter((template): template is DiagramTemplate => Boolean(template))
+				.map((template) => ({ kind: "library", template }));
+
+			const customEntries: CustomEntry[] = (
+				collection.customTemplates ?? []
+			).map((template: CustomTemplate) => ({
+				kind: "custom",
+				template,
+			}));
+
+			return {
+				...collection,
+				entries: [...libraryEntries, ...customEntries],
+			};
+		});
+	}, [collections]);
+
+	const isCollectionsView = selectedCategory === "Collections";
+	const hasCollections = collections.length > 0;
+
+	useEffect(() => {
+		if (!open) return;
+		const defaultName =
+			(currentDiagramName && currentDiagramName.trim().length > 0
+				? currentDiagramName.trim()
+				: "Current Diagram") ?? "Current Diagram";
+		setSaveCurrentName(defaultName);
+
+		if (collections.length > 0) {
+			setSaveCurrentCollectionId(collections[0].id);
+		} else {
+			setSaveCurrentCollectionId(NEW_COLLECTION_OPTION);
+		}
+		setSaveCurrentNewCollectionName("");
+	}, [collections, currentDiagramName, open]);
+
+	const filteredTemplates = useMemo(() => {
+		if (isCollectionsView) {
+			return [];
+		}
+
+		let templates = DIAGRAM_TEMPLATES;
+		const activeCategory =
+			!isCollectionsView && selectedCategory !== "All"
+				? (selectedCategory as TemplateCategory)
+				: undefined;
+
+		if (activeCategory) {
+			templates = templates.filter(
+				(template) => template.category === activeCategory,
+			);
+		}
+
+		if (searchQuery.trim()) {
+			templates = searchTemplates(searchQuery);
+			if (activeCategory) {
+				templates = templates.filter(
+					(template) => template.category === activeCategory,
+				);
+			}
+		}
+
+		return templates;
+	}, [isCollectionsView, searchQuery, selectedCategory]);
+
+	const handleCategoryChange = useCallback((category: DialogCategory) => {
+		setSelectedCategory(category);
+		if (category === "Collections") {
+			setSearchQuery("");
+		}
+	}, []);
+
+	const handleOpenCollectionMenu = useCallback(
+		(event: MouseEvent<HTMLButtonElement>, template: DiagramTemplate) => {
+			event.stopPropagation();
+			setCollectionMenuAnchorEl(event.currentTarget);
+			setTemplatePendingAssignment(template);
+		},
+		[],
+	);
+
+	const handleCloseCollectionMenu = useCallback(() => {
+		setCollectionMenuAnchorEl(null);
+		setTemplatePendingAssignment(null);
+	}, []);
+
+	const handleAddTemplateToCollection = useCallback(
+		(collectionId: string) => {
+			if (!templatePendingAssignment) return;
+			addTemplate(collectionId, templatePendingAssignment.id);
+			handleCloseCollectionMenu();
+		},
+		[addTemplate, handleCloseCollectionMenu, templatePendingAssignment],
+	);
+
+	const openNewCollectionDialog = useCallback(
+		(retainPendingTemplate = false) => {
+			if (!retainPendingTemplate) {
+				setTemplatePendingAssignment(null);
+			}
+			setCollectionDialogMode("create");
+			setCollectionNameInput("");
+			setCollectionBeingEdited(null);
+			setCollectionDialogOpen(true);
+		},
+		[],
+	);
+
+	const handleCreateCollectionFromMenu = useCallback(() => {
+		openNewCollectionDialog(true);
+		setCollectionMenuAnchorEl(null);
+	}, [openNewCollectionDialog]);
+
+	const handleStartCreateCollection = useCallback(() => {
+		openNewCollectionDialog(false);
+	}, [openNewCollectionDialog]);
+
+	const handleEditCollection = useCallback((collection: TemplateCollection) => {
+		setCollectionDialogMode("rename");
+		setCollectionBeingEdited(collection);
+		setCollectionNameInput(collection.name);
+		setCollectionDialogOpen(true);
+	}, []);
+
+	const handleDeleteCollection = useCallback(
+		(collectionId: string) => {
+			deleteStoredCollection(collectionId);
+		},
+		[deleteStoredCollection],
+	);
+
+	const handleCollectionDialogClose = useCallback(() => {
+		setCollectionDialogOpen(false);
+		setCollectionNameInput("");
+		setCollectionDialogMode("create");
+		setCollectionBeingEdited(null);
+		setTemplatePendingAssignment(null);
+	}, []);
+
+	const handleCollectionDialogSubmit = useCallback(() => {
+		const trimmedName = collectionNameInput.trim();
+		if (!trimmedName) return;
+
+		if (collectionDialogMode === "create") {
+			const newCollection = createCollection(trimmedName);
+			if (newCollection && templatePendingAssignment) {
+				addTemplate(newCollection.id, templatePendingAssignment.id);
+			}
+			handleCollectionDialogClose();
+			return;
+		}
+
+		if (collectionDialogMode === "rename" && collectionBeingEdited) {
+			renameCollection(collectionBeingEdited.id, trimmedName);
+			handleCollectionDialogClose();
+		}
+	}, [
+		addTemplate,
+		collectionBeingEdited,
+		collectionDialogMode,
+		collectionNameInput,
+		createCollection,
+		handleCollectionDialogClose,
+		renameCollection,
+		templatePendingAssignment,
+	]);
+
+	const handleRemoveTemplateFromCollection = useCallback(
+		(collectionId: string, templateId: string) => {
+			removeTemplate(collectionId, templateId);
+		},
+		[removeTemplate],
+	);
+
+	const handleRemoveCustomTemplateFromCollection = useCallback(
+		(collectionId: string, templateId: string) => {
+			removeCustomTemplate(collectionId, templateId);
+		},
+		[removeCustomTemplate],
+	);
+
+	const handleSelectTemplateByCode = useCallback(
+		(code: string, name: string) => {
+			onSelectTemplate(code, name);
+			onClose();
+			setSearchQuery("");
+			setSelectedCategory("All");
+		},
+		[onClose, onSelectTemplate],
+	);
+
+	const handleSelectTemplate = useCallback(
+		(template: DiagramTemplate) => {
+			handleSelectTemplateByCode(template.code, template.name);
+		},
+		[handleSelectTemplateByCode],
+	);
+
+	const handleSelectCustomTemplate = useCallback(
+		(template: CustomTemplate) => {
+			handleSelectTemplateByCode(template.code, template.name);
+		},
+		[handleSelectTemplateByCode],
+	);
+
+	const handleSelectLibraryTemplateFromCollection = useCallback(
+		(templateId: string) => {
+			const template = getTemplateById(templateId);
+			if (!template) return;
+			handleSelectTemplate(template);
+		},
+		[handleSelectTemplate],
+	);
+
+	const handleCloseDialog = useCallback(() => {
+		onClose();
+		setSearchQuery("");
+		setSelectedCategory("All");
+	}, [onClose]);
+
+	const handleOpenSaveCurrentDialog = useCallback(() => {
+		const fallbackName =
+			(currentDiagramName && currentDiagramName.trim().length > 0
+				? currentDiagramName.trim()
+				: "Current Diagram") ?? "Current Diagram";
+		setSaveCurrentName(fallbackName);
+		if (collections.length > 0) {
+			setSaveCurrentCollectionId(collections[0].id);
+		} else {
+			setSaveCurrentCollectionId(NEW_COLLECTION_OPTION);
+		}
+		setSaveCurrentNewCollectionName("");
+		setSaveCurrentDialogOpen(true);
+	}, [collections, currentDiagramName]);
+
+	const handleCloseSaveCurrentDialog = useCallback(() => {
+		setSaveCurrentDialogOpen(false);
+		setSaveCurrentNewCollectionName("");
+	}, []);
+
+	const handleSaveCurrentDiagramSubmit = useCallback(() => {
+		if (!hasCurrentDiagram || !currentDiagramCode) return;
+		const trimmedName = saveCurrentName.trim();
+		if (!trimmedName) return;
+
+		let targetCollectionId = saveCurrentCollectionId;
+
+		if (saveCurrentCollectionId === NEW_COLLECTION_OPTION) {
+			const trimmedCollectionName = saveCurrentNewCollectionName.trim();
+			if (!trimmedCollectionName) return;
+			const newCollection = createCollection(trimmedCollectionName);
+			if (!newCollection) return;
+			targetCollectionId = newCollection.id;
+			setSelectedCategory("Collections");
+			setSaveCurrentCollectionId(newCollection.id);
+		}
+
+		addCustomTemplate(targetCollectionId, {
+			name: trimmedName,
+			code: currentDiagramCode,
+		});
+		setSelectedCategory("Collections");
+		handleCloseSaveCurrentDialog();
+	}, [
+		addCustomTemplate,
+		createCollection,
+		currentDiagramCode,
+		hasCurrentDiagram,
+		handleCloseSaveCurrentDialog,
+		saveCurrentCollectionId,
+		saveCurrentName,
+		saveCurrentNewCollectionName,
+	]);
+
+	const canSaveCurrentDiagram =
+		hasCurrentDiagram &&
+		saveCurrentName.trim().length > 0 &&
+		(saveCurrentCollectionId === NEW_COLLECTION_OPTION
+			? saveCurrentNewCollectionName.trim().length > 0
+			: Boolean(saveCurrentCollectionId));
+
+	return (
+		<Dialog
+			open={open}
+			onClose={handleCloseDialog}
+			maxWidth="lg"
+			fullWidth
+			fullScreen={isMobile}
+			PaperProps={{
+				sx: {
+					height: isMobile ? "100%" : "80vh",
+				},
+			}}
+		>
+			<TemplateDialogHeader
+				isCollectionsView={isCollectionsView}
+				searchQuery={searchQuery}
+				onSearchChange={setSearchQuery}
+				onClose={handleCloseDialog}
+				onSaveCurrentDiagram={handleOpenSaveCurrentDialog}
+				onCreateCollection={handleStartCreateCollection}
+				hasCurrentDiagram={hasCurrentDiagram}
+			/>
+			<Divider />
+			<DialogContent sx={{ p: 0, display: "flex", height: "100%" }}>
+				<Box
+					sx={{
+						width: isMobile ? "100%" : 260,
+						borderRight: isMobile ? 0 : 1,
+						borderColor: "divider",
+						overflowY: "auto",
+						display: isMobile && selectedCategory !== "All" ? "none" : "block",
+					}}
+				>
+					<TemplateDialogSidebar
+						selectedCategory={selectedCategory}
+						onCategoryChange={handleCategoryChange}
+						hasCollections={hasCollections}
+						collectionsCount={collections.length}
+						totalSavedTemplates={collectionTemplateCount}
+					/>
+				</Box>
+
+				<Box
+					sx={{
+						flex: 1,
+						overflowY: "auto",
+						p: 2,
+						display: isMobile && selectedCategory === "All" ? "none" : "block",
+					}}
+				>
+					{isMobile && selectedCategory !== "All" && (
+						<Button
+							startIcon={<ArrowLeft size={16} />}
+							onClick={() => handleCategoryChange("All")}
+							sx={{ mb: 2 }}
+						>
+							Back to Categories
+						</Button>
+					)}
+
+					{isCollectionsView ? (
+						<TemplateCollectionsView
+							collections={collectionsWithEntries}
+							onRenameCollection={handleEditCollection}
+							onDeleteCollection={handleDeleteCollection}
+							onSelectLibraryTemplate={
+								handleSelectLibraryTemplateFromCollection
+							}
+							onSelectCustomTemplate={handleSelectCustomTemplate}
+							onRemoveLibraryTemplate={handleRemoveTemplateFromCollection}
+							onRemoveCustomTemplate={handleRemoveCustomTemplateFromCollection}
+							onCreateCollection={handleStartCreateCollection}
+						/>
+					) : (
+						<TemplateLibraryView
+							templates={filteredTemplates}
+							onSelectTemplate={handleSelectTemplate}
+							onAddToCollection={handleOpenCollectionMenu}
+						/>
+					)}
+				</Box>
+			</DialogContent>
+
+			<TemplateCollectionMenu
+				anchorEl={collectionMenuAnchorEl}
+				collections={collections}
+				template={templatePendingAssignment}
+				onClose={handleCloseCollectionMenu}
+				onAddTemplate={handleAddTemplateToCollection}
+				onCreateCollection={handleCreateCollectionFromMenu}
+			/>
+
+			<SaveCurrentDiagramDialog
+				open={saveCurrentDialogOpen}
+				onClose={handleCloseSaveCurrentDialog}
+				templateName={saveCurrentName}
+				onTemplateNameChange={setSaveCurrentName}
+				selectedCollectionId={saveCurrentCollectionId}
+				onSelectedCollectionChange={setSaveCurrentCollectionId}
+				newCollectionName={saveCurrentNewCollectionName}
+				onNewCollectionNameChange={setSaveCurrentNewCollectionName}
+				collections={collections}
+				onSubmit={handleSaveCurrentDiagramSubmit}
+				canSubmit={canSaveCurrentDiagram}
+			/>
+
+			<ManageCollectionDialog
+				open={collectionDialogOpen}
+				mode={collectionDialogMode}
+				name={collectionNameInput}
+				onNameChange={setCollectionNameInput}
+				onClose={handleCollectionDialogClose}
+				onSubmit={handleCollectionDialogSubmit}
+			/>
+		</Dialog>
+	);
+}
