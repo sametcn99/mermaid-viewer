@@ -27,3 +27,17 @@ export function getMermaidCodeFromUrl(): string {
 	if (!encoded) return "";
 	return decodeMermaid(encoded);
 }
+
+/**
+ * Decodes Mermaid code from a provided encoded `diagram` query value.
+ * Client-safe only (relies on browser base64 helpers via decodeMermaid).
+ *
+ * @param encoded Encoded diagram query value
+ * @returns Decoded Mermaid code or empty string
+ */
+export function getMermaidCodeFromEncoded(
+	encoded: string | null | undefined,
+): string {
+	if (!encoded) return "";
+	return decodeMermaid(encoded);
+}

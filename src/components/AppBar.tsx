@@ -35,6 +35,9 @@ import {
 import type React from "react";
 import { useEffect, useState, useId } from "react";
 import GitHubButton from "./DiagramAppbar/GitHubButton";
+import Link from "next/link";
+import { encodeMermaid } from "@/lib/utils";
+import { Monitor } from "lucide-react";
 import SaveDiagramDialog from "./DiagramAppbar/SaveDiagramDialog";
 import LoadDiagramDialog from "./DiagramAppbar/LoadDiagramDialog";
 import HowToUseDialog from "./DiagramAppbar/HowToUseDialog";
@@ -271,6 +274,17 @@ export default function AppBar({
 								</IconButton>
 							</Tooltip>
 
+							<Tooltip title="Enter Presentation (P)">
+								<IconButton
+									component={Link}
+									href={`/presentation?diagram=${encodeMermaid(currentDiagram)}`}
+									aria-label="Enter Presentation"
+									size="medium"
+								>
+									<Monitor size={20} />
+								</IconButton>
+							</Tooltip>
+
 							<Tooltip title="How to Use (F1)">
 								<IconButton
 									onClick={() => setOpenHowToUse(true)}
@@ -396,6 +410,17 @@ export default function AppBar({
 						<HelpCircle size={20} />
 					</ListItemIcon>
 					<ListItemText primary="How to Use" secondary="F1" />
+				</MenuItem>
+
+				<MenuItem
+					component={Link}
+					href={`/presentation?diagram=${encodeMermaid(currentDiagram)}`}
+					onClick={handleMobileMenuClose}
+				>
+					<ListItemIcon>
+						<Monitor size={20} />
+					</ListItemIcon>
+					<ListItemText primary="Enter Presentation" secondary="P" />
 				</MenuItem>
 
 				<MenuItem

@@ -24,6 +24,7 @@ import {
 	FilePlus,
 	FolderOpen,
 	FolderPlus,
+	Monitor,
 	Palette,
 	Save,
 	Share2,
@@ -61,7 +62,7 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 				}}
 			>
 				<Typography variant="h5" component="div" fontWeight="600">
-					How to Use Mermaid Viewer
+					How to Use Mermaid Editor
 				</Typography>
 				<IconButton
 					onClick={onClose}
@@ -78,7 +79,7 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 			<DialogContent dividers>
 				<Box sx={{ mb: 3 }}>
 					<Typography variant="body1" paragraph>
-						Mermaid Viewer is a powerful tool for creating and visualizing
+						Mermaid Editor is a powerful tool for creating and visualizing
 						Mermaid diagrams in real-time. Follow these steps to get started:
 					</Typography>
 				</Box>
@@ -168,6 +169,71 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 						</ListItem>
 					</List>
 				</Box>{" "}
+				<Divider sx={{ my: 3 }} />
+				<Box sx={{ mb: 4 }}>
+					<Typography
+						variant="h3"
+						component="h3"
+						gutterBottom
+						fontWeight="600"
+						sx={{
+							display: "flex",
+							alignItems: "center",
+							gap: 1,
+							mb: 2,
+							fontSize: "1.25rem",
+						}}
+					>
+						<Monitor size={20} />
+						Presentation Mode
+					</Typography>
+
+					<List>
+						<ListItem>
+							<ListItemIcon>
+								<Monitor size={20} />
+							</ListItemIcon>
+							<ListItemText
+								primary="Enter Full-Screen Viewer"
+								secondary="Use the 'Enter Presentation' button in the top AppBar (or the mobile menu) to open a distraction-free, full-viewport view of your diagram."
+								slotProps={{ primary: { fontWeight: 500 } }}
+							/>
+						</ListItem>
+
+						<ListItem>
+							<ListItemIcon>
+								<Share2 size={20} />
+							</ListItemIcon>
+							<ListItemText
+								primary="Keeps Your URL State"
+								secondary="Your current diagram is preserved via the encoded 'diagram' URL parameter when entering and exiting presentation mode."
+								slotProps={{ primary: { fontWeight: 500 } }}
+							/>
+						</ListItem>
+
+						<ListItem>
+							<ListItemIcon>
+								<Eye size={20} />
+							</ListItemIcon>
+							<ListItemText
+								primary="Focused Viewing Only"
+								secondary="The diagram toolbar is hidden in presentation mode for a clean viewing experience."
+								slotProps={{ primary: { fontWeight: 500 } }}
+							/>
+						</ListItem>
+
+						<ListItem>
+							<ListItemIcon>
+								<X size={20} />
+							</ListItemIcon>
+							<ListItemText
+								primary="Exit with Esc or Button"
+								secondary="Press Escape or use the floating back button to return to the editor with your diagram intact."
+								slotProps={{ primary: { fontWeight: 500 } }}
+							/>
+						</ListItem>
+					</List>
+				</Box>
 				<Divider sx={{ my: 3 }} />
 				<Box sx={{ mb: 4 }}>
 					<Typography

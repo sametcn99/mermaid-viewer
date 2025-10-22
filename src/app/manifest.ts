@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
 	return {
 		name: "Mermaid Live Editor & Viewer",
-		short_name: "Mermaid Viewer",
+		short_name: "Mermaid Editor",
 		description:
 			"Create, view, and edit Mermaid diagrams in real-time with this interactive online editor. Supports flowcharts, sequence diagrams, Gantt charts, and more.",
 		start_url: "/",

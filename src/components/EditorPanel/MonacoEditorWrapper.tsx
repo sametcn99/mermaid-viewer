@@ -1,8 +1,9 @@
-import Editor, { type OnMount } from "@monaco-editor/react";
+import Editor, { type OnMount, useMonaco } from "@monaco-editor/react";
 import { useRef, useCallback, useEffect } from "react";
 import type * as monaco from "monaco-editor";
 import { registerMermaidLanguage } from "@/lib/monaco";
 import EditorLoadingSpinner from "./EditorLoadingSpinner";
+import { useTheme } from "@mui/material";
 
 interface MonacoEditorWrapperProps {
 	value: string;
@@ -15,6 +16,8 @@ export default function MonacoEditorWrapper({
 	onChange,
 	theme,
 }: MonacoEditorWrapperProps) {
+	const muiTheme = useTheme();
+	const monacoInstance = useMonaco();
 	const cleanupRef = useRef<(() => void) | null>(null);
 	const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
@@ -33,8 +36,30 @@ export default function MonacoEditorWrapper({
 			// Register Mermaid language with all features
 			// This includes: tokenizer, language config, completions, validation, and custom theme
 			cleanupRef.current = registerMermaidLanguage(monaco);
+
+			// Define MUI-synced themes so editor background matches app background
+			const bg = muiTheme.palette.background.default;
+			const fg = muiTheme.palette.text.primary as string;
+			monaco.editor.defineTheme("mui-dark", {
+				base: "vs-dark",
+				inherit: true,
+				rules: [],
+				colors: {
+					"editor.background": bg,
+					"editor.foreground": fg,
+				},
+			});
+			monaco.editor.defineTheme("mui-light", {
+				base: "vs",
+				inherit: true,
+				rules: [],
+				colors: {
+					"editor.background": bg,
+					"editor.foreground": fg,
+				},
+			});
 		},
-		[],
+		[muiTheme.palette.background.default, muiTheme.palette.text.primary],
 	);
 
 	/**
@@ -55,15 +80,38 @@ export default function MonacoEditorWrapper({
 		[],
 	);
 
-	/**
-	 * Update editor theme when theme prop changes
-	 */
+	// If MUI theme changes at runtime, re-define and apply the theme
 	useEffect(() => {
-		if (editorRef.current) {
-			const monacoTheme = theme === "vs-dark" ? "mermaid-dark" : "vs";
-			editorRef.current.updateOptions({ theme: monacoTheme });
-		}
-	}, [theme]);
+		if (!monacoInstance) return;
+		const bg = muiTheme.palette.background.default;
+		const fg = muiTheme.palette.text.primary as string;
+		monacoInstance.editor.defineTheme("mui-dark", {
+			base: "vs-dark",
+			inherit: true,
+			rules: [],
+			colors: {
+				"editor.background": bg,
+				"editor.foreground": fg,
+			},
+		});
+		monacoInstance.editor.defineTheme("mui-light", {
+			base: "vs",
+			inherit: true,
+			rules: [],
+			colors: {
+				"editor.background": bg,
+				"editor.foreground": fg,
+			},
+		});
+		monacoInstance.editor.setTheme(
+			theme === "vs-dark" ? "mui-dark" : "mui-light",
+		);
+	}, [
+		monacoInstance,
+		muiTheme.palette.background.default,
+		muiTheme.palette.text.primary,
+		theme,
+	]);
 
 	/**
 	 * Cleanup on component unmount
@@ -77,12 +125,13 @@ export default function MonacoEditorWrapper({
 		};
 	}, []);
 
-	// Determine Monaco theme based on prop
+	// Determine Monaco theme based on prop + MUI colors
+	const computedTheme = theme === "vs-dark" ? "mui-dark" : "mui-light";
 	return (
 		<Editor
 			height="100%"
 			language="mermaid"
-			theme={"vs-dark"}
+			theme={computedTheme}
 			value={value}
 			onChange={onChange}
 			loading={<EditorLoadingSpinner />}

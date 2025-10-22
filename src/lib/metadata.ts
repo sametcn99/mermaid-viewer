@@ -1,9 +1,45 @@
 import type { Metadata, Viewport } from "next";
 
+const DEFAULT_SITE_URL = "https://mermaid.sametcc.me";
+const OG_IMAGE_PATH = "/window.svg";
+
+const ensureAbsoluteUrl = (value: string) =>
+	value.startsWith("http://") || value.startsWith("https://")
+		? value
+		: `https://${value}`;
+
+const resolveSiteUrl = () => {
+	const envUrl = process.env.NEXT_PUBLIC_SITE_URL ?? process.env.VERCEL_URL;
+
+	if (envUrl) {
+		try {
+			return new URL(ensureAbsoluteUrl(envUrl));
+		} catch {
+			// Ignore invalid values coming from the runtime environment
+		}
+	}
+
+	return new URL(DEFAULT_SITE_URL);
+};
+
+export const SITE_URL = resolveSiteUrl();
+export const SITE_URL_STRING = SITE_URL.toString();
+export const OG_IMAGE_URL = new URL(OG_IMAGE_PATH, SITE_URL).toString();
+
+export const APP_DESCRIPTION =
+	"Create, view, and edit Mermaid diagrams in real-time with this interactive online editor. Supports flowcharts, sequence diagrams, Gantt charts, class diagrams, state diagrams, entity relationship diagrams, user journey maps, and more. Free and open-source diagramming tool for developers and technical writers.";
+
+export const APP_TITLE = "Mermaid Live Editor & Viewer | Real-time Diagramming";
+
 const appMetadata: Metadata = {
-	title: "Mermaid Live Editor & Viewer | Real-time Diagramming",
-	description:
-		"Create, view, and edit Mermaid diagrams in real-time with this interactive online editor. Supports flowcharts, sequence diagrams, Gantt charts, class diagrams, state diagrams, entity relationship diagrams, user journey maps, and more. Free and open-source diagramming tool for developers and technical writers.",
+	title: {
+		default: APP_TITLE,
+		template: "%s | Mermaid Editor",
+	},
+	description: APP_DESCRIPTION,
+	metadataBase: SITE_URL,
+	applicationName: "Mermaid Editor",
+	category: "Development Tools",
 	keywords: [
 		"Mermaid",
 		"diagram",
@@ -32,6 +68,8 @@ const appMetadata: Metadata = {
 		"technical writing",
 		"visualization",
 		"open source",
+		"diagram templates",
+		"diagram generator",
 	],
 	authors: [
 		{
@@ -41,25 +79,53 @@ const appMetadata: Metadata = {
 	],
 	creator: "sametcn99",
 	publisher: "sametcn99",
-	applicationName: "Mermaid Viewer",
-	category: "Development Tools",
+	formatDetection: {
+		email: true,
+		address: false,
+		telephone: false,
+	},
+	alternates: {
+		canonical: "/",
+		languages: {
+			"en-US": "/",
+			"en-GB": "/",
+		},
+	},
 	openGraph: {
-		title: "Mermaid Live Editor & Viewer | Real-time Diagramming",
-		description:
-			"Interactive online tool for creating and viewing Mermaid diagrams. Supports multiple diagram types including flowcharts, sequence diagrams, Gantt charts, and more. Free and open-source.",
+		title: APP_TITLE,
+		description: APP_DESCRIPTION,
 		type: "website",
 		locale: "en_US",
-		siteName: "Mermaid Viewer",
+		siteName: "Mermaid Editor",
+		url: SITE_URL_STRING,
+		images: [
+			{
+				url: OG_IMAGE_URL,
+				width: 1200,
+				height: 630,
+				alt: "Mermaid diagram editor showing synchronized code and rendered chart preview",
+				type: "image/svg+xml",
+			},
+		],
 	},
 	twitter: {
 		card: "summary_large_image",
-		title: "Mermaid Live Editor & Viewer | Real-time Diagramming",
-		description:
-			"Create, view, and edit Mermaid diagrams in real-time. Free online tool for developers and technical writers. Supports flowcharts, sequence diagrams, and more.",
+		title: APP_TITLE,
+		description: APP_DESCRIPTION,
+		images: [OG_IMAGE_URL],
+	},
+	robots: {
+		index: true,
+		follow: true,
+		googleBot: {
+			index: true,
+			follow: true,
+		},
 	},
 	manifest: "/manifest.json",
 	icons: {
 		icon: "/favicon.ico",
+		apple: "/favicon.ico",
 	},
 };
 

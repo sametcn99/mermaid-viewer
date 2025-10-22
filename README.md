@@ -31,6 +31,7 @@
 - **🚀 Fast Rendering:** Debounced updates for smooth performance
 - **📤 Quick Sharing:** Generate shareable links with URL encoding
 - **🌐 Iframe Embedding:** Easily embed your diagrams into any website or blog using the iframe sharing feature. Just click the share button, select 'Embed as iframe', and copy the HTML code to use anywhere.
+- **🖥️ Presentation Mode:** Distraction-free, full-viewport viewer at `/presentation` that preserves your encoded diagram in the URL, hides the toolbar, and lets you exit with Esc or the floating back button
 
 ### 💎 **Advanced Features**
 
@@ -54,6 +55,14 @@
   - **📳 Haptic Feedback:** Tactile responses on supported devices
   - **🔄 Smart Auto-Reset:** Automatic view optimization for mobile screens
 - **⌨️ Keyboard Shortcuts:** Power user shortcuts for faster workflow
+
+---
+
+## 🖥️ Presentation Mode
+
+- Open a clean, full-viewport viewer with “Enter Presentation” from the AppBar (or mobile menu).
+- URL state is preserved using the `diagram` query — share or bookmark safely.
+- The diagram toolbar is hidden for focus; press Esc or use the back button to return to the editor.
 
 ---
 

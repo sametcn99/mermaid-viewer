@@ -13,7 +13,7 @@ export default function EditorPanelLayout({
 	theme,
 }: EditorPanelLayoutProps) {
 	return (
-		<Box sx={{ height: "100%", width: "100%" }}>
+		<Box sx={{ height: "100%", width: "100%", bgcolor: "background.default" }}>
 			<MonacoEditorWrapper value={value} onChange={onChange} theme={theme} />
 		</Box>
 	);

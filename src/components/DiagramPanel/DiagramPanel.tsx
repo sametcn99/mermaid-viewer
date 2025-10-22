@@ -17,6 +17,7 @@ import type { AiAssistantConfig } from "@/types/ai-assistant.types";
 
 interface DiagramPanelProps {
 	mermaidCode: string;
+	hideToolbar?: boolean;
 	ai?: {
 		config: AiAssistantConfig;
 		onRequestConsent: () => void;
@@ -33,7 +34,11 @@ if (typeof window !== "undefined") {
 	mermaid.initialize(defaultMermaidConfig);
 }
 
-export default function DiagramPanel({ mermaidCode, ai }: DiagramPanelProps) {
+export default function DiagramPanel({
+	mermaidCode,
+	hideToolbar,
+	ai,
+}: DiagramPanelProps) {
 	const svgContainerRef = useRef<HTMLDivElement>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -161,7 +166,7 @@ export default function DiagramPanel({ mermaidCode, ai }: DiagramPanelProps) {
 				bgcolor: "background.paper",
 			}}
 		>
-			{svgContent && !isLoading && !error && (
+			{svgContent && !isLoading && !error && !hideToolbar && (
 				<DiagramToolbar
 					onShareUrl={handleShareUrl}
 					onDownload={handleDownload}

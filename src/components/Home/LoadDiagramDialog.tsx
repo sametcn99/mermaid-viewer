@@ -28,7 +28,7 @@ const LoadDiagramDialog: React.FC<LoadDiagramDialogProps> = ({
 	diagrams,
 }) => (
 	<Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-		<DialogTitle>Mermaid Viewer</DialogTitle>
+		<DialogTitle>Mermaid Editor</DialogTitle>
 		<DialogContent>
 			<Typography>
 				You have previously saved diagrams. Would you like to load one or create
