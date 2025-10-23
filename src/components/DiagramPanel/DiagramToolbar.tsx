@@ -39,8 +39,7 @@ const DiagramToolbar: React.FC<DiagramToolbarProps> = ({
 		<Box
 			sx={{
 				position: "absolute",
-				top: isMobile ? "auto" : { xs: 8, sm: 20 }, // Drop to bottom on very small screens
-				bottom: isMobile ? 16 : "auto",
+				top: { xs: 8, sm: 20 },
 				left: { xs: 12, sm: 20 },
 				right: { xs: 12, sm: 20 },
 				zIndex: 10,
