@@ -39,5 +39,13 @@ export function getMermaidCodeFromEncoded(
 	encoded: string | null | undefined,
 ): string {
 	if (!encoded) return "";
-	return decodeMermaid(encoded);
+	const trimmed = encoded.trim();
+	if (!trimmed) return "";
+	// Normalise potential URL-safe variants and stray spaces from query parsing
+	let normalised = trimmed.replace(/ /g, "+").replace(/-/g, "+").replace(/_/g, "/");
+	const padding = normalised.length % 4;
+	if (padding > 0) {
+		normalised = normalised.padEnd(normalised.length + (4 - padding), "=");
+	}
+	return decodeMermaid(normalised);
 }

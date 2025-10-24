@@ -1,7 +1,7 @@
 "use client";
 
 import DiagramPanel from "@/components/DiagramPanel/DiagramPanel";
-import { getMermaidCodeFromEncoded } from "@/lib/url.utils";
+import { getMermaidCodeFromEncoded, getMermaidCodeFromUrl } from "@/lib/url.utils";
 import { encodeMermaid } from "@/lib/utils";
 import { Box, Fab, Tooltip } from "@mui/material";
 import { ArrowLeft } from "lucide-react";
@@ -25,8 +25,12 @@ export default function PresentationClient({
 	}, [encodedDiagram]);
 
 	const backHref = useMemo(() => {
-		if (encodedDiagram) return `/?diagram=${encodedDiagram}`;
-		if (code) return `/?diagram=${encodeMermaid(code)}`;
+		if (encodedDiagram) {
+			return `/?diagram=${encodeURIComponent(encodedDiagram)}`;
+		}
+		if (code) {
+			return `/?diagram=${encodeURIComponent(encodeMermaid(code))}`;
+		}
 		return "/";
 	}, [encodedDiagram, code]);
 

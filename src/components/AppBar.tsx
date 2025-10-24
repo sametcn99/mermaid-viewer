@@ -277,7 +277,7 @@ export default function AppBar({
 							<Tooltip title="Enter Presentation (P)">
 								<IconButton
 									component={Link}
-									href={`/presentation?diagram=${encodeMermaid(currentDiagram)}`}
+									href={`/presentation?diagram=${encodeURIComponent(encodeMermaid(currentDiagram))}`}
 									aria-label="Enter Presentation"
 									size="medium"
 								>
@@ -414,7 +414,7 @@ export default function AppBar({
 
 				<MenuItem
 					component={Link}
-					href={`/presentation?diagram=${encodeMermaid(currentDiagram)}`}
+					href={`/presentation?diagram=${encodeURIComponent(encodeMermaid(currentDiagram))}`}
 					onClick={handleMobileMenuClose}
 				>
 					<ListItemIcon>
