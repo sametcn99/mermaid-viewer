@@ -1,11 +1,4 @@
-import {
-	Box,
-	Chip,
-	IconButton,
-	Tooltip,
-	useMediaQuery,
-	useTheme,
-} from "@mui/material";
+import { Box, Chip, IconButton, Tooltip } from "@mui/material";
 import { Download, RotateCcw, Settings, Share2, CodeXml } from "lucide-react";
 import { useState } from "react";
 import ShareIframeDialog from "./ShareIframeDialog";
@@ -26,11 +19,6 @@ const DiagramToolbar: React.FC<DiagramToolbarProps> = ({
 	zoomLevel,
 }) => {
 	const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
-	const theme = useTheme();
-	const isMobile = useMediaQuery(theme.breakpoints.down("sm"), {
-		noSsr: true,
-	});
-
 	const handleShareClick = () => {
 		setIsShareDialogOpen(true);
 	};
