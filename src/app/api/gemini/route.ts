@@ -1,4 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
+import appConfig from "@/lib/config";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest) {
 		}
 
 		// Use user API key if provided, otherwise use server API key
-		const apiKey = userApiKey || process.env.GEMINI_API_KEY;
+		const apiKey = userApiKey || appConfig.gemini.apiKey;
 		// Use selected model or default to gemini-2.5-flash
 		console.log("Selected Model:", selectedModel);
 		const model = selectedModel || "gemini-2.5-flash";

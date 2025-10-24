@@ -31,6 +31,7 @@ import {
 	X,
 	Zap,
 } from "lucide-react";
+import appConfig from "@/lib/config";
 
 interface HowToUseDialogProps {
 	open: boolean;
@@ -488,7 +489,7 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 						source code and contribute!
 					</Typography>
 					<Link
-						href="https://sametcc.me/repo/mermaid-viewer"
+						href={appConfig.publisher.repository}
 						target="_blank"
 						rel="noopener noreferrer"
 						underline="hover"

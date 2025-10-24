@@ -1,5 +1,5 @@
-import ThemeRegistry from "@/components/ThemeRegistry";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
+import ThemeRegistry from "@/components/ThemeRegistry";
 import appMetadata, {
 	APP_DESCRIPTION,
 	APP_TITLE,
@@ -7,6 +7,7 @@ import appMetadata, {
 	SITE_URL_STRING,
 	appViewport,
 } from "@/lib/metadata";
+import appConfig from "@/lib/config";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -35,13 +36,13 @@ const structuredData = [
 		},
 		author: {
 			"@type": "Person",
-			name: "sametcn99",
-			url: "https://github.com/sametcn99",
+			name: appConfig.publisher.name,
+			url: appConfig.publisher.repository,
 		},
 		publisher: {
 			"@type": "Person",
-			name: "sametcn99",
-			url: "https://sametcc.me",
+			name: appConfig.publisher.name,
+			url: appConfig.publisher.website,
 		},
 		browserRequirements: "Requires JavaScript. Requires HTML5.",
 	},
@@ -53,8 +54,8 @@ const structuredData = [
 		inLanguage: "en-US",
 		description: APP_DESCRIPTION,
 		sameAs: [
-			"https://github.com/sametcn99/mermaid-viewer",
-			"https://sametcc.me",
+			appConfig.publisher.repository,
+			appConfig.publisher.website,
 			SITE_URL_STRING,
 		],
 	},

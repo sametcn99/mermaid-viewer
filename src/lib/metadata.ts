@@ -1,29 +1,10 @@
+import appConfig from "@/lib/config";
 import type { Metadata, Viewport } from "next";
 
-const DEFAULT_SITE_URL = "https://mermaid.sametcc.me";
 const OG_IMAGE_PATH = "/window.svg";
 
-const ensureAbsoluteUrl = (value: string) =>
-	value.startsWith("http://") || value.startsWith("https://")
-		? value
-		: `https://${value}`;
-
-const resolveSiteUrl = () => {
-	const envUrl = process.env.NEXT_PUBLIC_SITE_URL ?? process.env.VERCEL_URL;
-
-	if (envUrl) {
-		try {
-			return new URL(ensureAbsoluteUrl(envUrl));
-		} catch {
-			// Ignore invalid values coming from the runtime environment
-		}
-	}
-
-	return new URL(DEFAULT_SITE_URL);
-};
-
-export const SITE_URL = resolveSiteUrl();
-export const SITE_URL_STRING = SITE_URL.toString();
+export const SITE_URL = appConfig.site.url;
+export const SITE_URL_STRING = appConfig.site.urlString;
 export const OG_IMAGE_URL = new URL(OG_IMAGE_PATH, SITE_URL).toString();
 
 export const APP_DESCRIPTION =
@@ -73,12 +54,12 @@ const appMetadata: Metadata = {
 	],
 	authors: [
 		{
-			name: "sametcn99",
-			url: "https://github.com/sametcn99",
+			name: appConfig.publisher.name,
+			url: appConfig.publisher.repository,
 		},
 	],
-	creator: "sametcn99",
-	publisher: "sametcn99",
+	creator: appConfig.publisher.name,
+	publisher: appConfig.publisher.name,
 	formatDetection: {
 		email: true,
 		address: false,
