@@ -14,7 +14,6 @@ const DiagramSVGViewer: React.FC<DiagramSVGViewerProps> = ({
 }) => (
 	<Box
 		ref={svgContainerRef}
-		// biome-ignore lint/security/noDangerouslySetInnerHtml: .
 		dangerouslySetInnerHTML={{ __html: svgContent }}
 		sx={{
 			width: "auto",

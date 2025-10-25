@@ -1,5 +1,7 @@
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import ThemeRegistry from "@/components/ThemeRegistry";
+import DeviceStateInitializer from "@/components/DeviceStateInitializer";
+import StoreProvider from "@/store/StoreProvider";
 import appMetadata, {
 	APP_DESCRIPTION,
 	APP_TITLE,
@@ -94,13 +96,17 @@ export default function RootLayout({
 				></script>
 				<script
 					type="application/ld+json"
-					// biome-ignore lint/security/noDangerouslySetInnerHtml: .
 					dangerouslySetInnerHTML={{ __html: structuredDataScript }}
 				/>
 			</head>
 			<body className={inter.className}>
 				<AppRouterCacheProvider options={{ key: "mui" }}>
-					<ThemeRegistry>{children}</ThemeRegistry>
+					<ThemeRegistry>
+						<StoreProvider>
+							<DeviceStateInitializer />
+							{children}
+						</StoreProvider>
+					</ThemeRegistry>
 				</AppRouterCacheProvider>
 			</body>
 		</html>

@@ -1,7 +1,10 @@
 "use client";
 
 import type { DiagramTemplate, TemplateCategory } from "@/lib/templates";
-import type { CustomTemplate, TemplateCollection } from "@/lib/storage.utils";
+import type {
+	CustomTemplate,
+	TemplateCollection,
+} from "@/lib/utils/local-storage/templates.storage";
 
 export type DialogCategory = TemplateCategory | "All" | "Collections";
 

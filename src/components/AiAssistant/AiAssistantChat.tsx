@@ -11,7 +11,7 @@ import {
 	clearDiagramSnapshots,
 	getAiChatHistory,
 	saveDiagramSnapshots,
-} from "@/lib/storage.utils";
+} from "@/lib/utils/local-storage/ai-assistant.storage";
 import {
 	Alert,
 	Box,

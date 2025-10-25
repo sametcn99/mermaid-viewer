@@ -4,49 +4,92 @@ import AiAssistantFab from "@/components/AiAssistant/AiAssistantFab";
 import AlertSnackbar from "@/components/Home/AlertSnackbar";
 import LoadDiagramDialog from "@/components/Home/LoadDiagramDialog";
 import ResizablePanels from "@/components/Home/ResizablePanels";
-import { useMermaid } from "@/hooks/useMermaid";
-import { useResizablePanels } from "@/hooks/useResizablePanels";
 import {
 	getAllDiagramsFromStorage,
-	getAiAssistantConfig,
-} from "@/lib/storage.utils";
+	type SavedDiagram,
+} from "@/lib/utils/local-storage/diagrams.storage";
+import { getAiAssistantConfig } from "@/lib/utils/local-storage/ai-assistant.storage";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import type { AiAssistantConfig } from "@/types/ai-assistant.types";
 import { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import AppBar from "@/components/AppBar";
+import type { AppDispatch, RootState } from "@/store";
+import {
+	cancelMermaidDebounce,
+	closeLoadDialog,
+	createNewDiagram,
+	dismissMermaidAlert,
+	initializeMermaidState,
+	loadDiagramFromStorage,
+	updateMermaidFromEditor,
+} from "@/store/mermaidSlice";
 
 export default function Home() {
 	const theme = useTheme();
 	const isDarkMode = theme.palette.mode === "dark";
 	const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+	const dispatch = useDispatch<AppDispatch>();
+	const {
+		mermaidCode,
+		debouncedCode,
+		openLoadDialog,
+		alertMessage,
+		hasUnsavedChanges,
+	} = useSelector((state: RootState) => state.mermaid);
 	const [aiConfig, setAiConfig] = useState<AiAssistantConfig>({
 		consentGiven: false,
 	});
 
-	const {
-		panelSize: editorPanelSize,
-		containerRef,
-		handleMouseDown,
-	} = useResizablePanels({
-		initialSize: 50,
-		minSize: isSmallScreen ? 0 : 10,
-		maxSize: isSmallScreen ? 100 : 90,
-		isVertical: isSmallScreen,
-	});
-	const {
-		mermaidCode,
-		debouncedCode,
-		currentDiagramId,
-		openLoadDialog,
-		alertMessage,
-		handleEditorChange,
-		handleLoadDiagram,
-		handleNewDiagram,
-		handleSaveDiagram,
-		handleSelectTemplate,
-		handleCloseLoadDialog,
-		handleAlertClose,
-	} = useMermaid();
+	useEffect(() => {
+		dispatch(initializeMermaidState());
+		return () => {
+			dispatch(cancelMermaidDebounce());
+		};
+	}, [dispatch]);
+
+	useEffect(() => {
+		const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+			if (hasUnsavedChanges) {
+				const message =
+					"You have unsaved changes. Are you sure you want to leave?";
+				event.preventDefault();
+				event.returnValue = message;
+				return message;
+			}
+		};
+
+		window.addEventListener("beforeunload", handleBeforeUnload);
+		return () => {
+			window.removeEventListener("beforeunload", handleBeforeUnload);
+		};
+	}, [hasUnsavedChanges]);
+
+	const handleEditorChange = useCallback(
+		(value: string) => {
+			dispatch(updateMermaidFromEditor(value));
+		},
+		[dispatch],
+	);
+
+	const handleLoadDiagram = useCallback(
+		(diagram: SavedDiagram) => {
+			dispatch(loadDiagramFromStorage(diagram));
+		},
+		[dispatch],
+	);
+
+	const handleNewDiagram = useCallback(() => {
+		dispatch(createNewDiagram());
+	}, [dispatch]);
+
+	const handleCloseLoadDialog = useCallback(() => {
+		dispatch(closeLoadDialog());
+	}, [dispatch]);
+
+	const handleAlertClose = useCallback(() => {
+		dispatch(dismissMermaidAlert());
+	}, [dispatch]);
 
 	// Load AI config on mount and listen for changes
 	useEffect(() => {
@@ -142,18 +185,8 @@ export default function Home() {
 
 	return (
 		<Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-			<AppBar
-				currentDiagram={mermaidCode}
-				savedDiagramId={currentDiagramId}
-				onLoadDiagram={handleLoadDiagram}
-				onNewDiagram={handleNewDiagram}
-				onSaveDiagram={handleSaveDiagram}
-				onSelectTemplate={handleSelectTemplate}
-			/>
+			<AppBar />
 			<ResizablePanels
-				editorPanelSize={editorPanelSize}
-				containerRef={containerRef}
-				handleMouseDown={handleMouseDown}
 				isSmallScreen={isSmallScreen}
 				mermaidCode={mermaidCode}
 				debouncedCode={debouncedCode}

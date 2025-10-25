@@ -4,8 +4,12 @@ import { Box } from "@mui/material";
 import mermaid, { type MermaidConfig } from "mermaid";
 import { useEffect, useRef, useState } from "react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
-import { getMermaidConfig, saveMermaidConfig } from "@/lib/storage.utils";
-import { useMobileTouch } from "@/hooks/useTouchDevice";
+import {
+	getMermaidConfig,
+	saveMermaidConfig,
+} from "@/lib/utils/local-storage/mermaid-config.storage";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/store";
 import CopyNotification from "./CopyNotification";
 import DiagramEmpty from "./DiagramEmpty";
 import DiagramError from "./DiagramError";
@@ -57,8 +61,10 @@ export default function DiagramPanel({
 	const [aiConfig, setAiConfig] = useState(ai?.config);
 	const resetTransformRef = useRef<(() => void) | null>(null);
 
-	// Mobile touch detection
-	const { isMobileTouch, isTouchDevice } = useMobileTouch();
+	const { isTouchDevice, screen } = useSelector(
+		(state: RootState) => state.device,
+	);
+	const isMobileTouch = isTouchDevice && screen.isMobile;
 
 	// Listen for AI config changes
 	useEffect(() => {

@@ -15,14 +15,14 @@ import {
 	TextField,
 	Typography,
 } from "@mui/material";
-import { getMermaidCodeFromUrl } from "@/lib/url.utils";
-import { encodeMermaid } from "@/lib/utils";
+import { retrieveDiagramCodeFromUrl } from "@/lib/utils/url.utils";
 import {
 	buildIframeOptionsQuery,
 	DEFAULT_IFRAME_OPTIONS,
 	isValidIframeBackground,
 	type IframeOptions,
 } from "@/lib/iframeOptions";
+import { compressToBase64 } from "@/lib/utils/compression.utils";
 
 interface ShareIframeDialogProps {
 	open: boolean;
@@ -40,7 +40,7 @@ const ShareIframeDialog: FC<ShareIframeDialogProps> = ({ open, onClose }) => {
 
 	useEffect(() => {
 		if (typeof window === "undefined" || !open) return;
-		setEncodedDiagram(encodeMermaid(getMermaidCodeFromUrl()));
+		setEncodedDiagram(compressToBase64(retrieveDiagramCodeFromUrl()));
 		setCopiedLink(false);
 		setCopiedEmbed(false);
 	}, [open]);

@@ -4,7 +4,7 @@ import type { AiAssistantConfig } from "@/types/ai-assistant.types";
 import {
 	getAiAssistantConfig,
 	saveAiAssistantConfig,
-} from "@/lib/storage.utils";
+} from "@/lib/utils/local-storage/ai-assistant.storage";
 import { Fab, Tooltip } from "@mui/material";
 import { Sparkles } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";

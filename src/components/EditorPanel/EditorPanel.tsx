@@ -1,6 +1,6 @@
 "use client";
 
-import { updateUrlWithMermaidCode } from "@/lib/url.utils";
+import { updateBrowserUrlWithDiagramCode } from "@/lib/utils/url.utils";
 import EditorPanelLayout from "./EditorPanelLayout";
 
 interface EditorPanelProps {
@@ -19,7 +19,7 @@ export default function EditorPanel({
 		onChange(value);
 		if (value !== undefined) {
 			const timeoutId = setTimeout(() => {
-				updateUrlWithMermaidCode(value);
+				updateBrowserUrlWithDiagramCode(value);
 			}, 1000);
 			return () => clearTimeout(timeoutId);
 		}

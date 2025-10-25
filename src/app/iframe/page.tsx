@@ -2,8 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import mermaid from "mermaid";
-import { decodeMermaid } from "@/lib/utils";
-import { useMobileTouch } from "@/hooks/useTouchDevice";
 import {
 	DEFAULT_IFRAME_OPTIONS,
 	parseIframeOptions,
@@ -15,6 +13,9 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/store";
+import { decompressFromBase64 } from "@/lib/utils/compression.utils";
 
 function getMermaidCodeFromSearchParams(): string {
 	if (typeof window === "undefined") return "";
@@ -22,7 +23,7 @@ function getMermaidCodeFromSearchParams(): string {
 	const params = new URLSearchParams(window.location.search);
 	const encoded = params.get("diagram");
 	if (!encoded) return "";
-	return decodeMermaid(encoded);
+	return decompressFromBase64(encoded);
 }
 
 export default function IframeMermaidPage() {
@@ -40,7 +41,10 @@ export default function IframeMermaidPage() {
 		((scale?: number, animationTime?: number) => void) | null
 	>(null);
 	const diagramContainerRef = useRef<HTMLDivElement>(null);
-	const { isTouchDevice, isMobileTouch } = useMobileTouch();
+	const { isTouchDevice, screen } = useSelector(
+		(state: RootState) => state.device,
+	);
+	const isMobileTouch = isTouchDevice && screen.isMobile;
 
 	useEffect(() => {
 		if (warnings.length) {

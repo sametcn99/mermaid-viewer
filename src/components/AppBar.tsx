@@ -5,7 +5,7 @@ import {
 	deleteDiagram,
 	getAllDiagramsFromStorage,
 	saveDiagramToStorage,
-} from "@/lib/storage.utils";
+} from "@/lib/utils/local-storage/diagrams.storage";
 import {
 	Box,
 	IconButton,
@@ -33,54 +33,51 @@ import {
 	Check,
 } from "lucide-react";
 import type React from "react";
-import { useEffect, useState, useId } from "react";
+import { useEffect, useMemo, useState, useId } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import GitHubButton from "./DiagramAppbar/GitHubButton";
 import Link from "next/link";
-import { encodeMermaid } from "@/lib/utils";
 import { Monitor } from "lucide-react";
 import SaveDiagramDialog from "./DiagramAppbar/SaveDiagramDialog";
 import LoadDiagramDialog from "./DiagramAppbar/LoadDiagramDialog";
 import HowToUseDialog from "./DiagramAppbar/HowToUseDialog";
 import TemplateDialog from "./DiagramAppbar/TemplateDialog";
+import type { AppDispatch, RootState } from "@/store";
+import {
+	createNewDiagram,
+	loadDiagramFromStorage,
+	saveDiagramChanges,
+	selectTemplateDiagram,
+	setCustomAlertMessage,
+	setCustomCurrentDiagramId,
+	setCustomUnsavedChanges,
+} from "@/store/mermaidSlice";
+import { compressToBase64 } from "@/lib/utils/compression.utils";
 
-interface AppBarProps {
-	currentDiagram: string;
-	savedDiagramId?: string;
-	onLoadDiagram: (diagram: SavedDiagram) => void;
-	onNewDiagram: () => void;
-	onSaveDiagram: (diagramId: string | undefined) => void;
-	onSelectTemplate?: (code: string, name: string) => void;
-}
-
-export default function AppBar({
-	currentDiagram,
-	savedDiagramId,
-	onLoadDiagram,
-	onNewDiagram,
-	onSaveDiagram,
-	onSelectTemplate,
-}: AppBarProps) {
+export default function AppBar() {
 	const theme = useTheme();
 	const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 	const isTablet = useMediaQuery(theme.breakpoints.down("md"));
+	const dispatch = useDispatch<AppDispatch>();
+	const { mermaidCode, currentDiagramId, hasUnsavedChanges } = useSelector(
+		(state: RootState) => state.mermaid,
+	);
 
 	const [savedDiagrams, setSavedDiagrams] = useState<SavedDiagram[]>([]);
-	const [openDialog, setOpenDialog] = useState<boolean>(false);
-	const [openLoadDialog, setOpenLoadDialog] = useState<boolean>(false);
-	const [diagramName, setDiagramName] = useState<string>("");
-	const [openHowToUse, setOpenHowToUse] = useState<boolean>(false);
-	const [openTemplateDialog, setOpenTemplateDialog] = useState<boolean>(false);
+	const [openDialog, setOpenDialog] = useState(false);
+	const [openLoadDialog, setOpenLoadDialog] = useState(false);
+	const [diagramName, setDiagramName] = useState("");
+	const [openHowToUse, setOpenHowToUse] = useState(false);
+	const [openTemplateDialog, setOpenTemplateDialog] = useState(false);
 	const [mobileMenuAnchor, setMobileMenuAnchor] = useState<null | HTMLElement>(
 		null,
 	);
-	const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
 	const mobileMenuId = useId();
 
 	useEffect(() => {
 		const diagrams = getAllDiagramsFromStorage();
 		setSavedDiagrams(diagrams);
 
-		// Check if user has seen the welcome modal
 		const hasSeenWelcome = localStorage.getItem("hasSeenWelcome");
 		if (!hasSeenWelcome) {
 			setOpenHowToUse(true);
@@ -88,27 +85,14 @@ export default function AppBar({
 		}
 	}, []);
 
-	useEffect(() => {
-		if (savedDiagramId) {
-			const savedDiagram = savedDiagrams.find((d) => d.id === savedDiagramId);
-			if (savedDiagram && savedDiagram.code !== currentDiagram) {
-				setHasUnsavedChanges(true);
-			} else {
-				setHasUnsavedChanges(false);
-			}
-		} else {
-			setHasUnsavedChanges(currentDiagram.trim().length > 0);
-		}
-	}, [currentDiagram, savedDiagramId, savedDiagrams]);
-
 	const refreshSavedDiagrams = () => {
 		const diagrams = getAllDiagramsFromStorage();
 		setSavedDiagrams(diagrams);
 	};
 
 	const handleSave = () => {
-		if (savedDiagramId) {
-			onSaveDiagram(savedDiagramId);
+		if (currentDiagramId) {
+			dispatch(saveDiagramChanges(currentDiagramId));
 			return;
 		}
 
@@ -117,10 +101,12 @@ export default function AppBar({
 	};
 
 	const handleSaveSubmit = () => {
-		const diagram = saveDiagramToStorage(diagramName, currentDiagram);
+		const diagram = saveDiagramToStorage(diagramName, mermaidCode);
 		refreshSavedDiagrams();
 		setOpenDialog(false);
-		onSaveDiagram(diagram.id);
+		dispatch(setCustomCurrentDiagramId(diagram.id));
+		dispatch(setCustomUnsavedChanges(false));
+		dispatch(setCustomAlertMessage("Diagram saved"));
 	};
 
 	const handleDeleteDiagram = (id: string, event: React.MouseEvent) => {
@@ -129,9 +115,8 @@ export default function AppBar({
 		refreshSavedDiagrams();
 	};
 
-	const formatTimestamp = (timestamp: number) => {
-		return new Date(timestamp).toLocaleString();
-	};
+	const formatTimestamp = (timestamp: number) =>
+		new Date(timestamp).toLocaleString();
 
 	const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
 		setMobileMenuAnchor(event.currentTarget);
@@ -142,7 +127,7 @@ export default function AppBar({
 	};
 
 	const handleNewDiagram = () => {
-		onNewDiagram();
+		dispatch(createNewDiagram());
 		handleMobileMenuClose();
 	};
 
@@ -166,9 +151,20 @@ export default function AppBar({
 		handleMobileMenuClose();
 	};
 
-	const currentDiagramName = savedDiagramId
-		? savedDiagrams.find((d) => d.id === savedDiagramId)?.name
-		: null;
+	const currentDiagramName = useMemo(() => {
+		if (!currentDiagramId) return null;
+		return savedDiagrams.find((d) => d.id === currentDiagramId)?.name ?? null;
+	}, [currentDiagramId, savedDiagrams]);
+
+	const handleLoadSavedDiagram = (diagram: SavedDiagram) => {
+		dispatch(loadDiagramFromStorage(diagram));
+		setOpenLoadDialog(false);
+	};
+
+	const handleCreateNewFromDialog = () => {
+		dispatch(createNewDiagram());
+		setOpenLoadDialog(false);
+	};
 
 	return (
 		<>
@@ -223,7 +219,7 @@ export default function AppBar({
 						<Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
 							<Tooltip title="New Diagram (Ctrl+N)">
 								<IconButton
-									onClick={onNewDiagram}
+									onClick={() => dispatch(createNewDiagram())}
 									aria-label="New Diagram"
 									size="medium"
 								>
@@ -255,7 +251,7 @@ export default function AppBar({
 
 							<Tooltip
 								title={
-									savedDiagramId
+									currentDiagramId
 										? hasUnsavedChanges
 											? "Update Saved Diagram (Ctrl+S)"
 											: "Diagram Saved"
@@ -265,7 +261,7 @@ export default function AppBar({
 								<IconButton
 									onClick={handleSave}
 									aria-label={
-										savedDiagramId ? "Update Saved Diagram" : "Save Diagram"
+										currentDiagramId ? "Update Saved Diagram" : "Save Diagram"
 									}
 									size="medium"
 									color={hasUnsavedChanges ? "warning" : "default"}
@@ -277,7 +273,7 @@ export default function AppBar({
 							<Tooltip title="Enter Presentation (P)">
 								<IconButton
 									component={Link}
-									href={`/presentation?diagram=${encodeURIComponent(encodeMermaid(currentDiagram))}`}
+									href={`/presentation?diagram=${encodeURIComponent(compressToBase64(mermaidCode))}`}
 									aria-label="Enter Presentation"
 									size="medium"
 								>
@@ -397,7 +393,7 @@ export default function AppBar({
 							<Save size={20} />
 						</ListItemIcon>
 						<ListItemText
-							primary={savedDiagramId ? "Update" : "Save"}
+							primary={currentDiagramId ? "Update" : "Save"}
 							secondary={hasUnsavedChanges ? "Unsaved changes" : "Ctrl+S"}
 						/>
 					</MenuItem>
@@ -414,7 +410,7 @@ export default function AppBar({
 
 				<MenuItem
 					component={Link}
-					href={`/presentation?diagram=${encodeURIComponent(encodeMermaid(currentDiagram))}`}
+					href={`/presentation?diagram=${encodeURIComponent(compressToBase64(mermaidCode))}`}
 					onClick={handleMobileMenuClose}
 				>
 					<ListItemIcon>
@@ -425,7 +421,7 @@ export default function AppBar({
 
 				<MenuItem
 					component="a"
-					href="https://github.com"
+					href="https://github.com/sametcn99/mermaid-viewer"
 					target="_blank"
 					rel="noopener noreferrer"
 					onClick={handleMobileMenuClose}
@@ -451,15 +447,9 @@ export default function AppBar({
 			<LoadDiagramDialog
 				open={openLoadDialog}
 				savedDiagrams={savedDiagrams}
-				savedDiagramId={savedDiagramId}
-				onLoadDiagram={(diagram) => {
-					onLoadDiagram(diagram);
-					setOpenLoadDialog(false);
-				}}
-				onNewDiagram={() => {
-					onNewDiagram();
-					setOpenLoadDialog(false);
-				}}
+				savedDiagramId={currentDiagramId}
+				onLoadDiagram={handleLoadSavedDiagram}
+				onNewDiagram={handleCreateNewFromDialog}
 				onDeleteDiagram={handleDeleteDiagram}
 				onClose={() => setOpenLoadDialog(false)}
 				formatTimestamp={formatTimestamp}
@@ -474,12 +464,11 @@ export default function AppBar({
 				open={openTemplateDialog}
 				onClose={() => setOpenTemplateDialog(false)}
 				onSelectTemplate={(code, name) => {
-					if (onSelectTemplate) {
-						onSelectTemplate(code, name);
-					}
+					dispatch(selectTemplateDiagram({ code, name }));
+					setOpenTemplateDialog(false);
 				}}
-				currentDiagramCode={currentDiagram}
-				currentDiagramName={currentDiagramName}
+				currentDiagramCode={mermaidCode}
+				currentDiagramName={currentDiagramName ?? undefined}
 			/>
 		</>
 	);

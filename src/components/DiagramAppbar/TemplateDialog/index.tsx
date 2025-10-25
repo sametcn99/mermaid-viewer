@@ -26,8 +26,22 @@ import {
 	type DiagramTemplate,
 	type TemplateCategory,
 } from "@/lib/templates";
-import type { CustomTemplate, TemplateCollection } from "@/lib/storage.utils";
-import { useTemplateCollections } from "@/hooks/useTemplateCollections";
+import type {
+	CustomTemplate,
+	TemplateCollection,
+} from "@/lib/utils/local-storage/templates.storage";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "@/store";
+import {
+	addCustomTemplateToCollectionThunk,
+	addTemplateToCollectionThunk,
+	createTemplateCollectionThunk,
+	deleteTemplateCollectionThunk,
+	refreshTemplateCollections,
+	removeCustomTemplateFromCollectionThunk,
+	removeTemplateFromCollectionThunk,
+	renameTemplateCollectionThunk,
+} from "@/store/templateCollectionsSlice";
 
 import { TemplateCollectionMenu } from "./TemplateCollectionMenu";
 import { TemplateCollectionsView } from "./TemplateCollectionsView";
@@ -53,17 +67,75 @@ export default function TemplateDialog({
 }: TemplateDialogProps) {
 	const theme = useTheme();
 	const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+	const dispatch = useDispatch<AppDispatch>();
+	const collections = useSelector(
+		(state: RootState) => state.templateCollections.collections,
+	);
 
-	const {
-		collections,
-		createCollection,
-		renameCollection,
-		deleteCollection: deleteStoredCollection,
-		addTemplate,
-		removeTemplate,
-		addCustomTemplate,
-		removeCustomTemplate,
-	} = useTemplateCollections();
+	const createCollection = useCallback(
+		(name: string) => {
+			return dispatch(createTemplateCollectionThunk(name));
+		},
+		[dispatch],
+	);
+
+	const renameCollection = useCallback(
+		(id: string, name: string) => {
+			return dispatch(renameTemplateCollectionThunk(id, name));
+		},
+		[dispatch],
+	);
+
+	const deleteStoredCollection = useCallback(
+		(id: string) => {
+			return dispatch(deleteTemplateCollectionThunk(id));
+		},
+		[dispatch],
+	);
+
+	const addTemplate = useCallback(
+		(collectionId: string, templateId: string) => {
+			return dispatch(addTemplateToCollectionThunk(collectionId, templateId));
+		},
+		[dispatch],
+	);
+
+	const removeTemplate = useCallback(
+		(collectionId: string, templateId: string) => {
+			return dispatch(
+				removeTemplateFromCollectionThunk(collectionId, templateId),
+			);
+		},
+		[dispatch],
+	);
+
+	const addCustomTemplate = useCallback(
+		(collectionId: string, template: { name: string; code: string }) => {
+			return dispatch(
+				addCustomTemplateToCollectionThunk(collectionId, template),
+			);
+		},
+		[dispatch],
+	);
+
+	const removeCustomTemplate = useCallback(
+		(collectionId: string, customTemplateId: string) => {
+			return dispatch(
+				removeCustomTemplateFromCollectionThunk(collectionId, customTemplateId),
+			);
+		},
+		[dispatch],
+	);
+
+	useEffect(() => {
+		dispatch(refreshTemplateCollections());
+	}, [dispatch]);
+
+	useEffect(() => {
+		if (open) {
+			dispatch(refreshTemplateCollections());
+		}
+	}, [dispatch, open]);
 
 	const [selectedCategory, setSelectedCategory] =
 		useState<DialogCategory>("All");

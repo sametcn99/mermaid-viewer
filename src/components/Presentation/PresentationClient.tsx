@@ -1,13 +1,13 @@
 "use client";
 
 import DiagramPanel from "@/components/DiagramPanel/DiagramPanel";
-import { getMermaidCodeFromEncoded, getMermaidCodeFromUrl } from "@/lib/url.utils";
-import { encodeMermaid } from "@/lib/utils";
+import { decodeDiagramCode } from "@/lib/utils/url.utils";
 import { Box, Fab, Tooltip } from "@mui/material";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { compressToBase64 } from "@/lib/utils/compression.utils";
 
 interface PresentationClientProps {
 	encodedDiagram?: string;
@@ -20,7 +20,7 @@ export default function PresentationClient({
 	const [code, setCode] = useState<string>("");
 
 	useEffect(() => {
-		const decoded = getMermaidCodeFromEncoded(encodedDiagram);
+		const decoded = decodeDiagramCode(encodedDiagram);
 		setCode(decoded);
 	}, [encodedDiagram]);
 
@@ -29,7 +29,7 @@ export default function PresentationClient({
 			return `/?diagram=${encodeURIComponent(encodedDiagram)}`;
 		}
 		if (code) {
-			return `/?diagram=${encodeURIComponent(encodeMermaid(code))}`;
+			return `/?diagram=${encodeURIComponent(compressToBase64(code))}`;
 		}
 		return "/";
 	}, [encodedDiagram, code]);

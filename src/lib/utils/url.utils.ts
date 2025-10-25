@@ -1,17 +1,13 @@
-/**
- * Utility functions for handling URL parameters with encrypted Mermaid code
- */
-
-import { decodeMermaid, encodeMermaid } from "./utils";
+import { compressToBase64, decompressFromBase64 } from "./compression.utils";
 
 /**
  * Updates the browser URL with the encoded Mermaid code
  * @param code The Mermaid diagram code
  */
-export function updateUrlWithMermaidCode(code: string): void {
+export function updateBrowserUrlWithDiagramCode(code: string): void {
 	if (typeof window === "undefined") return;
 	const url = new URL(window.location.href);
-	if (code) url.searchParams.set("diagram", encodeMermaid(code));
+	if (code) url.searchParams.set("diagram", compressToBase64(code));
 	else url.searchParams.delete("diagram");
 	window.history.replaceState({}, "", url.toString());
 }
@@ -20,12 +16,12 @@ export function updateUrlWithMermaidCode(code: string): void {
  * Retrieves Mermaid code from URL if present
  * @returns The decoded Mermaid code or empty string
  */
-export function getMermaidCodeFromUrl(): string {
+export function retrieveDiagramCodeFromUrl(): string {
 	if (typeof window === "undefined") return "";
 	const url = new URL(window.location.href);
 	const encoded = url.searchParams.get("diagram");
 	if (!encoded) return "";
-	return decodeMermaid(encoded);
+	return decompressFromBase64(encoded);
 }
 
 /**
@@ -35,17 +31,17 @@ export function getMermaidCodeFromUrl(): string {
  * @param encoded Encoded diagram query value
  * @returns Decoded Mermaid code or empty string
  */
-export function getMermaidCodeFromEncoded(
-	encoded: string | null | undefined,
-): string {
+export function decodeDiagramCode(encoded: string | null | undefined): string {
 	if (!encoded) return "";
 	const trimmed = encoded.trim();
 	if (!trimmed) return "";
-	// Normalise potential URL-safe variants and stray spaces from query parsing
-	let normalised = trimmed.replace(/ /g, "+").replace(/-/g, "+").replace(/_/g, "/");
+	let normalised = trimmed
+		.replace(/ /g, "+")
+		.replace(/-/g, "+")
+		.replace(/_/g, "/");
 	const padding = normalised.length % 4;
 	if (padding > 0) {
 		normalised = normalised.padEnd(normalised.length + (4 - padding), "=");
 	}
-	return decodeMermaid(normalised);
+	return decompressFromBase64(normalised);
 }

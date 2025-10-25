@@ -15,7 +15,7 @@ import {
 	TextField,
 } from "@mui/material";
 
-import type { TemplateCollection } from "@/lib/storage.utils";
+import type { TemplateCollection } from "@/lib/utils/local-storage/templates.storage";
 import { NEW_COLLECTION_OPTION } from "./constants";
 
 interface SaveCurrentDiagramDialogProps {
