@@ -28,15 +28,17 @@ export default function AiConsentDialog({
 			onClose={onDecline}
 			maxWidth="sm"
 			fullWidth
-			PaperProps={{
-				sx: {
-					borderRadius: 3,
-					boxShadow: "0px 8px 24px rgba(0,0,0,0.15)",
-					overflow: "hidden",
+			slotProps={{
+				transition: {
+					timeout: 300,
 				},
-			}}
-			TransitionProps={{
-				timeout: 300,
+				paper: {
+					sx: {
+						borderRadius: 3,
+						boxShadow: "0px 8px 24px rgba(0,0,0,0.15)",
+						overflow: "hidden",
+					},
+				},
 			}}
 		>
 			<DialogTitle
@@ -44,8 +46,6 @@ export default function AiConsentDialog({
 					display: "flex",
 					alignItems: "center",
 					gap: 1,
-					bgcolor: "primary.main",
-					color: "primary.contrastText",
 					py: 2,
 				}}
 			>
