@@ -19,14 +19,29 @@ function binaryStringToUint8Array(str: string): Uint8Array {
 	return buffer;
 }
 
+// URL-safe base64 encoding (letters, numbers only)
+function base64UrlEncode(input: string): string {
+	return btoa(input)
+		.replace(/\+/g, "-")
+		.replace(/\//g, "_")
+		.replace(/=+$/g, "");
+}
+
+function base64UrlDecode(input: string): string {
+	let base64 = input.replace(/-/g, "+").replace(/_/g, "/");
+	// Pad with '=' to make length a multiple of 4
+	while (base64.length % 4) base64 += "=";
+	return atob(base64);
+}
+
 export function compressToBase64(payload: string): string {
 	const compressed = pako.deflate(payload);
 	const binary = uint8ArrayToBinaryString(compressed);
-	return btoa(binary);
+	return base64UrlEncode(binary);
 }
 
 export function decompressFromBase64(base64: string): string {
-	const binary = atob(base64);
+	const binary = base64UrlDecode(base64);
 	const compressed = binaryStringToUint8Array(binary);
 	return pako.inflate(compressed, { to: "string" });
 }

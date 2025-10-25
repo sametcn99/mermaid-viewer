@@ -22,20 +22,32 @@ export default function PresentationClient({
 	const [code, setCode] = useState<string>("");
 
 	useEffect(() => {
-		if (encodedDiagram) {
+		if (!encodedDiagram) {
+			return;
+		}
+
+		try {
 			const decoded = decompressFromBase64(encodedDiagram);
 			setCode(decoded);
+		} catch (error) {
+			console.error("Failed to decode presentation diagram", error);
+			setCode("");
 		}
 	}, [encodedDiagram]);
 
 	const backHref = useMemo(() => {
-		if (encodedDiagram) {
-			return `/?diagram=${compressToBase64(encodedDiagram)}`;
-		}
+		let encodedFromCode: string | undefined;
 		if (code) {
-			return `/?diagram=${compressToBase64(code)}`;
+			try {
+				encodedFromCode = compressToBase64(code);
+			} catch (error) {
+				console.error("Failed to encode presentation diagram", error);
+			}
 		}
-		return "/";
+		const encodedFallback = encodedDiagram ?? undefined;
+		const encodedValue = encodedFromCode || encodedFallback;
+
+		return encodedValue ? `/?diagram=${encodedValue}` : "/";
 	}, [encodedDiagram, code]);
 
 	useEffect(() => {

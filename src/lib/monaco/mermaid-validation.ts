@@ -126,9 +126,14 @@ export function setupMermaidValidation(
 ): () => void {
 	// Create debounced validation function
 	const debouncedValidate = debounce(async () => {
+		if (model.isDisposed()) {
+			return;
+		}
 		const code = model.getValue();
 		const markers = await validateMermaidSyntax(code);
-		monaco.editor.setModelMarkers(model, "mermaid", markers);
+		if (!model.isDisposed()) {
+			monaco.editor.setModelMarkers(model, "mermaid", markers);
+		}
 	}, 1000); // 1000ms debounce
 
 	// Validate on content change
