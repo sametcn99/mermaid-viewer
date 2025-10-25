@@ -40,7 +40,9 @@ import GitHubButton from "./DiagramAppbar/GitHubButton";
 import Link from "next/link";
 import { Monitor } from "lucide-react";
 import SaveDiagramDialog from "./DiagramAppbar/SaveDiagramDialog";
-import LoadDiagramDialog from "./DiagramAppbar/LoadDiagramDialog";
+import LoadDiagramDialog, {
+	type ImportedDiagramData,
+} from "./DiagramAppbar/LoadDiagramDialog";
 import HowToUseDialog from "./DiagramAppbar/HowToUseDialog";
 import TemplateDialog from "./DiagramAppbar/TemplateDialog";
 import type { AppDispatch, RootState } from "@/store";
@@ -188,6 +190,30 @@ export default function AppBar() {
 		dispatch(createNewDiagram());
 		setOpenLoadDialog(false);
 	};
+
+	const handleImportDiagrams = useCallback(
+		async (diagrams: ImportedDiagramData[]) => {
+			try {
+				for (const diagram of diagrams) {
+					await saveDiagramToStorage(diagram.name, diagram.code, {
+						timestamp: diagram.timestamp,
+					});
+				}
+				await refreshSavedDiagrams();
+				dispatch(
+					setCustomAlertMessage(
+						diagrams.length === 1
+							? "Diagram imported"
+							: `${diagrams.length} diagrams imported`,
+					),
+				);
+			} catch (error) {
+				console.error("Failed to import diagrams:", error);
+				dispatch(setCustomAlertMessage("Import failed"));
+			}
+		},
+		[dispatch, refreshSavedDiagrams],
+	);
 
 	return (
 		<>
@@ -476,6 +502,7 @@ export default function AppBar() {
 				onDeleteDiagram={handleDeleteDiagram}
 				onClose={() => setOpenLoadDialog(false)}
 				formatTimestamp={formatTimestamp}
+				onImportDiagrams={handleImportDiagrams}
 			/>
 
 			<HowToUseDialog

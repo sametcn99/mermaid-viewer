@@ -30,17 +30,22 @@ async function getUntitledDiagramIndex(): Promise<number> {
 export async function saveDiagramToStorage(
 	name: string,
 	code: string,
+	options?: { id?: string; timestamp?: number },
 ): Promise<SavedDiagram> {
 	const trimmedName = name.trim();
 	const diagramName = trimmedName.length
 		? trimmedName
 		: `Untitled Diagram ${await getUntitledDiagramIndex()}`;
+	const timestamp = options?.timestamp ?? Date.now();
+	const id =
+		options?.id ??
+		`diagram_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
 	const newDiagram: SavedDiagram = {
-		id: `diagram_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+		id,
 		name: diagramName,
 		code,
-		timestamp: Date.now(),
+		timestamp,
 	};
 
 	await withDatabase((db) => db.put(DIAGRAM_STORE, newDiagram));

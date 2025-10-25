@@ -30,6 +30,7 @@ import {
 	Share2,
 	X,
 	Zap,
+	Upload,
 } from "lucide-react";
 import appConfig from "@/lib/config";
 
@@ -154,6 +155,17 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 							<ListItemText
 								primary="Load Saved Diagrams"
 								secondary="Use the folder icon to open and manage your previously saved diagrams."
+								slotProps={{ primary: { fontWeight: 500 } }}
+							/>
+						</ListItem>
+
+						<ListItem>
+							<ListItemIcon>
+								<Upload size={20} />
+							</ListItemIcon>
+							<ListItemText
+								primary="Import Diagrams (.mmd or .zip)"
+								secondary="Use the Upload button in the Saved Diagrams dialog to import single .mmd files or a .zip export (includes optional data.json metadata). Imported diagrams will be added to your saved diagrams."
 								slotProps={{ primary: { fontWeight: 500 } }}
 							/>
 						</ListItem>
@@ -314,6 +326,17 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 							<ListItemText
 								primary="Download as SVG or PNG"
 								secondary="Use the toolbar below the diagram to download your visualization in different formats."
+								slotProps={{ primary: { fontWeight: 500 } }}
+							/>
+						</ListItem>
+
+						<ListItem>
+							<ListItemIcon>
+								<Download size={20} />
+							</ListItemIcon>
+							<ListItemText
+								primary="Download .mmd or Export All (.zip)"
+								secondary="Download the current diagram as a .mmd file, or open Saved Diagrams and use 'Download All' to export every saved diagram as a .zip (includes optional data.json metadata)."
 								slotProps={{ primary: { fontWeight: 500 } }}
 							/>
 						</ListItem>

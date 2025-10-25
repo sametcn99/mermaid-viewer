@@ -30,6 +30,8 @@
 - **🎨 Syntax Highlighting:** Monaco Editor with intelligent code completion
 - **🚀 Fast Rendering:** Debounced updates for smooth performance
 - **📤 Quick Sharing:** Generate shareable links with URL encoding
+- **📥 Import Diagrams:** Import single `.mmd` files or a `.zip` archive exported from the app (the zip can include an optional `data.json` with metadata and compressed diagram content). Use the Upload button in the Saved Diagrams dialog to add diagrams to your local collection.
+- **⬇️ Download Diagrams:** Download the current diagram as a `.mmd` file, or export all saved diagrams as a `.zip` (the zip export includes an optional `data.json` with metadata and compressed diagram content). Use the Saved Diagrams dialog for bulk export.
 - **🌐 Iframe Embedding:** Easily embed your diagrams into any website or blog using the iframe sharing feature. Just click the share button, select 'Embed as iframe', and copy the HTML code to use anywhere.
 - **🖥️ Presentation Mode:** Distraction-free, full-viewport viewer at `/presentation` that preserves your encoded diagram in the URL, hides the toolbar, and lets you exit with Esc or the floating back button
 

@@ -58,6 +58,7 @@
 		"@mui/material-nextjs": "^7.3.3",
 		"@reduxjs/toolkit": "^2.9.2",
 		"idb": "^8.0.3",
+		"jszip": "^3.10.1",
 		"lodash.debounce": "^4.0.8",
 		"lucide-react": "^0.548.0",
 		"mermaid": "^11.12.0",
