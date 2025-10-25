@@ -1,13 +1,15 @@
 "use client";
 
 import DiagramPanel from "@/components/DiagramPanel/DiagramPanel";
-import { decodeDiagramCode } from "@/lib/utils/url.utils";
 import { Box, Fab, Tooltip } from "@mui/material";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { compressToBase64 } from "@/lib/utils/compression.utils";
+import {
+	compressToBase64,
+	decompressFromBase64,
+} from "@/lib/utils/compression.utils";
 
 interface PresentationClientProps {
 	encodedDiagram?: string;
@@ -20,16 +22,18 @@ export default function PresentationClient({
 	const [code, setCode] = useState<string>("");
 
 	useEffect(() => {
-		const decoded = decodeDiagramCode(encodedDiagram);
-		setCode(decoded);
+		if (encodedDiagram) {
+			const decoded = decompressFromBase64(encodedDiagram);
+			setCode(decoded);
+		}
 	}, [encodedDiagram]);
 
 	const backHref = useMemo(() => {
 		if (encodedDiagram) {
-			return `/?diagram=${encodeURIComponent(encodedDiagram)}`;
+			return `/?diagram=${compressToBase64(encodedDiagram)}`;
 		}
 		if (code) {
-			return `/?diagram=${encodeURIComponent(compressToBase64(code))}`;
+			return `/?diagram=${compressToBase64(code)}`;
 		}
 		return "/";
 	}, [encodedDiagram, code]);

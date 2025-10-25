@@ -23,25 +23,3 @@ export function retrieveDiagramCodeFromUrl(): string {
 	if (!encoded) return "";
 	return decompressFromBase64(encoded);
 }
-
-/**
- * Decodes Mermaid code from a provided encoded `diagram` query value.
- * Client-safe only (relies on browser base64 helpers via decodeMermaid).
- *
- * @param encoded Encoded diagram query value
- * @returns Decoded Mermaid code or empty string
- */
-export function decodeDiagramCode(encoded: string | null | undefined): string {
-	if (!encoded) return "";
-	const trimmed = encoded.trim();
-	if (!trimmed) return "";
-	let normalised = trimmed
-		.replace(/ /g, "+")
-		.replace(/-/g, "+")
-		.replace(/_/g, "/");
-	const padding = normalised.length % 4;
-	if (padding > 0) {
-		normalised = normalised.padEnd(normalised.length + (4 - padding), "=");
-	}
-	return decompressFromBase64(normalised);
-}
