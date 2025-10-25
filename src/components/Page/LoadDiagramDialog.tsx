@@ -1,4 +1,4 @@
-import type { SavedDiagram } from "@/lib/utils/local-storage/diagrams.storage";
+import type { SavedDiagram } from "@/lib/indexed-db/diagrams.storage";
 import {
 	Button,
 	Dialog,

@@ -10,7 +10,7 @@ import {
 import { Check, FolderPlus } from "lucide-react";
 
 import type { DiagramTemplate } from "@/lib/templates";
-import type { TemplateCollection } from "@/lib/utils/local-storage/templates.storage";
+import type { TemplateCollection } from "@/lib/indexed-db/templates.storage";
 
 interface TemplateCollectionMenuProps {
 	anchorEl: HTMLElement | null;

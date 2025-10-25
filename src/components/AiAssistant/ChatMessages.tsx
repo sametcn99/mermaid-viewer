@@ -11,8 +11,11 @@ import {
 	Typography,
 } from "@mui/material";
 import { RotateCcw, Sparkles, User } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { getRawItem, setRawItem } from "@/lib/indexed-db";
 import TypingText from "./TypingText";
+
+const LAST_AI_MESSAGE_KEY = "lastAiMessageId";
 
 interface ChatMessagesProps {
 	messages: ChatMessage[];
@@ -30,13 +33,40 @@ export default function ChatMessages({
 	onSuggestionClick,
 }: ChatMessagesProps) {
 	const messagesEndRef = useRef<HTMLDivElement>(null);
-	const [lastAiMessageId, setLastAiMessageId] = useState<string | null>(() => {
-		// Initialize from localStorage to preserve across mounts
-		if (typeof window !== "undefined") {
-			return localStorage.getItem("lastAiMessageId");
-		}
-		return null;
-	});
+	const [lastAiMessageId, setLastAiMessageId] = useState<string | null>(null);
+	const [isLastAiMessageIdLoaded, setIsLastAiMessageIdLoaded] = useState(false);
+
+	const persistLastAiMessageId = useCallback((id: string) => {
+		setLastAiMessageId(id);
+		void setRawItem(LAST_AI_MESSAGE_KEY, id).catch((error) => {
+			console.error("Failed to store last AI message id:", error);
+		});
+	}, []);
+
+	useEffect(() => {
+		let isCancelled = false;
+
+		const loadStoredLastAiMessageId = async () => {
+			try {
+				const storedValue = await getRawItem(LAST_AI_MESSAGE_KEY);
+				if (!isCancelled) {
+					setLastAiMessageId(storedValue);
+				}
+			} catch (error) {
+				console.error("Failed to read last AI message id:", error);
+			} finally {
+				if (!isCancelled) {
+					setIsLastAiMessageIdLoaded(true);
+				}
+			}
+		};
+
+		void loadStoredLastAiMessageId();
+
+		return () => {
+			isCancelled = true;
+		};
+	}, []);
 
 	// Compute the newest assistant message id synchronously from the messages array.
 	// This lets us decide during the first render whether the newest AI message
@@ -47,64 +77,82 @@ export default function ChatMessages({
 		return aiMessages[aiMessages.length - 1].id;
 	})();
 
-	// Initialize lastAiMessageId on mount if not set
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Only run on mount
 	useEffect(() => {
-		// On first mount, if we don't have a stored lastAiMessageId, set it to the
-		// current newest assistant message so older messages don't animate.
-		if (!lastAiMessageId && messages.length > 0) {
-			const aiMessages = messages.filter((m) => m.role === "assistant");
-			if (aiMessages.length > 0) {
-				const newestAiMessage = aiMessages[aiMessages.length - 1];
-				setLastAiMessageId(newestAiMessage.id);
-				localStorage.setItem("lastAiMessageId", newestAiMessage.id);
-			}
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+		if (!isLastAiMessageIdLoaded) return;
+		if (lastAiMessageId) return;
+		if (messages.length === 0) return;
+
+		const aiMessages = messages.filter((m) => m.role === "assistant");
+		if (aiMessages.length === 0) return;
+
+		const newestAiMessage = aiMessages[aiMessages.length - 1];
+		persistLastAiMessageId(newestAiMessage.id);
+	}, [
+		isLastAiMessageIdLoaded,
+		lastAiMessageId,
+		messages,
+		persistLastAiMessageId,
+	]);
 
 	// Scroll to bottom on mount and when messages change
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Auto-scroll on new messages and mount
 	useEffect(() => {
-		// Use setTimeout to ensure DOM is ready
-		setTimeout(() => {
+		const scrollTimeout = window.setTimeout(() => {
 			messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 		}, 100);
 
-		// When messages length changes and a new assistant message appears, wait until
-		// the typing animation completes (we set a localStorage flag `typing-completed-<id>`)
-		// before updating the stored lastAiMessageId. This avoids flipping the stored
-		// id too early and preventing the animation from running.
 		if (
-			derivedNewestAiMessageId &&
-			derivedNewestAiMessageId !== lastAiMessageId
+			!isLastAiMessageIdLoaded ||
+			!derivedNewestAiMessageId ||
+			derivedNewestAiMessageId === lastAiMessageId
 		) {
-			const storageKey = `typing-completed-${derivedNewestAiMessageId}`;
-
-			// If already completed (unlikely), update immediately
-			if (
-				typeof window !== "undefined" &&
-				localStorage.getItem(storageKey) === "true"
-			) {
-				setLastAiMessageId(derivedNewestAiMessageId);
-				localStorage.setItem("lastAiMessageId", derivedNewestAiMessageId);
-			} else {
-				// Otherwise poll briefly to detect when the typing animation finishes.
-				const interval = setInterval(() => {
-					if (
-						typeof window !== "undefined" &&
-						localStorage.getItem(storageKey) === "true"
-					) {
-						setLastAiMessageId(derivedNewestAiMessageId);
-						localStorage.setItem("lastAiMessageId", derivedNewestAiMessageId);
-						clearInterval(interval);
-					}
-				}, 100);
-				// Stop polling after a reasonable timeout (10s)
-				setTimeout(() => clearInterval(interval), 10000);
-			}
+			return () => {
+				window.clearTimeout(scrollTimeout);
+			};
 		}
-	}, [messages.length]); // Only depend on message count, not entire messages array
+
+		let isCancelled = false;
+		const storageKey = `typing-completed-${derivedNewestAiMessageId}`;
+
+		const checkTypingCompletion = async () => {
+			try {
+				const storedFlag = await getRawItem(storageKey);
+				if (!isCancelled && storedFlag === "true") {
+					persistLastAiMessageId(derivedNewestAiMessageId);
+					return true;
+				}
+			} catch (error) {
+				console.error("Failed to read typing completion flag:", error);
+			}
+			return false;
+		};
+
+		void checkTypingCompletion();
+
+		const interval = window.setInterval(() => {
+			void checkTypingCompletion().then((completed) => {
+				if (completed) {
+					window.clearInterval(interval);
+					window.clearTimeout(timeoutId);
+				}
+			});
+		}, 100);
+
+		const timeoutId = window.setTimeout(() => {
+			window.clearInterval(interval);
+		}, 10000);
+
+		return () => {
+			isCancelled = true;
+			window.clearInterval(interval);
+			window.clearTimeout(timeoutId);
+			window.clearTimeout(scrollTimeout);
+		};
+	}, [
+		derivedNewestAiMessageId,
+		lastAiMessageId,
+		isLastAiMessageIdLoaded,
+		persistLastAiMessageId,
+	]);
 
 	// Scroll to bottom when loading state changes
 	useEffect(() => {
@@ -212,6 +260,7 @@ export default function ChatMessages({
 					const shouldAnimateTyping =
 						!isUser &&
 						derivedNewestAiMessageId !== null &&
+						isLastAiMessageIdLoaded &&
 						derivedNewestAiMessageId !== lastAiMessageId &&
 						message.id === derivedNewestAiMessageId;
 

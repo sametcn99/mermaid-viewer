@@ -1,5 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
+import { getRawItem, setRawItem } from "@/lib/indexed-db";
 
 export default function TypingText({
 	content,
@@ -10,21 +11,41 @@ export default function TypingText({
 	isComplete: boolean;
 	messageId: string;
 }) {
-	// Check localStorage to see if this message has already been animated
 	const storageKey = `typing-completed-${messageId}`;
-	const hasBeenAnimated =
-		typeof window !== "undefined" &&
-		localStorage.getItem(storageKey) === "true";
 
+	const [hasBeenAnimated, setHasBeenAnimated] = useState<boolean>(isComplete);
 	const [displayText, setDisplayText] = useState(() =>
-		isComplete || hasBeenAnimated ? content : "",
+		isComplete ? content : "",
 	);
 	const [currentIndex, setCurrentIndex] = useState(() =>
-		isComplete || hasBeenAnimated ? content.length : 0,
+		isComplete ? content.length : 0,
 	);
-	const hasCompletedRef = useRef(isComplete || hasBeenAnimated);
+	const hasCompletedRef = useRef(isComplete);
 
 	const characterDelay = 15; // milliseconds per character
+
+	useEffect(() => {
+		let isCancelled = false;
+
+		if (isComplete) {
+			setHasBeenAnimated(true);
+			return;
+		}
+
+		setHasBeenAnimated(false);
+		void getRawItem(storageKey)
+			.then((value) => {
+				if (isCancelled) return;
+				setHasBeenAnimated(value === "true");
+			})
+			.catch((error) => {
+				console.error("Failed to read typing completion flag:", error);
+			});
+
+		return () => {
+			isCancelled = true;
+		};
+	}, [storageKey, isComplete]);
 
 	useEffect(() => {
 		// If already completed once, always show full content
@@ -53,9 +74,10 @@ export default function TypingText({
 		} else if (currentIndex === content.length && currentIndex > 0) {
 			// Mark as completed when animation finishes
 			hasCompletedRef.current = true;
-			if (typeof window !== "undefined") {
-				localStorage.setItem(storageKey, "true");
-			}
+			setHasBeenAnimated(true);
+			void setRawItem(storageKey, "true").catch((error) => {
+				console.error("Failed to persist typing completion flag:", error);
+			});
 		}
 	}, [content, currentIndex, isComplete, hasBeenAnimated, storageKey]);
 

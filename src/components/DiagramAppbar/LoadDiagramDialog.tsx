@@ -1,4 +1,4 @@
-import type { SavedDiagram } from "@/lib/utils/local-storage/diagrams.storage";
+import type { SavedDiagram } from "@/lib/indexed-db/diagrams.storage";
 import {
 	Button,
 	Dialog,
@@ -25,7 +25,10 @@ interface LoadDiagramDialogProps {
 	savedDiagramId?: string;
 	onLoadDiagram: (diagram: SavedDiagram) => void;
 	onNewDiagram: () => void;
-	onDeleteDiagram: (id: string, event: React.MouseEvent) => void;
+	onDeleteDiagram: (
+		id: string,
+		event: React.MouseEvent,
+	) => void | Promise<void>;
 	onClose: () => void;
 	formatTimestamp: (timestamp: number) => string;
 }

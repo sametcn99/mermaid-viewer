@@ -17,7 +17,7 @@ import {
 import type { MermaidConfig } from "mermaid";
 import type React from "react";
 import { useEffect, useState } from "react";
-import { saveMermaidConfig } from "@/lib/utils/local-storage/mermaid-config.storage";
+import { saveMermaidConfig } from "@/lib/indexed-db/mermaid-config.storage";
 
 interface DiagramSettingsProps {
 	open: boolean;

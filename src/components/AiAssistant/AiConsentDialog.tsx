@@ -13,7 +13,7 @@ import { Sparkles } from "lucide-react";
 
 interface AiConsentDialogProps {
 	open: boolean;
-	onAccept: () => void;
+	onAccept: () => void | Promise<void>;
 	onDecline: () => void;
 }
 
@@ -86,7 +86,9 @@ export default function AiConsentDialog({
 					Cancel
 				</Button>
 				<Button
-					onClick={onAccept}
+					onClick={() => {
+						void onAccept();
+					}}
 					variant="contained"
 					startIcon={<Sparkles size={18} />}
 					sx={{

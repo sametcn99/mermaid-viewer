@@ -5,7 +5,8 @@ import {
 	getAllDiagramsFromStorage,
 	type SavedDiagram,
 	updateDiagram,
-} from "@/lib/utils/local-storage/diagrams.storage";
+	getDiagramById,
+} from "@/lib/indexed-db/diagrams.storage";
 import {
 	updateBrowserUrlWithDiagramCode,
 	retrieveDiagramCodeFromUrl,
@@ -86,47 +87,49 @@ const dispatchDebouncedCode = debounce(
 	300,
 );
 
-const getCurrentDiagram = (state: RootState): SavedDiagram | undefined => {
+const getCurrentDiagram = async (
+	state: RootState,
+): Promise<SavedDiagram | undefined> => {
 	const { currentDiagramId } = state.mermaid;
 	if (!currentDiagramId) return undefined;
-	const savedDiagrams = getAllDiagramsFromStorage();
-	return savedDiagrams.find((diagram) => diagram.id === currentDiagramId);
+	return getDiagramById(currentDiagramId);
 };
 
-export const initializeMermaidState = (): AppThunk => (dispatch) => {
-	const codeFromUrl = retrieveDiagramCodeFromUrl();
+export const initializeMermaidState =
+	(): AppThunk<Promise<void>> => async (dispatch) => {
+		const codeFromUrl = retrieveDiagramCodeFromUrl();
 
-	if (codeFromUrl) {
-		dispatch(setMermaidCode(codeFromUrl));
-		dispatch(setDebouncedCode(codeFromUrl));
-		const matchedId = findMatchingDiagramId(codeFromUrl);
-		if (matchedId) {
-			dispatch(setCurrentDiagramId(matchedId));
-			dispatch(setHasUnsavedChanges(false));
+		if (codeFromUrl) {
+			dispatch(setMermaidCode(codeFromUrl));
+			dispatch(setDebouncedCode(codeFromUrl));
+			const matchedId = await findMatchingDiagramId(codeFromUrl);
+			if (matchedId) {
+				dispatch(setCurrentDiagramId(matchedId));
+				dispatch(setHasUnsavedChanges(false));
+			}
+			return;
 		}
-		return;
-	}
 
-	const savedDiagrams = getAllDiagramsFromStorage();
-	if (savedDiagrams.length > 0) {
-		dispatch(setOpenLoadDialog(true));
-		return;
-	}
+		const savedDiagrams = await getAllDiagramsFromStorage();
+		if (savedDiagrams.length > 0) {
+			dispatch(setOpenLoadDialog(true));
+			return;
+		}
 
-	dispatch(setMermaidCode(initialMermaidCode));
-	dispatch(setDebouncedCode(initialMermaidCode));
-	updateBrowserUrlWithDiagramCode(initialMermaidCode);
-};
+		dispatch(setMermaidCode(initialMermaidCode));
+		dispatch(setDebouncedCode(initialMermaidCode));
+		updateBrowserUrlWithDiagramCode(initialMermaidCode);
+	};
 
 export const updateMermaidFromEditor =
-	(value: string | undefined): AppThunk =>
-	(dispatch, getState) => {
+	(value: string | undefined): AppThunk<Promise<void>> =>
+	async (dispatch, getState) => {
 		const newCode = value || "";
 		dispatch(setMermaidCode(newCode));
 		dispatchDebouncedCode(dispatch, newCode);
 
 		const state = getState();
-		const currentDiagram = getCurrentDiagram(state);
+		const currentDiagram = await getCurrentDiagram(state);
 
 		if (currentDiagram) {
 			const hasChanged = currentDiagram.code !== newCode;
@@ -161,11 +164,11 @@ export const createNewDiagram = (): AppThunk => (dispatch) => {
 };
 
 export const saveDiagramChanges =
-	(diagramId: string | undefined): AppThunk =>
-	(dispatch, getState) => {
+	(diagramId: string | undefined): AppThunk<Promise<void>> =>
+	async (dispatch, getState) => {
 		if (!diagramId) return;
 		const { mermaidCode } = getState().mermaid;
-		const updated = updateDiagram(diagramId, { code: mermaidCode });
+		const updated = await updateDiagram(diagramId, { code: mermaidCode });
 		if (updated) {
 			dispatch(setHasUnsavedChanges(false));
 			dispatch(setAlertMessage("Diagram updated"));

@@ -13,7 +13,7 @@ interface SaveDiagramDialogProps {
 	diagramName: string;
 	setDiagramName: (name: string) => void;
 	onClose: () => void;
-	onSave: () => void;
+	onSave: () => void | Promise<void>;
 }
 
 const SaveDiagramDialog: React.FC<SaveDiagramDialogProps> = ({

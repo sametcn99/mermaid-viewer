@@ -4,7 +4,7 @@ import type { DiagramTemplate, TemplateCategory } from "@/lib/templates";
 import type {
 	CustomTemplate,
 	TemplateCollection,
-} from "@/lib/utils/local-storage/templates.storage";
+} from "@/lib/indexed-db/templates.storage";
 
 export type DialogCategory = TemplateCategory | "All" | "Collections";
 

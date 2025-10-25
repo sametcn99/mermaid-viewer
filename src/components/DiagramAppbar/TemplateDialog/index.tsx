@@ -29,7 +29,7 @@ import {
 import type {
 	CustomTemplate,
 	TemplateCollection,
-} from "@/lib/utils/local-storage/templates.storage";
+} from "@/lib/indexed-db/templates.storage";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "@/store";
 import {
@@ -128,12 +128,12 @@ export default function TemplateDialog({
 	);
 
 	useEffect(() => {
-		dispatch(refreshTemplateCollections());
+		void dispatch(refreshTemplateCollections());
 	}, [dispatch]);
 
 	useEffect(() => {
 		if (open) {
-			dispatch(refreshTemplateCollections());
+			void dispatch(refreshTemplateCollections());
 		}
 	}, [dispatch, open]);
 
@@ -267,7 +267,7 @@ export default function TemplateDialog({
 	const handleAddTemplateToCollection = useCallback(
 		(collectionId: string) => {
 			if (!templatePendingAssignment) return;
-			addTemplate(collectionId, templatePendingAssignment.id);
+			void addTemplate(collectionId, templatePendingAssignment.id);
 			handleCloseCollectionMenu();
 		},
 		[addTemplate, handleCloseCollectionMenu, templatePendingAssignment],
@@ -304,7 +304,7 @@ export default function TemplateDialog({
 
 	const handleDeleteCollection = useCallback(
 		(collectionId: string) => {
-			deleteStoredCollection(collectionId);
+			void deleteStoredCollection(collectionId);
 		},
 		[deleteStoredCollection],
 	);
@@ -317,21 +317,21 @@ export default function TemplateDialog({
 		setTemplatePendingAssignment(null);
 	}, []);
 
-	const handleCollectionDialogSubmit = useCallback(() => {
+	const handleCollectionDialogSubmit = useCallback(async () => {
 		const trimmedName = collectionNameInput.trim();
 		if (!trimmedName) return;
 
 		if (collectionDialogMode === "create") {
-			const newCollection = createCollection(trimmedName);
+			const newCollection = await createCollection(trimmedName);
 			if (newCollection && templatePendingAssignment) {
-				addTemplate(newCollection.id, templatePendingAssignment.id);
+				await addTemplate(newCollection.id, templatePendingAssignment.id);
 			}
 			handleCollectionDialogClose();
 			return;
 		}
 
 		if (collectionDialogMode === "rename" && collectionBeingEdited) {
-			renameCollection(collectionBeingEdited.id, trimmedName);
+			await renameCollection(collectionBeingEdited.id, trimmedName);
 			handleCollectionDialogClose();
 		}
 	}, [
@@ -347,14 +347,14 @@ export default function TemplateDialog({
 
 	const handleRemoveTemplateFromCollection = useCallback(
 		(collectionId: string, templateId: string) => {
-			removeTemplate(collectionId, templateId);
+			void removeTemplate(collectionId, templateId);
 		},
 		[removeTemplate],
 	);
 
 	const handleRemoveCustomTemplateFromCollection = useCallback(
 		(collectionId: string, templateId: string) => {
-			removeCustomTemplate(collectionId, templateId);
+			void removeCustomTemplate(collectionId, templateId);
 		},
 		[removeCustomTemplate],
 	);
@@ -418,7 +418,7 @@ export default function TemplateDialog({
 		setSaveCurrentNewCollectionName("");
 	}, []);
 
-	const handleSaveCurrentDiagramSubmit = useCallback(() => {
+	const handleSaveCurrentDiagramSubmit = useCallback(async () => {
 		if (!hasCurrentDiagram || !currentDiagramCode) return;
 		const trimmedName = saveCurrentName.trim();
 		if (!trimmedName) return;
@@ -428,14 +428,14 @@ export default function TemplateDialog({
 		if (saveCurrentCollectionId === NEW_COLLECTION_OPTION) {
 			const trimmedCollectionName = saveCurrentNewCollectionName.trim();
 			if (!trimmedCollectionName) return;
-			const newCollection = createCollection(trimmedCollectionName);
+			const newCollection = await createCollection(trimmedCollectionName);
 			if (!newCollection) return;
 			targetCollectionId = newCollection.id;
 			setSelectedCategory("Collections");
 			setSaveCurrentCollectionId(newCollection.id);
 		}
 
-		addCustomTemplate(targetCollectionId, {
+		await addCustomTemplate(targetCollectionId, {
 			name: trimmedName,
 			code: currentDiagramCode,
 		});

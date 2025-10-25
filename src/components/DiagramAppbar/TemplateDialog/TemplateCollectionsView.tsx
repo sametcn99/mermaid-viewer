@@ -16,7 +16,7 @@ import { FileText, FolderPlus, Pencil, Trash2, X } from "lucide-react";
 import type {
 	CustomTemplate,
 	TemplateCollection,
-} from "@/lib/utils/local-storage/templates.storage";
+} from "@/lib/indexed-db/templates.storage";
 import type { CollectionWithEntries, CollectionEntry } from "./types";
 
 interface TemplateCollectionsViewProps {

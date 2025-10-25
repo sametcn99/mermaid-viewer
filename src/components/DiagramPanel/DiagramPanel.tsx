@@ -7,7 +7,7 @@ import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import {
 	getMermaidConfig,
 	saveMermaidConfig,
-} from "@/lib/utils/local-storage/mermaid-config.storage";
+} from "@/lib/indexed-db/mermaid-config.storage";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/store";
 import CopyNotification from "./CopyNotification";
@@ -48,14 +48,8 @@ export default function DiagramPanel({
 	const [error, setError] = useState<string | null>(null);
 	const [svgContent, setSvgContent] = useState<string>("");
 	const [showCopyNotification, setShowCopyNotification] = useState(false);
-	const [mermaidConfig, setMermaidConfig] = useState<MermaidConfig>(() => {
-		// Load config from localStorage
-		const savedConfig = getMermaidConfig();
-		if (savedConfig && typeof savedConfig === "object") {
-			return savedConfig as MermaidConfig;
-		}
-		return defaultMermaidConfig;
-	});
+	const [mermaidConfig, setMermaidConfig] =
+		useState<MermaidConfig>(defaultMermaidConfig);
 	const [openSettings, setOpenSettings] = useState(false);
 	const [zoomLevel, setZoomLevel] = useState(1);
 	const [aiConfig, setAiConfig] = useState(ai?.config);
@@ -65,6 +59,17 @@ export default function DiagramPanel({
 		(state: RootState) => state.device,
 	);
 	const isMobileTouch = isTouchDevice && screen.isMobile;
+
+	// Load saved config on mount
+	useEffect(() => {
+		const loadConfig = async () => {
+			const savedConfig = await getMermaidConfig();
+			if (savedConfig && typeof savedConfig === "object") {
+				setMermaidConfig(savedConfig as MermaidConfig);
+			}
+		};
+		loadConfig();
+	}, []);
 
 	// Listen for AI config changes
 	useEffect(() => {
@@ -105,7 +110,6 @@ export default function DiagramPanel({
 		renderDiagram();
 	}, [mermaidCode, mermaidConfig]);
 
-	// Save to localStorage when config changes
 	useEffect(() => {
 		saveMermaidConfig(mermaidConfig);
 	}, [mermaidConfig]);

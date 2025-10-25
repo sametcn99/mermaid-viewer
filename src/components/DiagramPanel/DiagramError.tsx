@@ -2,7 +2,7 @@ import { Alert, Box, Button, CircularProgress } from "@mui/material";
 import { Bot } from "lucide-react";
 import type React from "react";
 import { useState, useEffect } from "react";
-import { getAiAssistantConfig } from "@/lib/utils/local-storage/ai-assistant.storage";
+import { getAiAssistantConfig } from "@/lib/indexed-db/ai-assistant.storage";
 
 interface DiagramErrorProps {
 	error: string;
@@ -27,13 +27,22 @@ const DiagramError: React.FC<DiagramErrorProps> = ({
 
 	// Listen for AI config changes
 	useEffect(() => {
-		const handleAiConfigChange = () => {
-			const config = getAiAssistantConfig();
-			setLocalAiConsentGiven(config?.consentGiven || false);
+		let isMounted = true;
+		const syncConsentFromStorage = async () => {
+			const config = await getAiAssistantConfig();
+			if (isMounted) {
+				setLocalAiConsentGiven(config?.consentGiven || false);
+			}
 		};
 
+		const handleAiConfigChange = async () => {
+			await syncConsentFromStorage();
+		};
+
+		void syncConsentFromStorage();
 		window.addEventListener("aiConfigChanged", handleAiConfigChange);
 		return () => {
+			isMounted = false;
 			window.removeEventListener("aiConfigChanged", handleAiConfigChange);
 		};
 	}, []);

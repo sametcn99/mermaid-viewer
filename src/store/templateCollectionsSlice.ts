@@ -2,7 +2,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type {
 	CustomTemplate,
 	TemplateCollection,
-} from "@/lib/utils/local-storage/templates.storage";
+} from "@/lib/indexed-db/templates.storage";
 import {
 	addTemplateToCollection,
 	addCustomTemplateToCollection,
@@ -12,7 +12,7 @@ import {
 	removeCustomTemplateFromCollection,
 	removeTemplateFromCollection,
 	renameTemplateCollection,
-} from "@/lib/utils/local-storage/templates.storage";
+} from "@/lib/indexed-db/templates.storage";
 import type { AppThunk } from "./index";
 
 export interface TemplateCollectionsState {
@@ -43,39 +43,43 @@ export const { setCollections, setInitialized } =
 
 export default templateCollectionsSlice.reducer;
 
-export const refreshTemplateCollections = (): AppThunk => (dispatch) => {
-	if (typeof window === "undefined") return;
-	const collections = getTemplateCollections();
-	dispatch(setCollections(collections));
-	dispatch(setInitialized(true));
-};
+export const refreshTemplateCollections =
+	(): AppThunk<Promise<void>> => async (dispatch) => {
+		if (typeof window === "undefined") return;
+		const collections = await getTemplateCollections();
+		dispatch(setCollections(collections));
+		dispatch(setInitialized(true));
+	};
 
 export const createTemplateCollectionThunk =
-	(name: string): AppThunk<TemplateCollection | null> =>
-	(dispatch) => {
+	(name: string): AppThunk<Promise<TemplateCollection | null>> =>
+	async (dispatch) => {
 		const trimmed = name.trim();
 		if (!trimmed) return null;
-		const collection = createTemplateCollection(trimmed);
-		dispatch(refreshTemplateCollections());
+		const collection = await createTemplateCollection(trimmed);
+		await dispatch(refreshTemplateCollections());
 		return collection;
 	};
 
 export const renameTemplateCollectionThunk =
-	(id: string, name: string): AppThunk<TemplateCollection | undefined> =>
-	(dispatch) => {
+	(
+		id: string,
+		name: string,
+	): AppThunk<Promise<TemplateCollection | undefined>> =>
+	async (dispatch) => {
 		const trimmed = name.trim();
 		if (!trimmed) return undefined;
-		const updated = renameTemplateCollection(id, trimmed);
-		dispatch(refreshTemplateCollections());
+		const updated = await renameTemplateCollection(id, trimmed);
+		await dispatch(refreshTemplateCollections());
 		return updated;
 	};
 
 export const deleteTemplateCollectionThunk =
-	(id: string): AppThunk<boolean> =>
-	(dispatch) => {
-		const result = deleteTemplateCollection(id);
+	(id: string): AppThunk<Promise<boolean>> =>
+	async (dispatch) => {
+		const result = await deleteTemplateCollection(id);
 		if (result) {
-			dispatch(refreshTemplateCollections());
+			await dispatch(refreshTemplateCollections());
 		}
 		return result;
 	};
@@ -84,10 +88,10 @@ export const addTemplateToCollectionThunk =
 	(
 		collectionId: string,
 		templateId: string,
-	): AppThunk<TemplateCollection | undefined> =>
-	(dispatch) => {
-		const updated = addTemplateToCollection(collectionId, templateId);
-		dispatch(refreshTemplateCollections());
+	): AppThunk<Promise<TemplateCollection | undefined>> =>
+	async (dispatch) => {
+		const updated = await addTemplateToCollection(collectionId, templateId);
+		await dispatch(refreshTemplateCollections());
 		return updated;
 	};
 
@@ -95,10 +99,13 @@ export const removeTemplateFromCollectionThunk =
 	(
 		collectionId: string,
 		templateId: string,
-	): AppThunk<TemplateCollection | undefined> =>
-	(dispatch) => {
-		const updated = removeTemplateFromCollection(collectionId, templateId);
-		dispatch(refreshTemplateCollections());
+	): AppThunk<Promise<TemplateCollection | undefined>> =>
+	async (dispatch) => {
+		const updated = await removeTemplateFromCollection(
+			collectionId,
+			templateId,
+		);
+		await dispatch(refreshTemplateCollections());
 		return updated;
 	};
 
@@ -106,13 +113,13 @@ export const addCustomTemplateToCollectionThunk =
 	(
 		collectionId: string,
 		template: { name: string; code: string },
-	): AppThunk<CustomTemplate | undefined> =>
-	(dispatch) => {
-		const customTemplate = addCustomTemplateToCollection(
+	): AppThunk<Promise<CustomTemplate | undefined>> =>
+	async (dispatch) => {
+		const customTemplate = await addCustomTemplateToCollection(
 			collectionId,
 			template,
 		);
-		dispatch(refreshTemplateCollections());
+		await dispatch(refreshTemplateCollections());
 		return customTemplate;
 	};
 
@@ -120,12 +127,12 @@ export const removeCustomTemplateFromCollectionThunk =
 	(
 		collectionId: string,
 		customTemplateId: string,
-	): AppThunk<TemplateCollection | undefined> =>
-	(dispatch) => {
-		const updated = removeCustomTemplateFromCollection(
+	): AppThunk<Promise<TemplateCollection | undefined>> =>
+	async (dispatch) => {
+		const updated = await removeCustomTemplateFromCollection(
 			collectionId,
 			customTemplateId,
 		);
-		dispatch(refreshTemplateCollections());
+		await dispatch(refreshTemplateCollections());
 		return updated;
 	};

@@ -5,7 +5,8 @@ import {
 	deleteDiagram,
 	getAllDiagramsFromStorage,
 	saveDiagramToStorage,
-} from "@/lib/utils/local-storage/diagrams.storage";
+} from "@/lib/indexed-db/diagrams.storage";
+import { getRawItem, setRawItem } from "@/lib/indexed-db";
 import {
 	Box,
 	IconButton,
@@ -33,7 +34,7 @@ import {
 	Check,
 } from "lucide-react";
 import type React from "react";
-import { useEffect, useMemo, useState, useId } from "react";
+import { useEffect, useMemo, useState, useId, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import GitHubButton from "./DiagramAppbar/GitHubButton";
 import Link from "next/link";
@@ -75,20 +76,39 @@ export default function AppBar() {
 	const mobileMenuId = useId();
 
 	useEffect(() => {
-		const diagrams = getAllDiagramsFromStorage();
-		setSavedDiagrams(diagrams);
+		let isMounted = true;
+		const loadData = async () => {
+			const diagrams = await getAllDiagramsFromStorage();
+			if (isMounted) {
+				setSavedDiagrams(diagrams);
+			}
 
-		const hasSeenWelcome = localStorage.getItem("hasSeenWelcome");
-		if (!hasSeenWelcome) {
-			setOpenHowToUse(true);
-			localStorage.setItem("hasSeenWelcome", "true");
-		}
+			const hasSeenWelcome = await getRawItem("mermaid-viewer-hasSeenWelcome");
+			if (!hasSeenWelcome && isMounted) {
+				setOpenHowToUse(true);
+				await setRawItem("mermaid-viewer-hasSeenWelcome", "true");
+			}
+		};
+		loadData();
+
+		const handleDiagramsChange = async () => {
+			const diagrams = await getAllDiagramsFromStorage();
+			if (isMounted) {
+				setSavedDiagrams(diagrams);
+			}
+		};
+
+		window.addEventListener("diagramsChanged", handleDiagramsChange);
+		return () => {
+			isMounted = false;
+			window.removeEventListener("diagramsChanged", handleDiagramsChange);
+		};
 	}, []);
 
-	const refreshSavedDiagrams = () => {
-		const diagrams = getAllDiagramsFromStorage();
+	const refreshSavedDiagrams = useCallback(async () => {
+		const diagrams = await getAllDiagramsFromStorage();
 		setSavedDiagrams(diagrams);
-	};
+	}, []);
 
 	const handleSave = () => {
 		if (currentDiagramId) {
@@ -100,20 +120,23 @@ export default function AppBar() {
 		setDiagramName(`Untitled Diagram ${savedDiagrams.length + 1}`);
 	};
 
-	const handleSaveSubmit = () => {
-		const diagram = saveDiagramToStorage(diagramName, mermaidCode);
-		refreshSavedDiagrams();
+	const handleSaveSubmit = useCallback(async () => {
+		const diagram = await saveDiagramToStorage(diagramName, mermaidCode);
+		await refreshSavedDiagrams();
 		setOpenDialog(false);
 		dispatch(setCustomCurrentDiagramId(diagram.id));
 		dispatch(setCustomUnsavedChanges(false));
 		dispatch(setCustomAlertMessage("Diagram saved"));
-	};
+	}, [diagramName, mermaidCode, dispatch, refreshSavedDiagrams]);
 
-	const handleDeleteDiagram = (id: string, event: React.MouseEvent) => {
-		event.stopPropagation();
-		deleteDiagram(id);
-		refreshSavedDiagrams();
-	};
+	const handleDeleteDiagram = useCallback(
+		async (id: string, event: React.MouseEvent) => {
+			event.stopPropagation();
+			await deleteDiagram(id);
+			await refreshSavedDiagrams();
+		},
+		[refreshSavedDiagrams],
+	);
 
 	const formatTimestamp = (timestamp: number) =>
 		new Date(timestamp).toLocaleString();

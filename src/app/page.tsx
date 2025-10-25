@@ -7,8 +7,8 @@ import ResizablePanels from "@/components/Home/ResizablePanels";
 import {
 	getAllDiagramsFromStorage,
 	type SavedDiagram,
-} from "@/lib/utils/local-storage/diagrams.storage";
-import { getAiAssistantConfig } from "@/lib/utils/local-storage/ai-assistant.storage";
+} from "@/lib/indexed-db/diagrams.storage";
+import { getAiAssistantConfig } from "@/lib/indexed-db/ai-assistant.storage";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import type { AiAssistantConfig } from "@/types/ai-assistant.types";
 import { useCallback, useEffect, useState } from "react";
@@ -40,6 +40,7 @@ export default function Home() {
 	const [aiConfig, setAiConfig] = useState<AiAssistantConfig>({
 		consentGiven: false,
 	});
+	const [savedDiagrams, setSavedDiagrams] = useState<SavedDiagram[]>([]);
 
 	useEffect(() => {
 		dispatch(initializeMermaidState());
@@ -91,23 +92,52 @@ export default function Home() {
 		dispatch(dismissMermaidAlert());
 	}, [dispatch]);
 
+	useEffect(() => {
+		let isMounted = true;
+		const loadDiagrams = async () => {
+			const diagrams = await getAllDiagramsFromStorage();
+			if (isMounted) {
+				setSavedDiagrams(diagrams);
+			}
+		};
+		loadDiagrams();
+
+		const handleDiagramsChange = async () => {
+			const diagrams = await getAllDiagramsFromStorage();
+			if (isMounted) {
+				setSavedDiagrams(diagrams);
+			}
+		};
+
+		window.addEventListener("diagramsChanged", handleDiagramsChange);
+		return () => {
+			isMounted = false;
+			window.removeEventListener("diagramsChanged", handleDiagramsChange);
+		};
+	}, []);
+
 	// Load AI config on mount and listen for changes
 	useEffect(() => {
-		const savedConfig = getAiAssistantConfig();
-		if (savedConfig) {
-			setAiConfig(savedConfig);
-		}
+		let isMounted = true;
+		const loadConfig = async () => {
+			const savedConfig = await getAiAssistantConfig();
+			if (savedConfig && isMounted) {
+				setAiConfig(savedConfig);
+			}
+		};
+		loadConfig();
 
 		// Listen for AI config changes
-		const handleAiConfigChange = () => {
-			const updatedConfig = getAiAssistantConfig();
-			if (updatedConfig) {
+		const handleAiConfigChange = async () => {
+			const updatedConfig = await getAiAssistantConfig();
+			if (updatedConfig && isMounted) {
 				setAiConfig(updatedConfig);
 			}
 		};
 
 		window.addEventListener("aiConfigChanged", handleAiConfigChange);
 		return () => {
+			isMounted = false;
 			window.removeEventListener("aiConfigChanged", handleAiConfigChange);
 		};
 	}, []);
@@ -124,7 +154,7 @@ export default function Home() {
 				const fixMessage = `I'm getting this error in my Mermaid diagram. Please fix the error and return only the corrected Mermaid code without any explanation:\n\nError: ${errorMessage}\n\nCurrent code:\n\`\`\`mermaid\n${code}\n\`\`\`\n\nReturn only the fixed Mermaid code.`;
 
 				// Get the AI config
-				const aiConfig = getAiAssistantConfig();
+				const aiConfig = await getAiAssistantConfig();
 
 				// Send a direct request to the API
 				const response = await fetch("/api/gemini", {
@@ -203,7 +233,7 @@ export default function Home() {
 				onClose={handleCloseLoadDialog}
 				onLoadDiagram={handleLoadDiagram}
 				onNewDiagram={handleNewDiagram}
-				diagrams={getAllDiagramsFromStorage()}
+				diagrams={savedDiagrams}
 			/>
 			<AlertSnackbar
 				open={!!alertMessage}

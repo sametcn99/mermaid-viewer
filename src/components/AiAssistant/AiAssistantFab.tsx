@@ -4,7 +4,7 @@ import type { AiAssistantConfig } from "@/types/ai-assistant.types";
 import {
 	getAiAssistantConfig,
 	saveAiAssistantConfig,
-} from "@/lib/utils/local-storage/ai-assistant.storage";
+} from "@/lib/indexed-db/ai-assistant.storage";
 import { Fab, Tooltip } from "@mui/material";
 import { Sparkles } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
@@ -29,10 +29,17 @@ export default function AiAssistantFab({
 
 	// Load config on mount
 	useEffect(() => {
-		const savedConfig = getAiAssistantConfig();
-		if (savedConfig) {
-			setConfig(savedConfig);
-		}
+		let isMounted = true;
+		const loadConfig = async () => {
+			const savedConfig = await getAiAssistantConfig();
+			if (isMounted && savedConfig) {
+				setConfig(savedConfig);
+			}
+		};
+		void loadConfig();
+		return () => {
+			isMounted = false;
+		};
 	}, []);
 
 	// Listen for open AI assistant events
@@ -61,13 +68,17 @@ export default function AiAssistantFab({
 		}
 	}, [config.consentGiven]);
 
-	const handleAcceptConsent = useCallback(() => {
+	const handleAcceptConsent = useCallback(async () => {
 		const newConfig: AiAssistantConfig = {
 			consentGiven: true,
 			lastConsentDate: Date.now(),
 		};
 		setConfig(newConfig);
-		saveAiAssistantConfig(newConfig);
+		try {
+			await saveAiAssistantConfig(newConfig);
+		} catch (error) {
+			console.error("Failed to persist AI consent config:", error);
+		}
 		// Notify other components about the config change
 		window.dispatchEvent(new CustomEvent("aiConfigChanged"));
 		setShowConsentDialog(false);
@@ -92,12 +103,19 @@ export default function AiAssistantFab({
 		setChatMinimized(false);
 	}, []);
 
-	const handleUpdateConfig = useCallback((newConfig: AiAssistantConfig) => {
-		setConfig(newConfig);
-		saveAiAssistantConfig(newConfig);
-		// Notify other components about the config change
-		window.dispatchEvent(new CustomEvent("aiConfigChanged"));
-	}, []);
+	const handleUpdateConfig = useCallback(
+		async (newConfig: AiAssistantConfig) => {
+			setConfig(newConfig);
+			try {
+				await saveAiAssistantConfig(newConfig);
+			} catch (error) {
+				console.error("Failed to persist AI assistant config:", error);
+			}
+			// Notify other components about the config change
+			window.dispatchEvent(new CustomEvent("aiConfigChanged"));
+		},
+		[],
+	);
 
 	return (
 		<>

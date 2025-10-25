@@ -40,6 +40,7 @@
 		"start": "next start",
 		"lint": "biome lint --write",
 		"format": "biome format --write",
+		"type-check": "tsc --noEmit",
 		"test": "vitest run"
 	},
 	"dependencies": {
@@ -56,6 +57,7 @@
 		"@mui/material": "^7.3.4",
 		"@mui/material-nextjs": "^7.3.3",
 		"@reduxjs/toolkit": "^2.9.2",
+		"idb": "^8.0.3",
 		"lodash.debounce": "^4.0.8",
 		"lucide-react": "^0.548.0",
 		"mermaid": "^11.12.0",

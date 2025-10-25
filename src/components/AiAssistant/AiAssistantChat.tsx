@@ -10,8 +10,9 @@ import {
 	clearAiChatHistory,
 	clearDiagramSnapshots,
 	getAiChatHistory,
+	getDiagramSnapshots,
 	saveDiagramSnapshots,
-} from "@/lib/utils/local-storage/ai-assistant.storage";
+} from "@/lib/indexed-db/ai-assistant.storage";
 import {
 	Alert,
 	Box,
@@ -36,7 +37,7 @@ interface AiAssistantChatProps {
 	onMinimize: () => void;
 	onMaximize: () => void;
 	onUpdateDiagram: (code: string) => void;
-	onUpdateConfig: (config: AiAssistantConfig) => void;
+	onUpdateConfig: (config: AiAssistantConfig) => void | Promise<void>;
 }
 
 export default function AiAssistantChat({
@@ -57,12 +58,28 @@ export default function AiAssistantChat({
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	// Load chat history on mount
+	// Load chat history and snapshots on mount
 	useEffect(() => {
-		const history = getAiChatHistory();
-		if (history) {
-			setMessages(history.messages);
-		}
+		let isMounted = true;
+		const loadHistory = async () => {
+			const history = await getAiChatHistory();
+			if (isMounted && history) {
+				setMessages(history.messages);
+			}
+		};
+		const loadSnapshots = async () => {
+			const storedSnapshots = await getDiagramSnapshots();
+			if (isMounted && storedSnapshots.length > 0) {
+				setSnapshots(storedSnapshots);
+			}
+		};
+
+		void loadHistory();
+		void loadSnapshots();
+
+		return () => {
+			isMounted = false;
+		};
 	}, []);
 
 	const handleSendMessage = useCallback(async () => {
@@ -76,12 +93,13 @@ export default function AiAssistantChat({
 		};
 
 		setMessages((prev) => [...prev, userMessage]);
-		addMessageToAiChatHistory(userMessage);
 		setInputValue("");
 		setLoading(true);
 		setError(null);
 
 		try {
+			await addMessageToAiChatHistory(userMessage);
+
 			const response = await fetch("/api/gemini", {
 				method: "POST",
 				headers: {
@@ -117,7 +135,7 @@ export default function AiAssistantChat({
 			};
 
 			setMessages((prev) => [...prev, assistantMessage]);
-			addMessageToAiChatHistory(assistantMessage);
+			await addMessageToAiChatHistory(assistantMessage);
 
 			// If AI provided mermaid code, create snapshot and update diagram
 			if (data.mermaidCode) {
@@ -129,7 +147,7 @@ export default function AiAssistantChat({
 
 				const newSnapshots = [...snapshots, snapshot];
 				setSnapshots(newSnapshots);
-				saveDiagramSnapshots(newSnapshots);
+				await saveDiagramSnapshots(newSnapshots);
 
 				// Auto-update diagram
 				onUpdateDiagram(data.mermaidCode);
@@ -159,13 +177,13 @@ export default function AiAssistantChat({
 	);
 
 	const handleSaveApiKey = useCallback(
-		(apiKey: string, model: string) => {
+		async (apiKey: string, model: string) => {
 			const newConfig = {
 				...config,
 				userApiKey: apiKey,
 				selectedModel: model,
 			};
-			onUpdateConfig(newConfig);
+			await onUpdateConfig(newConfig);
 			// Notify other components about the config change
 			window.dispatchEvent(new CustomEvent("aiConfigChanged"));
 			setApiKeyDialogOpen(false);
@@ -200,12 +218,12 @@ export default function AiAssistantChat({
 		[],
 	);
 
-	const handleClearHistory = useCallback(() => {
+	const handleClearHistory = useCallback(async () => {
 		if (confirm("Are you sure you want to clear all chat history?")) {
 			setMessages([]);
 			setSnapshots([]);
-			clearAiChatHistory();
-			clearDiagramSnapshots();
+			await clearAiChatHistory();
+			await clearDiagramSnapshots();
 		}
 	}, []);
 

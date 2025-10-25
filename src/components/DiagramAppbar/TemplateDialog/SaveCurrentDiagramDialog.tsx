@@ -15,7 +15,7 @@ import {
 	TextField,
 } from "@mui/material";
 
-import type { TemplateCollection } from "@/lib/utils/local-storage/templates.storage";
+import type { TemplateCollection } from "@/lib/indexed-db/templates.storage";
 import { NEW_COLLECTION_OPTION } from "./constants";
 
 interface SaveCurrentDiagramDialogProps {
@@ -28,7 +28,7 @@ interface SaveCurrentDiagramDialogProps {
 	onNewCollectionNameChange: (value: string) => void;
 	collections: TemplateCollection[];
 	onClose: () => void;
-	onSubmit: () => void;
+	onSubmit: () => void | Promise<void>;
 	canSubmit: boolean;
 }
 
@@ -93,7 +93,13 @@ export function SaveCurrentDiagramDialog({
 			</DialogContent>
 			<DialogActions>
 				<Button onClick={onClose}>Cancel</Button>
-				<Button variant="contained" onClick={onSubmit} disabled={!canSubmit}>
+				<Button
+					variant="contained"
+					onClick={() => {
+						void onSubmit();
+					}}
+					disabled={!canSubmit}
+				>
 					Save
 				</Button>
 			</DialogActions>

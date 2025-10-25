@@ -44,7 +44,7 @@
   - **📱 Momentum panning:** Smooth scrolling with velocity-based movement
 - **🔍 Smart Template Search:** Filter and search through templates by category, name, or tags
 - **💾 Auto-Save:** Your work is automatically saved in browser storage
-- **🎨 Persistent Settings:** Diagram configuration (theme, colors, fonts) saved to localStorage
+- **🎨 Persistent Settings:** Diagram configuration (theme, colors, fonts) saved to indexed-db
 - **📋 One-Click Copy:** Copy diagrams as SVG or share links instantly
 - **🔄 Real-time Validation:** Immediate feedback on syntax errors
 - **📁 Personal Collections:** Organize favorite templates and store custom snippets by saving the current diagram directly into reusable, local-only collections

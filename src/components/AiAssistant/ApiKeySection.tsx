@@ -19,7 +19,7 @@ import { useId, useState } from "react";
 interface ApiKeySectionProps {
 	currentApiKey?: string;
 	currentModel?: string;
-	onSave: (apiKey: string, model: string) => void;
+	onSave: (apiKey: string, model: string) => void | Promise<void>;
 	onCancel: () => void;
 	onTest?: (apiKey: string, model: string) => Promise<boolean>;
 }
@@ -70,9 +70,9 @@ export default function ApiKeySection({
 		}
 	};
 
-	const handleSave = () => {
+	const handleSave = async () => {
 		const modelToSave = isCustomModel ? customModel : model;
-		onSave(apiKey.trim(), modelToSave);
+		await onSave(apiKey.trim(), modelToSave);
 	};
 
 	return (
@@ -229,7 +229,9 @@ export default function ApiKeySection({
 				<Button
 					fullWidth
 					variant="contained"
-					onClick={handleSave}
+					onClick={() => {
+						void handleSave();
+					}}
 					disabled={!apiKey.trim() || (isCustomModel && !customModel.trim())}
 					startIcon={<Check size={18} />}
 					sx={{
