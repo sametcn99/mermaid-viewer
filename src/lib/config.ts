@@ -1,4 +1,3 @@
-// cspell:ignore sametcn
 import { z } from "zod";
 
 const DEFAULTS = Object.freeze({
