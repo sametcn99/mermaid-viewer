@@ -2,14 +2,18 @@
 
 import { Box } from "@mui/material";
 import mermaid, { type MermaidConfig } from "mermaid";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import {
 	getMermaidConfig,
 	saveMermaidConfig,
 } from "@/lib/indexed-db/mermaid-config.storage";
-import { useSelector } from "react-redux";
-import type { RootState } from "@/store";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+	refreshSavedDiagrams,
+	selectSavedDiagrams,
+} from "@/store/savedDiagramsSlice";
+import { setLoadDialogOpen } from "@/store/mermaidSlice";
 import CopyNotification from "./CopyNotification";
 import DiagramEmpty from "./DiagramEmpty";
 import DiagramError from "./DiagramError";
@@ -54,10 +58,22 @@ export default function DiagramPanel({
 	const [zoomLevel, setZoomLevel] = useState(1);
 	const [aiConfig, setAiConfig] = useState(ai?.config);
 	const resetTransformRef = useRef<(() => void) | null>(null);
+	const savedDiagramsRequestRef = useRef(false);
+	const dispatch = useAppDispatch();
+	const { isTouchDevice, screen } = useAppSelector((state) => state.device);
+	const savedDiagrams = useAppSelector(selectSavedDiagrams);
+	const hasSavedDiagrams = savedDiagrams.length > 0;
 
-	const { isTouchDevice, screen } = useSelector(
-		(state: RootState) => state.device,
-	);
+	useEffect(() => {
+		if (typeof window === "undefined") return;
+		if (savedDiagramsRequestRef.current) return;
+		savedDiagramsRequestRef.current = true;
+		void dispatch(refreshSavedDiagrams());
+	}, [dispatch]);
+
+	const handleOpenSavedDiagrams = useCallback(() => {
+		dispatch(setLoadDialogOpen(true));
+	}, [dispatch]);
 	const isMobileTouch = isTouchDevice && screen.isMobile;
 
 	// Load saved config on mount
@@ -70,8 +86,6 @@ export default function DiagramPanel({
 		};
 		loadConfig();
 	}, []);
-
-	// Listen for AI config changes
 	useEffect(() => {
 		setAiConfig(ai?.config);
 	}, [ai?.config]);
@@ -266,7 +280,12 @@ export default function DiagramPanel({
 					}}
 				</TransformWrapper>
 			)}
-			{!isLoading && !error && !svgContent && !mermaidCode && <DiagramEmpty />}
+			{!isLoading && !error && !svgContent && !mermaidCode && (
+				<DiagramEmpty
+					onOpenSavedDiagrams={handleOpenSavedDiagrams}
+					hasSavedDiagrams={hasSavedDiagrams}
+				/>
+			)}
 
 			<CopyNotification
 				open={showCopyNotification}
