@@ -26,7 +26,7 @@ interface ResizablePanelsProps {
 	instanceId?: string;
 }
 
-const DEFAULT_PANEL_SIZE = 50;
+const DEFAULT_PANEL_SIZE = 40;
 
 export default function ResizablePanels({
 	isSmallScreen,
@@ -42,7 +42,7 @@ export default function ResizablePanels({
 	const panelState = useSelector(
 		(state: RootState) => state.resizablePanels.instances[instanceId],
 	);
-	const panelSize = panelState?.panelSize ?? DEFAULT_PANEL_SIZE;
+	const editorPanelSize = panelState?.panelSize ?? DEFAULT_PANEL_SIZE;
 	const isResizing = panelState?.isResizing ?? false;
 
 	const minSize = useMemo(() => (isSmallScreen ? 0 : 10), [isSmallScreen]);
@@ -65,7 +65,7 @@ export default function ResizablePanels({
 		dispatch(
 			clampPanelSize({
 				id: instanceId,
-				value: panelSize,
+				value: editorPanelSize,
 				minSize,
 				maxSize,
 				isVertical,
@@ -75,7 +75,7 @@ export default function ResizablePanels({
 		dispatch,
 		instanceId,
 		isSmallScreen,
-		panelSize,
+		editorPanelSize,
 		minSize,
 		maxSize,
 		isVertical,
@@ -140,8 +140,7 @@ export default function ResizablePanels({
 		};
 	}, [handleMouseUp, handlePointerMove, isResizing]);
 
-	const editorPanelSize = panelSize;
-	const viewerPanelSize = 100 - editorPanelSize;
+	const diagramPanelSize = 100 - editorPanelSize;
 
 	return (
 		<Box
@@ -202,8 +201,8 @@ export default function ResizablePanels({
 			</Box>
 			<Box
 				sx={{
-					height: isSmallScreen ? `${viewerPanelSize}%` : "100%",
-					width: isSmallScreen ? "100%" : `${viewerPanelSize}%`,
+					height: isSmallScreen ? `${diagramPanelSize}%` : "100%",
+					width: isSmallScreen ? "100%" : `${diagramPanelSize}%`,
 					overflow: "hidden",
 				}}
 			>

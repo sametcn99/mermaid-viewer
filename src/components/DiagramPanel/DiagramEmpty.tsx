@@ -3,7 +3,7 @@
 import { Box, Button, Paper, Stack, Typography } from "@mui/material";
 import { FolderOpen, Grid, Pencil, HelpCircle } from "lucide-react";
 import type React from "react";
-import HowToUseDialog from "../DiagramAppbar/HowToUseDialog";
+import HowToUseDialog from "../HowToUseDialog";
 import { useState } from "react";
 
 interface DiagramEmptyProps {

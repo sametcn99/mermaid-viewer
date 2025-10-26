@@ -1,5 +1,5 @@
+import PresentationClient from "@/components/PresentationClient";
 import type { Metadata } from "next";
-import PresentationClient from "@/components/Presentation/PresentationClient";
 
 export const metadata: Metadata = {
 	title: "Presentation | Mermaid Editor",

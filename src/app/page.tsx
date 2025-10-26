@@ -1,8 +1,8 @@
 "use client";
 
 import AiAssistantFab from "@/components/AiAssistant/AiAssistantFab";
-import AlertSnackbar from "@/components/Home/AlertSnackbar";
-import ResizablePanels from "@/components/Home/ResizablePanels";
+import AlertSnackbar from "@/components/AlertSnackbar";
+import ResizablePanels from "@/components/ResizablePanels";
 import { getAiAssistantConfig } from "@/lib/indexed-db/ai-assistant.storage";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import type { AiAssistantConfig } from "@/types/ai-assistant.types";
@@ -16,7 +16,7 @@ import {
 	initializeMermaidState,
 	updateMermaidFromEditor,
 } from "@/store/mermaidSlice";
-import LoadDiagramDialog from "@/components/DiagramAppbar/LoadDiagramDialog";
+import LoadDiagramDialog from "@/components/LoadDiagramDialog";
 
 export default function Home() {
 	const theme = useTheme();

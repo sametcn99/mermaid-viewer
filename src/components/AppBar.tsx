@@ -31,12 +31,12 @@ import {
 import type React from "react";
 import { useEffect, useMemo, useState, useId, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import GitHubButton from "./DiagramAppbar/GitHubButton";
+import GitHubButton from "./GitHubButton";
 import Link from "next/link";
 import { Monitor } from "lucide-react";
-import SaveDiagramDialog from "./DiagramAppbar/SaveDiagramDialog";
-import HowToUseDialog from "./DiagramAppbar/HowToUseDialog";
-import TemplateDialog from "./DiagramAppbar/TemplateDialog";
+import SaveDiagramDialog from "./SaveDiagramDialog";
+import HowToUseDialog from "./HowToUseDialog";
+import TemplateDialog from "./TemplateDialog";
 import {
 	createNewDiagram,
 	saveDiagramChanges,
@@ -51,7 +51,7 @@ import {
 	refreshSavedDiagrams,
 	selectSavedDiagrams,
 } from "@/store/savedDiagramsSlice";
-import LoadDiagramDialog from "./DiagramAppbar/LoadDiagramDialog";
+import LoadDiagramDialog from "./LoadDiagramDialog";
 
 export default function AppBar() {
 	const theme = useTheme();
