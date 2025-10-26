@@ -1,4 +1,19 @@
 import type { SavedDiagram } from "@/lib/indexed-db/diagrams.storage";
+import { updateDiagram } from "@/lib/indexed-db/diagrams.storage";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+	deleteSavedDiagram,
+	importSavedDiagrams,
+	refreshSavedDiagrams,
+	selectSavedDiagrams,
+	type ImportedDiagramInput,
+} from "@/store/savedDiagramsSlice";
+import {
+	closeLoadDialog,
+	createNewDiagram,
+	loadDiagramFromStorage,
+	setCustomAlertMessage,
+} from "@/store/mermaidSlice";
 import {
 	compressToBase64,
 	decompressFromBase64,
@@ -27,40 +42,17 @@ import JSZip from "jszip";
 import type React from "react";
 import { useRef, useState, useEffect } from "react";
 import { Check, X, Edit } from "lucide-react";
-import { updateDiagram } from "@/lib/indexed-db/diagrams.storage";
 
-export interface ImportedDiagramData {
-	name: string;
-	code: string;
-	timestamp: number;
-}
+const LoadDiagramDialog: React.FC = () => {
+	const dispatch = useAppDispatch();
+	const savedDiagrams = useAppSelector(selectSavedDiagrams);
+	const { openLoadDialog, currentDiagramId: savedDiagramId } = useAppSelector(
+		(state) => state.mermaid,
+	);
 
-interface LoadDiagramDialogProps {
-	open: boolean;
-	savedDiagrams: SavedDiagram[];
-	savedDiagramId?: string;
-	onLoadDiagram: (diagram: SavedDiagram) => void;
-	onNewDiagram: () => void;
-	onDeleteDiagram: (
-		id: string,
-		event: React.MouseEvent,
-	) => void | Promise<void>;
-	onClose: () => void;
-	formatTimestamp: (timestamp: number) => string;
-	onImportDiagrams?: (diagrams: ImportedDiagramData[]) => Promise<void>;
-}
+	const formatTimestamp = (timestamp: number) =>
+		new Date(timestamp).toLocaleString();
 
-const LoadDiagramDialog: React.FC<LoadDiagramDialogProps> = ({
-	open,
-	savedDiagrams,
-	savedDiagramId,
-	onLoadDiagram,
-	onNewDiagram,
-	onDeleteDiagram,
-	onClose,
-	formatTimestamp,
-	onImportDiagrams,
-}) => {
 	const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 	const [diagramToDelete, setDiagramToDelete] = useState<{
 		id: string;
@@ -106,11 +98,12 @@ const LoadDiagramDialog: React.FC<LoadDiagramDialogProps> = ({
 	};
 
 	const handleConfirmDelete = (event: React.MouseEvent) => {
-		if (diagramToDelete) {
-			onDeleteDiagram(diagramToDelete.id, event);
-			setDeleteConfirmOpen(false);
-			setDiagramToDelete(null);
-		}
+		event.stopPropagation();
+		if (!diagramToDelete) return;
+		const { id } = diagramToDelete;
+		setDeleteConfirmOpen(false);
+		setDiagramToDelete(null);
+		dispatch(deleteSavedDiagram(id));
 	};
 
 	const handleCancelDelete = () => {
@@ -210,8 +203,12 @@ const LoadDiagramDialog: React.FC<LoadDiagramDialogProps> = ({
 		}
 		try {
 			setIsRenaming(true);
-			// update storage; parent should listen to `diagramsChanged` and refresh list
-			await updateDiagram(diagramId, { name: newName });
+			// update storage; refresh store state once rename completes
+			const updated = await updateDiagram(diagramId, { name: newName });
+			if (updated) {
+				dispatch(refreshSavedDiagrams());
+				dispatch(setCustomAlertMessage("Diagram renamed"));
+			}
 		} catch (err) {
 			console.error("Failed to rename diagram:", err);
 		} finally {
@@ -280,7 +277,9 @@ const LoadDiagramDialog: React.FC<LoadDiagramDialogProps> = ({
 			fileName.replace(/[^a-zA-Z0-9]/g, "diagram"),
 		);
 
-	const handleProcessZipFile = async (file: File) => {
+	const handleProcessZipFile = async (
+		file: File,
+	): Promise<ImportedDiagramInput[]> => {
 		const zip = await JSZip.loadAsync(file);
 		const metadataMap = new Map<
 			string,
@@ -317,7 +316,7 @@ const LoadDiagramDialog: React.FC<LoadDiagramDialogProps> = ({
 			}
 		}
 
-		const imported: ImportedDiagramData[] = [];
+		const imported: ImportedDiagramInput[] = [];
 		const entries = Object.values(zip.files);
 		for (const entry of entries) {
 			if (entry.dir) continue;
@@ -364,14 +363,14 @@ const LoadDiagramDialog: React.FC<LoadDiagramDialogProps> = ({
 		event: React.ChangeEvent<HTMLInputElement>,
 	) => {
 		const files = event.target.files;
-		if (!files?.length || !onImportDiagrams) {
+		if (!files?.length) {
 			event.target.value = "";
 			return;
 		}
 
 		setIsImporting(true);
 		try {
-			const imported: ImportedDiagramData[] = [];
+			const imported: ImportedDiagramInput[] = [];
 			for (const file of Array.from(files)) {
 				const extension = file.name.split(".").pop()?.toLowerCase();
 				if (extension === "zip") {
@@ -402,7 +401,7 @@ const LoadDiagramDialog: React.FC<LoadDiagramDialogProps> = ({
 			}
 
 			if (imported.length) {
-				await onImportDiagrams(imported);
+				dispatch(importSavedDiagrams(imported));
 			}
 		} finally {
 			setIsImporting(false);
@@ -411,13 +410,17 @@ const LoadDiagramDialog: React.FC<LoadDiagramDialogProps> = ({
 	};
 
 	const handleUploadClick = () => {
-		if (!onImportDiagrams) return;
 		fileInputRef.current?.click();
 	};
 
 	return (
 		<>
-			<Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+			<Dialog
+				open={openLoadDialog}
+				onClose={() => dispatch(closeLoadDialog())}
+				maxWidth="sm"
+				fullWidth
+			>
 				<DialogTitle
 					sx={{
 						display: "flex",
@@ -428,20 +431,13 @@ const LoadDiagramDialog: React.FC<LoadDiagramDialogProps> = ({
 				>
 					Saved Diagrams
 					<Box sx={{ display: "flex", gap: 1 }}>
-						<Tooltip
-							title={
-								onImportDiagrams
-									? "Upload diagrams (.mmd or .zip)"
-									: "Import disabled"
-							}
-							arrow
-						>
+						<Tooltip title="Upload diagrams (.mmd or .zip)" arrow>
 							<span>
 								<Button
 									variant="text"
 									size="small"
 									onClick={handleUploadClick}
-									disabled={!onImportDiagrams || isImporting}
+									disabled={isImporting}
 									startIcon={
 										isImporting ? (
 											<CircularProgress size={16} />
@@ -494,8 +490,8 @@ const LoadDiagramDialog: React.FC<LoadDiagramDialogProps> = ({
 									key={diagram.id}
 									onClick={() => {
 										if (!editingDiagramId) {
-											onLoadDiagram(diagram);
-											onClose();
+											dispatch(loadDiagramFromStorage(diagram));
+											dispatch(closeLoadDialog());
 										}
 									}}
 									selected={diagram.id === savedDiagramId}
@@ -601,14 +597,14 @@ const LoadDiagramDialog: React.FC<LoadDiagramDialogProps> = ({
 				<DialogActions>
 					<Button
 						onClick={() => {
-							onNewDiagram();
-							onClose();
+							dispatch(createNewDiagram());
+							dispatch(closeLoadDialog());
 						}}
 						startIcon={<Plus />}
 					>
 						New Diagram
 					</Button>
-					<Button onClick={onClose}>Close</Button>
+					<Button onClick={() => dispatch(closeLoadDialog())}>Close</Button>
 				</DialogActions>
 			</Dialog>
 

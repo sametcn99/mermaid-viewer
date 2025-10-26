@@ -13,15 +13,6 @@ import {
 } from "@/lib/utils/url.utils";
 import type { AppDispatch, AppThunk, RootState } from "./index";
 
-export const initialMermaidCode = `graph TD
-  A[Start] --> B{Is it Friday?};
-  B -- Yes --> C[Party!];
-  B -- No --> D[Code];
-  D --> E[Coffee];
-  E --> D;
-  C --> F[Sleep];
-`;
-
 export interface MermaidState {
 	mermaidCode: string;
 	debouncedCode: string;
@@ -116,9 +107,10 @@ export const initializeMermaidState =
 			return;
 		}
 
-		dispatch(setMermaidCode(initialMermaidCode));
-		dispatch(setDebouncedCode(initialMermaidCode));
-		updateBrowserUrlWithDiagramCode(initialMermaidCode);
+		// No diagram in URL and no saved diagrams — leave editor empty.
+		// Previously we automatically created/loaded an example diagram here.
+		// To respect user's request, do not auto-create a diagram on initial visit.
+		return;
 	};
 
 export const updateMermaidFromEditor =
@@ -135,7 +127,7 @@ export const updateMermaidFromEditor =
 			const hasChanged = currentDiagram.code !== newCode;
 			dispatch(setHasUnsavedChanges(hasChanged));
 		} else {
-			const changed = newCode !== initialMermaidCode;
+			const changed = newCode !== "";
 			dispatch(setHasUnsavedChanges(changed));
 		}
 	};
@@ -154,12 +146,13 @@ export const loadDiagramFromStorage =
 
 export const createNewDiagram = (): AppThunk => (dispatch) => {
 	dispatch(resetMermaidState());
-	dispatch(setMermaidCode(initialMermaidCode));
-	dispatch(setDebouncedCode(initialMermaidCode));
+	dispatch(setMermaidCode(""));
+	dispatch(setDebouncedCode(""));
 	dispatch(setCurrentDiagramId(undefined));
-	updateBrowserUrlWithDiagramCode(initialMermaidCode);
+	updateBrowserUrlWithDiagramCode("");
 	dispatch(setHasUnsavedChanges(false));
 	dispatch(setOpenLoadDialog(false));
+	dispatch(setAlertMessage(null));
 	dispatch(setAlertMessage("Created new diagram"));
 };
 
@@ -187,14 +180,10 @@ export const selectTemplateDiagram =
 		dispatch(setAlertMessage(`Template loaded: ${name}`));
 	};
 
-export const closeLoadDialog = (): AppThunk => (dispatch, getState) => {
+export const closeLoadDialog = (): AppThunk => (dispatch) => {
 	dispatch(setOpenLoadDialog(false));
-	const { currentDiagramId, mermaidCode } = getState().mermaid;
-	if (!currentDiagramId && mermaidCode === "") {
-		dispatch(setMermaidCode(initialMermaidCode));
-		dispatch(setDebouncedCode(initialMermaidCode));
-		updateBrowserUrlWithDiagramCode(initialMermaidCode);
-	}
+	// Intentionally do not auto-create a diagram when load dialog is closed.
+	// Keep the editor state as-is (which will usually be empty).
 };
 
 export const dismissMermaidAlert = (): AppThunk => (dispatch) => {

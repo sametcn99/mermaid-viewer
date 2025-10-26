@@ -2,12 +2,7 @@
 
 import AiAssistantFab from "@/components/AiAssistant/AiAssistantFab";
 import AlertSnackbar from "@/components/Home/AlertSnackbar";
-import LoadDiagramDialog from "@/components/Home/LoadDiagramDialog";
 import ResizablePanels from "@/components/Home/ResizablePanels";
-import {
-	getAllDiagramsFromStorage,
-	type SavedDiagram,
-} from "@/lib/indexed-db/diagrams.storage";
 import { getAiAssistantConfig } from "@/lib/indexed-db/ai-assistant.storage";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import type { AiAssistantConfig } from "@/types/ai-assistant.types";
@@ -17,30 +12,22 @@ import AppBar from "@/components/AppBar";
 import type { AppDispatch, RootState } from "@/store";
 import {
 	cancelMermaidDebounce,
-	closeLoadDialog,
-	createNewDiagram,
 	dismissMermaidAlert,
 	initializeMermaidState,
-	loadDiagramFromStorage,
 	updateMermaidFromEditor,
 } from "@/store/mermaidSlice";
+import LoadDiagramDialog from "@/components/DiagramAppbar/LoadDiagramDialog";
 
 export default function Home() {
 	const theme = useTheme();
 	const isDarkMode = theme.palette.mode === "dark";
 	const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 	const dispatch = useDispatch<AppDispatch>();
-	const {
-		mermaidCode,
-		debouncedCode,
-		openLoadDialog,
-		alertMessage,
-		hasUnsavedChanges,
-	} = useSelector((state: RootState) => state.mermaid);
+	const { mermaidCode, debouncedCode, alertMessage, hasUnsavedChanges } =
+		useSelector((state: RootState) => state.mermaid);
 	const [aiConfig, setAiConfig] = useState<AiAssistantConfig>({
 		consentGiven: false,
 	});
-	const [savedDiagrams, setSavedDiagrams] = useState<SavedDiagram[]>([]);
 
 	useEffect(() => {
 		dispatch(initializeMermaidState());
@@ -73,48 +60,9 @@ export default function Home() {
 		[dispatch],
 	);
 
-	const handleLoadDiagram = useCallback(
-		(diagram: SavedDiagram) => {
-			dispatch(loadDiagramFromStorage(diagram));
-		},
-		[dispatch],
-	);
-
-	const handleNewDiagram = useCallback(() => {
-		dispatch(createNewDiagram());
-	}, [dispatch]);
-
-	const handleCloseLoadDialog = useCallback(() => {
-		dispatch(closeLoadDialog());
-	}, [dispatch]);
-
 	const handleAlertClose = useCallback(() => {
 		dispatch(dismissMermaidAlert());
 	}, [dispatch]);
-
-	useEffect(() => {
-		let isMounted = true;
-		const loadDiagrams = async () => {
-			const diagrams = await getAllDiagramsFromStorage();
-			if (isMounted) {
-				setSavedDiagrams(diagrams);
-			}
-		};
-		loadDiagrams();
-
-		const handleDiagramsChange = async () => {
-			const diagrams = await getAllDiagramsFromStorage();
-			if (isMounted) {
-				setSavedDiagrams(diagrams);
-			}
-		};
-
-		window.addEventListener("diagramsChanged", handleDiagramsChange);
-		return () => {
-			isMounted = false;
-			window.removeEventListener("diagramsChanged", handleDiagramsChange);
-		};
-	}, []);
 
 	// Load AI config on mount and listen for changes
 	useEffect(() => {
@@ -228,13 +176,7 @@ export default function Home() {
 					onRequestFix: handleRequestFix,
 				}}
 			/>
-			<LoadDiagramDialog
-				open={openLoadDialog}
-				onClose={handleCloseLoadDialog}
-				onLoadDiagram={handleLoadDiagram}
-				onNewDiagram={handleNewDiagram}
-				diagrams={savedDiagrams}
-			/>
+			<LoadDiagramDialog />
 			<AlertSnackbar
 				open={!!alertMessage}
 				message={alertMessage || ""}

@@ -9,6 +9,7 @@
 - Perform impact analysis before introducing structural changes and document any architectural decisions.
 - Ensure configuration, environment variables, and secrets remain externalized and never hard-coded.
 - Provide migration notes or fallbacks whenever a change could affect downstream consumers.
+- Always create components using React functional components and hooks; avoid class components.
 
 ## Code Quality
 

@@ -54,6 +54,7 @@
 		"@fortawesome/react-fontawesome": "^3.1.0",
 		"@google/genai": "^1.27.0",
 		"@monaco-editor/react": "^4.7.0",
+		"@mui/icons-material": "^7.3.4",
 		"@mui/material": "^7.3.4",
 		"@mui/material-nextjs": "^7.3.3",
 		"@reduxjs/toolkit": "^2.9.2",

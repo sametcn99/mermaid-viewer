@@ -1,11 +1,6 @@
 "use client";
 
-import {
-	type SavedDiagram,
-	deleteDiagram,
-	getAllDiagramsFromStorage,
-	saveDiagramToStorage,
-} from "@/lib/indexed-db/diagrams.storage";
+import { saveDiagramToStorage } from "@/lib/indexed-db/diagrams.storage";
 import { getRawItem, setRawItem } from "@/lib/indexed-db";
 import {
 	Box,
@@ -35,40 +30,40 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useEffect, useMemo, useState, useId, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import GitHubButton from "./DiagramAppbar/GitHubButton";
 import Link from "next/link";
 import { Monitor } from "lucide-react";
 import SaveDiagramDialog from "./DiagramAppbar/SaveDiagramDialog";
-import LoadDiagramDialog, {
-	type ImportedDiagramData,
-} from "./DiagramAppbar/LoadDiagramDialog";
 import HowToUseDialog from "./DiagramAppbar/HowToUseDialog";
 import TemplateDialog from "./DiagramAppbar/TemplateDialog";
-import type { AppDispatch, RootState } from "@/store";
 import {
 	createNewDiagram,
-	loadDiagramFromStorage,
 	saveDiagramChanges,
 	selectTemplateDiagram,
 	setCustomAlertMessage,
 	setCustomCurrentDiagramId,
 	setCustomUnsavedChanges,
+	setLoadDialogOpen,
 } from "@/store/mermaidSlice";
 import { compressToBase64 } from "@/lib/utils/compression.utils";
+import {
+	refreshSavedDiagrams,
+	selectSavedDiagrams,
+} from "@/store/savedDiagramsSlice";
+import LoadDiagramDialog from "./DiagramAppbar/LoadDiagramDialog";
 
 export default function AppBar() {
 	const theme = useTheme();
 	const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 	const isTablet = useMediaQuery(theme.breakpoints.down("md"));
-	const dispatch = useDispatch<AppDispatch>();
-	const { mermaidCode, currentDiagramId, hasUnsavedChanges } = useSelector(
-		(state: RootState) => state.mermaid,
+	const dispatch = useAppDispatch();
+	const { mermaidCode, currentDiagramId, hasUnsavedChanges } = useAppSelector(
+		(state) => state.mermaid,
 	);
+	const savedDiagrams = useAppSelector(selectSavedDiagrams);
 
-	const [savedDiagrams, setSavedDiagrams] = useState<SavedDiagram[]>([]);
 	const [openDialog, setOpenDialog] = useState(false);
-	const [openLoadDialog, setOpenLoadDialog] = useState(false);
 	const [diagramName, setDiagramName] = useState("");
 	const [openHowToUse, setOpenHowToUse] = useState(false);
 	const [openTemplateDialog, setOpenTemplateDialog] = useState(false);
@@ -80,9 +75,8 @@ export default function AppBar() {
 	useEffect(() => {
 		let isMounted = true;
 		const loadData = async () => {
-			const diagrams = await getAllDiagramsFromStorage();
-			if (isMounted) {
-				setSavedDiagrams(diagrams);
+			if (typeof window !== "undefined") {
+				void dispatch(refreshSavedDiagrams());
 			}
 
 			const hasSeenWelcome = await getRawItem("mermaid-viewer-hasSeenWelcome");
@@ -92,25 +86,27 @@ export default function AppBar() {
 			}
 		};
 		loadData();
-
-		const handleDiagramsChange = async () => {
-			const diagrams = await getAllDiagramsFromStorage();
-			if (isMounted) {
-				setSavedDiagrams(diagrams);
-			}
-		};
-
-		window.addEventListener("diagramsChanged", handleDiagramsChange);
 		return () => {
 			isMounted = false;
-			window.removeEventListener("diagramsChanged", handleDiagramsChange);
+		};
+	}, [dispatch]);
+
+	// Listen for requests from other components (e.g. DiagramEmpty) to open
+	// the TemplateDialog via a custom event 'openTemplateDialog'.
+	useEffect(() => {
+		const handler = () => setOpenTemplateDialog(true);
+		window.addEventListener("openTemplateDialog", handler as EventListener);
+		return () => {
+			window.removeEventListener(
+				"openTemplateDialog",
+				handler as EventListener,
+			);
 		};
 	}, []);
 
-	const refreshSavedDiagrams = useCallback(async () => {
-		const diagrams = await getAllDiagramsFromStorage();
-		setSavedDiagrams(diagrams);
-	}, []);
+	const refreshDiagrams = useCallback(() => {
+		void dispatch(refreshSavedDiagrams());
+	}, [dispatch]);
 
 	const handleSave = () => {
 		if (currentDiagramId) {
@@ -124,24 +120,12 @@ export default function AppBar() {
 
 	const handleSaveSubmit = useCallback(async () => {
 		const diagram = await saveDiagramToStorage(diagramName, mermaidCode);
-		await refreshSavedDiagrams();
+		refreshDiagrams();
 		setOpenDialog(false);
 		dispatch(setCustomCurrentDiagramId(diagram.id));
 		dispatch(setCustomUnsavedChanges(false));
 		dispatch(setCustomAlertMessage("Diagram saved"));
-	}, [diagramName, mermaidCode, dispatch, refreshSavedDiagrams]);
-
-	const handleDeleteDiagram = useCallback(
-		async (id: string, event: React.MouseEvent) => {
-			event.stopPropagation();
-			await deleteDiagram(id);
-			await refreshSavedDiagrams();
-		},
-		[refreshSavedDiagrams],
-	);
-
-	const formatTimestamp = (timestamp: number) =>
-		new Date(timestamp).toLocaleString();
+	}, [diagramName, mermaidCode, dispatch, refreshDiagrams]);
 
 	const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
 		setMobileMenuAnchor(event.currentTarget);
@@ -162,7 +146,7 @@ export default function AppBar() {
 	};
 
 	const handleOpenLoad = () => {
-		setOpenLoadDialog(true);
+		dispatch(setLoadDialogOpen(true));
 		handleMobileMenuClose();
 	};
 
@@ -180,40 +164,6 @@ export default function AppBar() {
 		if (!currentDiagramId) return null;
 		return savedDiagrams.find((d) => d.id === currentDiagramId)?.name ?? null;
 	}, [currentDiagramId, savedDiagrams]);
-
-	const handleLoadSavedDiagram = (diagram: SavedDiagram) => {
-		dispatch(loadDiagramFromStorage(diagram));
-		setOpenLoadDialog(false);
-	};
-
-	const handleCreateNewFromDialog = () => {
-		dispatch(createNewDiagram());
-		setOpenLoadDialog(false);
-	};
-
-	const handleImportDiagrams = useCallback(
-		async (diagrams: ImportedDiagramData[]) => {
-			try {
-				for (const diagram of diagrams) {
-					await saveDiagramToStorage(diagram.name, diagram.code, {
-						timestamp: diagram.timestamp,
-					});
-				}
-				await refreshSavedDiagrams();
-				dispatch(
-					setCustomAlertMessage(
-						diagrams.length === 1
-							? "Diagram imported"
-							: `${diagrams.length} diagrams imported`,
-					),
-				);
-			} catch (error) {
-				console.error("Failed to import diagrams:", error);
-				dispatch(setCustomAlertMessage("Import failed"));
-			}
-		},
-		[dispatch, refreshSavedDiagrams],
-	);
 
 	return (
 		<>
@@ -288,9 +238,9 @@ export default function AppBar() {
 
 							<Tooltip title="Open Saved Diagram (Ctrl+O)">
 								<IconButton
-									onClick={() => setOpenLoadDialog(true)}
 									aria-label="Open Saved Diagram"
 									size="medium"
+									onClick={handleOpenLoad}
 								>
 									<Badge badgeContent={savedDiagrams.length} color="primary">
 										<FolderOpen size={20} />
@@ -363,9 +313,9 @@ export default function AppBar() {
 
 									<Tooltip title="Open (Ctrl+O)">
 										<IconButton
-											onClick={() => setOpenLoadDialog(true)}
 											aria-label="Open Saved Diagram"
 											size="medium"
+											onClick={handleOpenLoad}
 										>
 											<Badge
 												badgeContent={savedDiagrams.length}
@@ -493,17 +443,7 @@ export default function AppBar() {
 				onSave={handleSaveSubmit}
 			/>
 
-			<LoadDiagramDialog
-				open={openLoadDialog}
-				savedDiagrams={savedDiagrams}
-				savedDiagramId={currentDiagramId}
-				onLoadDiagram={handleLoadSavedDiagram}
-				onNewDiagram={handleCreateNewFromDialog}
-				onDeleteDiagram={handleDeleteDiagram}
-				onClose={() => setOpenLoadDialog(false)}
-				formatTimestamp={formatTimestamp}
-				onImportDiagrams={handleImportDiagrams}
-			/>
+			<LoadDiagramDialog />
 
 			<HowToUseDialog
 				open={openHowToUse}
