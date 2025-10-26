@@ -33,6 +33,7 @@ import { useEffect, useMemo, useState, useId, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import GitHubButton from "./GitHubButton";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Monitor } from "lucide-react";
 import SaveDiagramDialog from "./SaveDiagramDialog";
 import HowToUseDialog from "./HowToUseDialog";
@@ -52,12 +53,14 @@ import {
 	selectSavedDiagrams,
 } from "@/store/savedDiagramsSlice";
 import LoadDiagramDialog from "./LoadDiagramDialog";
+import { useAppShortcuts } from "@/hooks/useAppShortcuts";
 
 export default function AppBar() {
 	const theme = useTheme();
 	const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 	const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 	const dispatch = useAppDispatch();
+	const router = useRouter();
 	const { mermaidCode, currentDiagramId, hasUnsavedChanges } = useAppSelector(
 		(state) => state.mermaid,
 	);
@@ -66,7 +69,7 @@ export default function AppBar() {
 	const [openDialog, setOpenDialog] = useState(false);
 	const [diagramName, setDiagramName] = useState("");
 	const [openHowToUse, setOpenHowToUse] = useState(false);
-	const [openTemplateDialog, setOpenTemplateDialog] = useState(false);
+	const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
 	const [mobileMenuAnchor, setMobileMenuAnchor] = useState<null | HTMLElement>(
 		null,
 	);
@@ -94,7 +97,7 @@ export default function AppBar() {
 	// Listen for requests from other components (e.g. DiagramEmpty) to open
 	// the TemplateDialog via a custom event 'openTemplateDialog'.
 	useEffect(() => {
-		const handler = () => setOpenTemplateDialog(true);
+		const handler = () => setIsTemplateDialogOpen(true);
 		window.addEventListener("openTemplateDialog", handler as EventListener);
 		return () => {
 			window.removeEventListener(
@@ -108,7 +111,7 @@ export default function AppBar() {
 		void dispatch(refreshSavedDiagrams());
 	}, [dispatch]);
 
-	const handleSave = () => {
+	const handleSave = useCallback(() => {
 		if (currentDiagramId) {
 			dispatch(saveDiagramChanges(currentDiagramId));
 			return;
@@ -116,7 +119,7 @@ export default function AppBar() {
 
 		setOpenDialog(true);
 		setDiagramName(`Untitled Diagram ${savedDiagrams.length + 1}`);
-	};
+	}, [currentDiagramId, dispatch, savedDiagrams.length]);
 
 	const handleSaveSubmit = useCallback(async () => {
 		const diagram = await saveDiagramToStorage(diagramName, mermaidCode);
@@ -127,43 +130,84 @@ export default function AppBar() {
 		dispatch(setCustomAlertMessage("Diagram saved"));
 	}, [diagramName, mermaidCode, dispatch, refreshDiagrams]);
 
-	const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-		setMobileMenuAnchor(event.currentTarget);
-	};
+	const handleMobileMenuOpen = useCallback(
+		(event: React.MouseEvent<HTMLElement>) => {
+			setMobileMenuAnchor(event.currentTarget);
+		},
+		[],
+	);
 
-	const handleMobileMenuClose = () => {
+	const handleMobileMenuClose = useCallback(() => {
 		setMobileMenuAnchor(null);
-	};
-
-	const handleNewDiagram = () => {
-		dispatch(createNewDiagram());
-		handleMobileMenuClose();
-	};
-
-	const handleOpenTemplates = () => {
-		setOpenTemplateDialog(true);
-		handleMobileMenuClose();
-	};
-
-	const handleOpenLoad = () => {
-		dispatch(setLoadDialogOpen(true));
-		handleMobileMenuClose();
-	};
-
-	const handleOpenSave = () => {
-		handleSave();
-		handleMobileMenuClose();
-	};
-
-	const handleOpenHelp = () => {
-		setOpenHowToUse(true);
-		handleMobileMenuClose();
-	};
+	}, []);
 
 	const currentDiagramName = useMemo(() => {
 		if (!currentDiagramId) return null;
 		return savedDiagrams.find((d) => d.id === currentDiagramId)?.name ?? null;
 	}, [currentDiagramId, savedDiagrams]);
+
+	const presentationHref = useMemo(
+		() =>
+			`/presentation?diagram=${encodeURIComponent(
+				compressToBase64(mermaidCode),
+			)}`,
+		[mermaidCode],
+	);
+
+	const createDiagram = useCallback(() => {
+		dispatch(createNewDiagram());
+	}, [dispatch]);
+
+	const showTemplateDialog = useCallback(() => {
+		setIsTemplateDialogOpen(true);
+	}, []);
+
+	const openLoadDialog = useCallback(() => {
+		dispatch(setLoadDialogOpen(true));
+	}, [dispatch]);
+
+	const showHowToUse = useCallback(() => {
+		setOpenHowToUse(true);
+	}, []);
+
+	const enterPresentation = useCallback(() => {
+		router.push(presentationHref);
+	}, [presentationHref, router]);
+
+	const shortcuts = useAppShortcuts({
+		onShortcutStart: handleMobileMenuClose,
+		onNewDiagram: createDiagram,
+		onOpenTemplates: showTemplateDialog,
+		onOpenSaved: openLoadDialog,
+		onSaveDiagram: handleSave,
+		onEnterPresentation: enterPresentation,
+		onOpenHelp: showHowToUse,
+	});
+
+	const handleNewDiagram = useCallback(() => {
+		handleMobileMenuClose();
+		createDiagram();
+	}, [createDiagram, handleMobileMenuClose]);
+
+	const handleOpenTemplates = useCallback(() => {
+		handleMobileMenuClose();
+		showTemplateDialog();
+	}, [handleMobileMenuClose, showTemplateDialog]);
+
+	const handleOpenLoad = useCallback(() => {
+		handleMobileMenuClose();
+		openLoadDialog();
+	}, [handleMobileMenuClose, openLoadDialog]);
+
+	const handleOpenSave = useCallback(() => {
+		handleMobileMenuClose();
+		handleSave();
+	}, [handleMobileMenuClose, handleSave]);
+
+	const handleOpenHelp = useCallback(() => {
+		handleMobileMenuClose();
+		showHowToUse();
+	}, [handleMobileMenuClose, showHowToUse]);
 
 	return (
 		<>
@@ -216,9 +260,9 @@ export default function AppBar() {
 
 					{!isTablet && (
 						<Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-							<Tooltip title="New Diagram (Ctrl+N)">
+							<Tooltip title={`New Diagram (${shortcuts.newDiagram})`}>
 								<IconButton
-									onClick={() => dispatch(createNewDiagram())}
+									onClick={createDiagram}
 									aria-label="New Diagram"
 									size="medium"
 								>
@@ -226,9 +270,9 @@ export default function AppBar() {
 								</IconButton>
 							</Tooltip>
 
-							<Tooltip title="Browse Templates (Ctrl+T)">
+							<Tooltip title={`Browse Templates (${shortcuts.openTemplates})`}>
 								<IconButton
-									onClick={() => setOpenTemplateDialog(true)}
+									onClick={showTemplateDialog}
 									aria-label="Browse Templates"
 									size="medium"
 								>
@@ -236,11 +280,11 @@ export default function AppBar() {
 								</IconButton>
 							</Tooltip>
 
-							<Tooltip title="Open Saved Diagram (Ctrl+O)">
+							<Tooltip title={`Open Saved Diagram (${shortcuts.openSaved})`}>
 								<IconButton
 									aria-label="Open Saved Diagram"
 									size="medium"
-									onClick={handleOpenLoad}
+									onClick={openLoadDialog}
 								>
 									<Badge badgeContent={savedDiagrams.length} color="primary">
 										<FolderOpen size={20} />
@@ -252,9 +296,9 @@ export default function AppBar() {
 								title={
 									currentDiagramId
 										? hasUnsavedChanges
-											? "Update Saved Diagram (Ctrl+S)"
+											? `Update Saved Diagram (${shortcuts.saveDiagram})`
 											: "Diagram Saved"
-										: "Save Diagram (Ctrl+S)"
+										: `Save Diagram (${shortcuts.saveDiagram})`
 								}
 							>
 								<IconButton
@@ -269,10 +313,10 @@ export default function AppBar() {
 								</IconButton>
 							</Tooltip>
 
-							<Tooltip title="Enter Presentation (P)">
+							<Tooltip title={`Enter Presentation (${shortcuts.presentation})`}>
 								<IconButton
 									component={Link}
-									href={`/presentation?diagram=${encodeURIComponent(compressToBase64(mermaidCode))}`}
+									href={presentationHref}
 									aria-label="Enter Presentation"
 									size="medium"
 								>
@@ -280,9 +324,9 @@ export default function AppBar() {
 								</IconButton>
 							</Tooltip>
 
-							<Tooltip title="How to Use (F1)">
+							<Tooltip title={`How to Use (${shortcuts.help})`}>
 								<IconButton
-									onClick={() => setOpenHowToUse(true)}
+									onClick={showHowToUse}
 									aria-label="How to Use"
 									size="medium"
 								>
@@ -300,7 +344,7 @@ export default function AppBar() {
 						<Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
 							{!isMobile && (
 								<>
-									<Tooltip title="Save (Ctrl+S)">
+									<Tooltip title={`Save (${shortcuts.saveDiagram})`}>
 										<IconButton
 											onClick={handleSave}
 											aria-label="Save Diagram"
@@ -311,11 +355,11 @@ export default function AppBar() {
 										</IconButton>
 									</Tooltip>
 
-									<Tooltip title="Open (Ctrl+O)">
+									<Tooltip title={`Open (${shortcuts.openSaved})`}>
 										<IconButton
 											aria-label="Open Saved Diagram"
 											size="medium"
-											onClick={handleOpenLoad}
+											onClick={openLoadDialog}
 										>
 											<Badge
 												badgeContent={savedDiagrams.length}
@@ -362,14 +406,20 @@ export default function AppBar() {
 					<ListItemIcon>
 						<Plus size={20} />
 					</ListItemIcon>
-					<ListItemText primary="New Diagram" secondary="Ctrl+N" />
+					<ListItemText
+						primary="New Diagram"
+						secondary={shortcuts.newDiagram}
+					/>
 				</MenuItem>
 
 				<MenuItem onClick={handleOpenTemplates}>
 					<ListItemIcon>
 						<FileText size={20} />
 					</ListItemIcon>
-					<ListItemText primary="Browse Templates" secondary="Ctrl+T" />
+					<ListItemText
+						primary="Browse Templates"
+						secondary={shortcuts.openTemplates}
+					/>
 				</MenuItem>
 
 				{isMobile && (
@@ -381,7 +431,7 @@ export default function AppBar() {
 						</ListItemIcon>
 						<ListItemText
 							primary="Open Saved"
-							secondary={`${savedDiagrams.length} saved`}
+							secondary={`${shortcuts.openSaved} • ${savedDiagrams.length} saved`}
 						/>
 					</MenuItem>
 				)}
@@ -393,7 +443,9 @@ export default function AppBar() {
 						</ListItemIcon>
 						<ListItemText
 							primary={currentDiagramId ? "Update" : "Save"}
-							secondary={hasUnsavedChanges ? "Unsaved changes" : "Ctrl+S"}
+							secondary={
+								hasUnsavedChanges ? "Unsaved changes" : shortcuts.saveDiagram
+							}
 						/>
 					</MenuItem>
 				)}
@@ -404,18 +456,21 @@ export default function AppBar() {
 					<ListItemIcon>
 						<HelpCircle size={20} />
 					</ListItemIcon>
-					<ListItemText primary="How to Use" secondary="F1" />
+					<ListItemText primary="How to Use" secondary={shortcuts.help} />
 				</MenuItem>
 
 				<MenuItem
 					component={Link}
-					href={`/presentation?diagram=${encodeURIComponent(compressToBase64(mermaidCode))}`}
+					href={presentationHref}
 					onClick={handleMobileMenuClose}
 				>
 					<ListItemIcon>
 						<Monitor size={20} />
 					</ListItemIcon>
-					<ListItemText primary="Enter Presentation" secondary="P" />
+					<ListItemText
+						primary="Enter Presentation"
+						secondary={shortcuts.presentation}
+					/>
 				</MenuItem>
 
 				<MenuItem
@@ -451,11 +506,11 @@ export default function AppBar() {
 			/>
 
 			<TemplateDialog
-				open={openTemplateDialog}
-				onClose={() => setOpenTemplateDialog(false)}
+				open={isTemplateDialogOpen}
+				onClose={() => setIsTemplateDialogOpen(false)}
 				onSelectTemplate={(code, name) => {
 					dispatch(selectTemplateDiagram({ code, name }));
-					setOpenTemplateDialog(false);
+					setIsTemplateDialogOpen(false);
 				}}
 				currentDiagramCode={mermaidCode}
 				currentDiagramName={currentDiagramName ?? undefined}

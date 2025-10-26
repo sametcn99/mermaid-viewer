@@ -1,15 +1,25 @@
 "use client";
 
 import DiagramPanel from "@/components/DiagramPanel/DiagramPanel";
+import LoadDiagramDialog from "@/components/LoadDiagramDialog";
+import TemplateDialog from "@/components/TemplateDialog";
 import { Box, Fab, Tooltip } from "@mui/material";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
 	compressToBase64,
 	decompressFromBase64,
 } from "@/lib/utils/compression.utils";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+	selectTemplateDiagram,
+	setDebouncedCode,
+	setHasUnsavedChanges,
+	setMermaidCode,
+} from "@/store/mermaidSlice";
+import { selectSavedDiagrams } from "@/store/savedDiagramsSlice";
 
 interface PresentationClientProps {
 	encodedDiagram?: string;
@@ -19,7 +29,21 @@ export default function PresentationClient({
 	encodedDiagram,
 }: PresentationClientProps) {
 	const router = useRouter();
-	const [code, setCode] = useState<string>("");
+	const dispatch = useAppDispatch();
+	const mermaidCode = useAppSelector((state) => state.mermaid.mermaidCode);
+	const currentDiagramId = useAppSelector(
+		(state) => state.mermaid.currentDiagramId,
+	);
+	const savedDiagrams = useAppSelector(selectSavedDiagrams);
+	const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
+
+	const currentDiagramName = useMemo(() => {
+		if (!currentDiagramId) return undefined;
+		return (
+			savedDiagrams.find((diagram) => diagram.id === currentDiagramId)?.name ||
+			undefined
+		);
+	}, [currentDiagramId, savedDiagrams]);
 
 	useEffect(() => {
 		if (!encodedDiagram) {
@@ -28,18 +52,51 @@ export default function PresentationClient({
 
 		try {
 			const decoded = decompressFromBase64(encodedDiagram);
-			setCode(decoded);
+			if (decoded !== mermaidCode) {
+				dispatch(setMermaidCode(decoded));
+				dispatch(setDebouncedCode(decoded));
+				dispatch(setHasUnsavedChanges(false));
+			}
 		} catch (error) {
 			console.error("Failed to decode presentation diagram", error);
-			setCode("");
+			dispatch(setMermaidCode(""));
+			dispatch(setDebouncedCode(""));
+			dispatch(setHasUnsavedChanges(false));
 		}
-	}, [encodedDiagram]);
+	}, [dispatch, encodedDiagram, mermaidCode]);
+
+	const handleTemplateDialogOpen = useCallback(() => {
+		setIsTemplateDialogOpen(true);
+	}, []);
+
+	useEffect(() => {
+		if (typeof window === "undefined") return;
+		const handler: EventListener = () => {
+			handleTemplateDialogOpen();
+		};
+		window.addEventListener("openTemplateDialog", handler);
+		return () => {
+			window.removeEventListener("openTemplateDialog", handler);
+		};
+	}, [handleTemplateDialogOpen]);
+
+	const handleTemplateDialogClose = useCallback(() => {
+		setIsTemplateDialogOpen(false);
+	}, []);
+
+	const handleTemplateSelect = useCallback(
+		(code: string, name: string) => {
+			dispatch(selectTemplateDiagram({ code, name }));
+			setIsTemplateDialogOpen(false);
+		},
+		[dispatch],
+	);
 
 	const backHref = useMemo(() => {
 		let encodedFromCode: string | undefined;
-		if (code) {
+		if (mermaidCode) {
 			try {
-				encodedFromCode = compressToBase64(code);
+				encodedFromCode = compressToBase64(mermaidCode);
 			} catch (error) {
 				console.error("Failed to encode presentation diagram", error);
 			}
@@ -48,7 +105,7 @@ export default function PresentationClient({
 		const encodedValue = encodedFromCode || encodedFallback;
 
 		return encodedValue ? `/?diagram=${encodedValue}` : "/";
-	}, [encodedDiagram, code]);
+	}, [encodedDiagram, mermaidCode]);
 
 	useEffect(() => {
 		const onKeyDown = (e: KeyboardEvent) => {
@@ -64,7 +121,7 @@ export default function PresentationClient({
 		<Box
 			sx={{ height: "100vh", width: "100vw", bgcolor: "background.default" }}
 		>
-			<DiagramPanel mermaidCode={code} hideToolbar />
+			<DiagramPanel mermaidCode={mermaidCode} hideToolbar />
 
 			<Tooltip title="Exit presentation (Esc)">
 				<Fab
@@ -84,6 +141,16 @@ export default function PresentationClient({
 					<ArrowLeft size={18} />
 				</Fab>
 			</Tooltip>
+
+			<LoadDiagramDialog />
+
+			<TemplateDialog
+				open={isTemplateDialogOpen}
+				onClose={handleTemplateDialogClose}
+				onSelectTemplate={handleTemplateSelect}
+				currentDiagramCode={mermaidCode}
+				currentDiagramName={currentDiagramName}
+			/>
 		</Box>
 	);
 }
