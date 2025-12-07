@@ -21,7 +21,7 @@ COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
 
 # Install curl for health check
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y curl adduser && rm -rf /var/lib/apt/lists/*
 
 RUN adduser --system --uid 1001 nextjs
 USER nextjs
