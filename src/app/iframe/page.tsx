@@ -64,7 +64,7 @@ export default function IframeMermaidPage() {
 		setIsRendering(true);
 		setRenderError(null);
 		setSvgContent("");
-		mermaid.initialize({ startOnLoad: false });
+		mermaid.initialize({ startOnLoad: false, suppressErrorRendering: true });
 		mermaid
 			.render("mermaid-diagram", code)
 			.then(({ svg }) => {

@@ -104,12 +104,14 @@ export default function DiagramPanel({
 
 			try {
 				// Apply current config before rendering
-				mermaid.initialize(mermaidConfig);
+				mermaid.initialize({
+					...mermaidConfig,
+					suppressErrorRendering: true,
+				});
 				const uniqueId = `mermaid-diagram-${Date.now()}`;
 				const { svg } = await mermaid.render(uniqueId, mermaidCode);
 				setSvgContent(svg);
 			} catch (err: unknown) {
-				console.error("Mermaid rendering error:", err);
 				if (err instanceof Error) {
 					setError(err.message || "Failed to render Mermaid diagram.");
 				} else {
@@ -209,10 +211,10 @@ export default function DiagramPanel({
 					ai={
 						ai
 							? {
-									consentGiven:
-										aiConfig?.consentGiven || ai.config.consentGiven,
-									onRequestConsent: ai.onRequestConsent,
-								}
+								consentGiven:
+									aiConfig?.consentGiven || ai.config.consentGiven,
+								onRequestConsent: ai.onRequestConsent,
+							}
 							: undefined
 					}
 				/>
