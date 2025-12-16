@@ -1,14 +1,14 @@
 <div align="center">
 
-# 🧜‍♀️ Mermaid Live Editor & Viewer
+# Mermaid Live Editor & Viewer
 
-**🚀 Create, edit, and share beautiful Mermaid diagrams in real-time!**
+**Create, edit, and share beautiful Mermaid diagrams in real-time!**
 
 *A powerful, modern web application that transforms your ideas into stunning diagrams with live preview and instant sharing capabilities.*
 
-[✨ **Live Demo**](https://mermaid.sametcc.me) • [🐛 **Report Bug**](https://github.com/sametcn99/mermaid-viewer/issues) • [💡 **Request Feature**](https://github.com/sametcn99/mermaid-viewer/issues) • [🏠 **GitHub Repository**](https://sametcc.me/repo/mermaid-viewer)
+[Live Demo](https://mermaid.sametcc.me) • [Report Bug](https://github.com/sametcn99/mermaid-viewer/issues) • [Request Feature](https://github.com/sametcn99/mermaid-viewer/issues) • [GitHub Repository](https://sametcc.me/repo/mermaid-viewer)
 
-## 📈 Stats
+## Stats
 
 ![GitHub stars](https://img.shields.io/github/stars/sametcn99/mermaid-viewer?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/sametcn99/mermaid-viewer?style=social)
@@ -19,66 +19,37 @@
 
 ---
 
-## ✨ Features
+## Features
 
-### 🔥 **Core Features**
-
-- **🤖 AI Assistant:** Chat with Google Gemini AI to create, modify, and fix diagrams using natural language
-- **⚡ Live Preview:** See your diagrams update instantly as you type
-- **📝 70+ Ready-Made Templates:** Comprehensive template library with 18 diagram categories
-- **📱 Responsive Split View:** Adjustable panels that work perfectly on all devices
-- **🎨 Syntax Highlighting:** Monaco Editor with intelligent code completion
-- **🚀 Fast Rendering:** Debounced updates for smooth performance
-- **📤 Quick Sharing:** Generate shareable links with URL encoding
-- **📥 Import Diagrams:** Import single `.mmd` files or a `.zip` archive exported from the app (the zip can include an optional `data.json` with metadata and compressed diagram content). Use the Upload button in the Saved Diagrams dialog to add diagrams to your local collection.
-- **⬇️ Download Diagrams:** Download the current diagram as a `.mmd` file, or export all saved diagrams as a `.zip` (the zip export includes an optional `data.json` with metadata and compressed diagram content). Use the Saved Diagrams dialog for bulk export.
-- **🌐 Iframe Embedding:** Easily embed your diagrams into any website or blog using the iframe sharing feature. Just click the share button, select 'Embed as iframe', and copy the HTML code to use anywhere.
-- **🖥️ Presentation Mode:** Distraction-free, full-viewport viewer at `/presentation` that preserves your encoded diagram in the URL, hides the toolbar, and lets you exit with Esc or the floating back button
-
-### 💎 **Advanced Features**
-
-- **🤖 AI-Powered Diagram Generation:** Generate and modify diagrams using conversational AI
-- **🔒 Privacy-First AI:** Your Gemini API key is stored locally and never sent to our servers
-- **🔍 Enhanced Zoom & Pan:** Advanced navigation with touch-optimized gestures:
-  - **🖱️ Mouse wheel:** Precise zoom control for desktop users
-  - **🤏 Pinch-to-zoom:** Natural mobile gesture support
-  - **👆 Double-tap:** Quick zoom functionality on touch devices
-  - **📱 Momentum panning:** Smooth scrolling with velocity-based movement
-- **🔍 Smart Template Search:** Filter and search through templates by category, name, or tags
-- **💾 Auto-Save:** Your work is automatically saved in browser storage
-- **🎨 Persistent Settings:** Diagram configuration (theme, colors, fonts) saved to indexed-db
-- **📋 One-Click Copy:** Copy diagrams as SVG or share links instantly
-- **🔄 Real-time Validation:** Immediate feedback on syntax errors
-- **📁 Personal Collections:** Organize favorite templates and store custom snippets by saving the current diagram directly into reusable, local-only collections
-- **📱 Mobile Touch Optimized:** Perfect experience on phones and tablets with:
-  - **👆 Enhanced Touch Targets:** All buttons sized 44px+ for easy tapping
-  - **🎯 Speed Dial Interface:** Mobile-friendly floating action button with gesture support
-  - **🤏 Pinch to Zoom:** Native mobile gesture support with momentum scrolling
-  - **📳 Haptic Feedback:** Tactile responses on supported devices
-  - **🔄 Smart Auto-Reset:** Automatic view optimization for mobile screens
-- **⌨️ Keyboard Shortcuts:** Power user shortcuts for faster workflow
+- **AI Assistant:** Chat with **Google Gemini AI** to create, modify, and fix diagrams using natural language. Your API key is stored locally for complete privacy.
+- **Live Preview:** See your diagrams update instantly as you type with our optimized, high-performance rendering engine.
+- **Rich Template Library:** Access over **70+ ready-made templates** across 18 categories to jumpstart your diagrams.
+- **Power Editor:** Built on **Monaco Editor** (VS Code), featuring intelligent syntax highlighting, code completion, and real-time error validation.
+- **Fully Component Responsive:** Adjustable split-view layout that adapts specifically for desktop, tablet, and mobile usage.
+- **Advanced Navigation:** Professional zoom & pan controls with mouse wheel support, pinch-to-zoom, and momentum panning.
+- **Auto-Save & Privacy:** Work is automatically saved to browser storage. No data is sent to servers—everything stays local.
+- **Versatile Exporting:** Download as `.mmd`, export full project `.zip` archives, or copy as SVG/PNG instantly.
+- **Smart Sharing:** Share diagrams instantly via encoded URLs without needing a backend.
+- **Iframe Embedding:** Seamlessly embed your diagrams into external websites or documentation using generated HTML.
+- **Personal Collections:** Save and organize your favorite diagrams into local collections for quick access.
+- **Presentation Mode:** A distraction-free viewer that hides the UI and supports full-screen presentation navigation.
+- **Customizable Settings:** Persistent configuration for themes, colors, and fonts saved directly to your browser.
 
 ---
 
-## 🖥️ Presentation Mode
 
-- Open a clean, full-viewport viewer with “Enter Presentation” from the AppBar (or mobile menu).
-- URL state is preserved using the `diagram` query — share or bookmark safely.
-- The diagram toolbar is hidden for focus; press Esc or use the back button to return to the editor.
 
----
+## Quick Start
 
-## �🚀 Quick Start
+### Prerequisites
 
-### 📋 Prerequisites
-
-Before you begin, ensure you have the following installed:
+Ensure you have the following installed on your system:
 
 - **Node.js** (v18.17.0 or higher)
-- **Bun** (recommended) or npm/yarn/pnpm
-- **Git** for version control
+- **Bun** (Recommended package manager) or npm/yarn/pnpm
+- **Git**
 
-### ⚡ Installation
+### Installation
 
 1. **Clone the repository**
 
@@ -89,8 +60,9 @@ Before you begin, ensure you have the following installed:
 
 2. **Install dependencies**
 
+   We recommend using Bun for the fastest installation experience.
+
    ```bash
-   # Using Bun (recommended for fastest installation)
    bun install
    ```
 
@@ -100,71 +72,46 @@ Before you begin, ensure you have the following installed:
    bun dev
    ```
 
-4. **Open your browser**
+4. **Open in Browser**
 
-   Navigate to [http://localhost:3000](http://localhost:3000) and start creating diagrams! 🎉
+   Navigate to [http://localhost:3000](http://localhost:3000) to start using the application.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-We welcome contributions from the community! Here's how you can help:
+We welcome contributions from the community! Whether you're fixing a bug, adding a feature, or improving documentation, your help is appreciated.
 
-### 🚀 **Quick Contribution Guide**
+### How to Contribute
 
-1. **🍴 Fork the Project**
-
-   ```bash
-   # Click the Fork button on GitHub
-   ```
-
-2. **🌿 Create your Feature Branch**
-
+1. **Fork the Project:** create your own copy of the repository on GitHub.
+2. **Create a Branch:** switch to a new branch for your feature or fix.
    ```bash
    git checkout -b feature/AmazingFeature
    ```
-
-3. **💻 Make your Changes**
-
+3. **Make Changes:** implement your changes and test them locally.
    ```bash
-   # Make your awesome changes
-   bun dev # Test locally
+   bun dev
    ```
-
-4. **✅ Run Tests & Linting**
-
+4. **Lint & Format:** ensure your code meets the project's standards.
    ```bash
    bun lint
    bun format
    ```
-
-5. **📝 Commit your Changes**
-
+5. **Commit:** write a clear, descriptive commit message.
    ```bash
    git commit -m 'Add some AmazingFeature'
    ```
-
-6. **🚀 Push to the Branch**
-
+6. **Push:** upload your branch to your fork.
    ```bash
    git push origin feature/AmazingFeature
    ```
-
-7. **🔄 Open a Pull Request**
-
-### 🎯 **Contribution Areas**
-
-- 🐛 **Bug Fixes:** Help us squash bugs
-- ✨ **New Features:** Add exciting new functionality  
-- 📖 **Documentation:** Improve our docs
-- 🎨 **UI/UX:** Enhance user experience
-- ⚡ **Performance:** Optimize for speed
-- 🧪 **Testing:** Add test coverage
+7. **Open a Pull Request:** submit your changes for review.
 
 ---
 
 <div align="center">
 
-⭐ **Star this repo if you found it helpful!** ⭐
+**Star this repo if you found it helpful!**
 
 </div>
