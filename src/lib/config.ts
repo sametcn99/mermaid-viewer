@@ -4,7 +4,7 @@ const DEFAULTS = Object.freeze({
 	siteUrl: "https://mermaid.sametcc.me",
 	publisherName: "sametcn99",
 	publisherWebsite: "https://sametcc.me",
-	repositoryUrl: "https://github.com/sametcn99/mermaid-viewer",
+	repositoryUrl: "https://sametcc.me/repo/mermaid-viewer",
 });
 
 const optionalEnv = z

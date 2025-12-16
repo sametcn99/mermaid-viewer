@@ -475,7 +475,7 @@ export default function AppBar() {
 
 				<MenuItem
 					component="a"
-					href="https://github.com/sametcn99/mermaid-viewer"
+					href="https://sametcc.me/repo/mermaid-viewer"
 					target="_blank"
 					rel="noopener noreferrer"
 					onClick={handleMobileMenuClose}

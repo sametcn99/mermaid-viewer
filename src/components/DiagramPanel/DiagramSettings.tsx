@@ -3,11 +3,13 @@
 import {
 	Box,
 	Button,
+	Checkbox,
 	Dialog,
 	DialogActions,
 	DialogContent,
 	DialogTitle,
 	FormControl,
+	FormControlLabel,
 	InputLabel,
 	MenuItem,
 	Select,
@@ -19,11 +21,15 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import { saveMermaidConfig } from "@/lib/indexed-db/mermaid-config.storage";
 
+export interface ExtendedMermaidConfig extends MermaidConfig {
+	useCustomColors?: boolean;
+}
+
 interface DiagramSettingsProps {
 	open: boolean;
 	onClose: () => void;
-	currentConfig: MermaidConfig;
-	onApply: (config: MermaidConfig) => void;
+	currentConfig: ExtendedMermaidConfig;
+	onApply: (config: ExtendedMermaidConfig) => void;
 }
 
 const DiagramSettings: React.FC<DiagramSettingsProps> = ({
@@ -32,7 +38,7 @@ const DiagramSettings: React.FC<DiagramSettingsProps> = ({
 	currentConfig,
 	onApply,
 }) => {
-	const [config, setConfig] = useState<MermaidConfig>(currentConfig);
+	const [config, setConfig] = useState<ExtendedMermaidConfig>(currentConfig);
 
 	useEffect(() => {
 		if (open) {
@@ -69,6 +75,15 @@ const DiagramSettings: React.FC<DiagramSettingsProps> = ({
 		});
 	};
 
+	const handleUseCustomColorsChange = (
+		event: React.ChangeEvent<HTMLInputElement>,
+	) => {
+		setConfig({
+			...config,
+			useCustomColors: event.target.checked,
+		});
+	};
+
 	const handleFontSizeChange = (event: SelectChangeEvent<string>) => {
 		setConfig({
 			...config,
@@ -95,10 +110,11 @@ const DiagramSettings: React.FC<DiagramSettingsProps> = ({
 	};
 
 	const handleReset = () => {
-		const defaultConfig: MermaidConfig = {
+		const defaultConfig: ExtendedMermaidConfig = {
 			theme: "default",
 			themeVariables: {},
 			fontFamily: undefined,
+			useCustomColors: false,
 		};
 		setConfig(defaultConfig);
 		onApply(defaultConfig);
@@ -177,8 +193,36 @@ const DiagramSettings: React.FC<DiagramSettingsProps> = ({
 
 					{/* Theme Variables */}
 					<Box>
-						<InputLabel sx={{ mb: 2 }}>Custom Colors</InputLabel>
-						<Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+						<Box
+							sx={{
+								display: "flex",
+								justifyContent: "space-between",
+								alignItems: "center",
+								mb: 2,
+							}}
+						>
+							<InputLabel sx={{ mb: 0 }}>Custom Colors</InputLabel>
+							<FormControlLabel
+								control={
+									<Checkbox
+										checked={config.useCustomColors || false}
+										onChange={handleUseCustomColorsChange}
+									/>
+								}
+								label="Use Custom Colors"
+							/>
+						</Box>
+
+						<Box
+							sx={{
+								display: "flex",
+								flexDirection: "column",
+								gap: 2,
+								opacity: config.useCustomColors ? 1 : 0.5,
+								pointerEvents: config.useCustomColors ? "auto" : "none",
+								transition: "opacity 0.2s",
+							}}
+						>
 							<Box sx={{ display: "flex", gap: 2 }}>
 								<TextField
 									fullWidth
@@ -206,9 +250,9 @@ const DiagramSettings: React.FC<DiagramSettingsProps> = ({
 									fullWidth
 									label="Background Color"
 									type="color"
-									value={config.themeVariables?.background || "#ffffff"}
+									value={config.themeVariables?.mainBkg || "#ffffff"}
 									onChange={(e) =>
-										handleThemeVariableChange("background", e.target.value)
+										handleThemeVariableChange("mainBkg", e.target.value)
 									}
 									InputLabelProps={{ shrink: true }}
 								/>
@@ -228,9 +272,9 @@ const DiagramSettings: React.FC<DiagramSettingsProps> = ({
 									fullWidth
 									label="Text Color"
 									type="color"
-									value={config.themeVariables?.text || "#333333"}
+									value={config.themeVariables?.textColor || "#333333"}
 									onChange={(e) =>
-										handleThemeVariableChange("text", e.target.value)
+										handleThemeVariableChange("textColor", e.target.value)
 									}
 									InputLabelProps={{ shrink: true }}
 								/>

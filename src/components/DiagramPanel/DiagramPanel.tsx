@@ -1,7 +1,7 @@
 "use client";
 
 import { Box } from "@mui/material";
-import mermaid, { type MermaidConfig } from "mermaid";
+import mermaid from "mermaid";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import {
@@ -18,7 +18,7 @@ import CopyNotification from "./CopyNotification";
 import DiagramEmpty from "./DiagramEmpty";
 import DiagramError from "./DiagramError";
 import DiagramLoading from "./DiagramLoading";
-import DiagramSettings from "./DiagramSettings";
+import DiagramSettings, { type ExtendedMermaidConfig } from "./DiagramSettings";
 import DiagramSVGViewer from "./DiagramSVGViewer";
 import DiagramToolbar from "./DiagramToolbar";
 import type { AiAssistantConfig } from "@/types/ai-assistant.types";
@@ -33,9 +33,10 @@ interface DiagramPanelProps {
 	};
 }
 
-const defaultMermaidConfig: MermaidConfig = {
+const defaultMermaidConfig: ExtendedMermaidConfig = {
 	startOnLoad: false,
 	theme: "default",
+	useCustomColors: false,
 };
 
 if (typeof window !== "undefined") {
@@ -53,7 +54,7 @@ export default function DiagramPanel({
 	const [svgContent, setSvgContent] = useState<string>("");
 	const [showCopyNotification, setShowCopyNotification] = useState(false);
 	const [mermaidConfig, setMermaidConfig] =
-		useState<MermaidConfig>(defaultMermaidConfig);
+		useState<ExtendedMermaidConfig>(defaultMermaidConfig);
 	const [openSettings, setOpenSettings] = useState(false);
 	const [zoomLevel, setZoomLevel] = useState(1);
 	const [aiConfig, setAiConfig] = useState(ai?.config);
@@ -81,7 +82,7 @@ export default function DiagramPanel({
 		const loadConfig = async () => {
 			const savedConfig = await getMermaidConfig();
 			if (savedConfig && typeof savedConfig === "object") {
-				setMermaidConfig(savedConfig as MermaidConfig);
+				setMermaidConfig(savedConfig as ExtendedMermaidConfig);
 			}
 		};
 		loadConfig();
@@ -104,8 +105,16 @@ export default function DiagramPanel({
 
 			try {
 				// Apply current config before rendering
+				const configToApply = { ...mermaidConfig };
+
+				// If custom colors are not enabled, remove themeVariables
+				// This ensures the selected theme takes precedence
+				if (!(mermaidConfig as ExtendedMermaidConfig).useCustomColors) {
+					delete configToApply.themeVariables;
+				}
+
 				mermaid.initialize({
-					...mermaidConfig,
+					...configToApply,
 					suppressErrorRendering: true,
 				});
 				const uniqueId = `mermaid-diagram-${Date.now()}`;
@@ -211,10 +220,10 @@ export default function DiagramPanel({
 					ai={
 						ai
 							? {
-								consentGiven:
-									aiConfig?.consentGiven || ai.config.consentGiven,
-								onRequestConsent: ai.onRequestConsent,
-							}
+									consentGiven:
+										aiConfig?.consentGiven || ai.config.consentGiven,
+									onRequestConsent: ai.onRequestConsent,
+								}
 							: undefined
 					}
 				/>
