@@ -6,7 +6,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
 	return [
 		{
-			url: baseUrl,
+			url: baseUrl[baseUrl.length - 1] === "/" ? baseUrl.slice(0, -1) : baseUrl,
 			lastModified: new Date(),
 			changeFrequency: "weekly",
 			priority: 1,

@@ -8,7 +8,7 @@ import { deleteDB, openDB } from "idb";
 import type { DBSchema, IDBPDatabase, IDBPTransaction } from "idb";
 
 const DB_NAME = "mermaid-viewer-db";
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 const STORE_NAME = "kv";
 const STORE_DIAGRAMS = "diagrams";
 const STORE_TEMPLATE_FAVORITES = "templateFavorites";
@@ -17,6 +17,7 @@ const STORE_AI_CHAT_HISTORY = "aiChatHistory";
 const STORE_AI_ASSISTANT_CONFIG = "aiAssistantConfig";
 const STORE_AI_DIAGRAM_SNAPSHOTS = "aiDiagramSnapshots";
 const STORE_MERMAID_CONFIG = "mermaidConfig";
+const STORE_THEME_SETTINGS = "themeSettings";
 
 export const STORE_NAMES = {
 	KEY_VALUE: STORE_NAME,
@@ -27,6 +28,7 @@ export const STORE_NAMES = {
 	AI_ASSISTANT_CONFIG: STORE_AI_ASSISTANT_CONFIG,
 	AI_DIAGRAM_SNAPSHOTS: STORE_AI_DIAGRAM_SNAPSHOTS,
 	MERMAID_CONFIG: STORE_MERMAID_CONFIG,
+	THEME_SETTINGS: STORE_THEME_SETTINGS,
 } as const;
 
 export type StoreName = (typeof STORE_NAMES)[keyof typeof STORE_NAMES];
@@ -109,6 +111,15 @@ interface MermaidViewerDB extends DBSchema {
 		value: {
 			id: string;
 			config: unknown;
+			updatedAt: number;
+		};
+		indexes: { byUpdatedAt: number };
+	};
+	themeSettings: {
+		key: string;
+		value: {
+			id: string;
+			settings: unknown;
 			updatedAt: number;
 		};
 		indexes: { byUpdatedAt: number };
@@ -294,6 +305,14 @@ async function openDatabase(): Promise<IDBPDatabase<MermaidViewerDB>> {
 					db,
 					upgradeTx,
 					STORE_NAMES.MERMAID_CONFIG,
+					{ keyPath: "id" },
+					[{ name: "byUpdatedAt", keyPath: "updatedAt" }],
+				);
+
+				ensureStore(
+					db,
+					upgradeTx,
+					STORE_NAMES.THEME_SETTINGS,
 					{ keyPath: "id" },
 					[{ name: "byUpdatedAt", keyPath: "updatedAt" }],
 				);

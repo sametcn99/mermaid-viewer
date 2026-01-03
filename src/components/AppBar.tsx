@@ -27,6 +27,7 @@ import {
 	FileText,
 	MenuIcon,
 	Check,
+	Palette,
 } from "lucide-react";
 import type React from "react";
 import { useEffect, useMemo, useState, useId, useCallback } from "react";
@@ -53,6 +54,7 @@ import {
 	selectSavedDiagrams,
 } from "@/store/savedDiagramsSlice";
 import LoadDiagramDialog from "./LoadDiagramDialog";
+import ThemeSettingsDialog from "./ThemeSettingsDialog";
 import { useAppShortcuts } from "@/hooks/useAppShortcuts";
 
 export default function AppBar() {
@@ -73,6 +75,7 @@ export default function AppBar() {
 	const [mobileMenuAnchor, setMobileMenuAnchor] = useState<null | HTMLElement>(
 		null,
 	);
+	const [isThemeDialogOpen, setIsThemeDialogOpen] = useState(false);
 	const mobileMenuId = useId();
 
 	useEffect(() => {
@@ -220,7 +223,7 @@ export default function AppBar() {
 								userSelect: "none",
 								fontWeight: 700,
 								fontSize: { xs: "1.1rem", sm: "1.5rem" },
-								color: "#ffffff",
+								color: "text.primary",
 								letterSpacing: "-0.02em",
 								fontFamily:
 									'"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
@@ -245,7 +248,7 @@ export default function AppBar() {
 							<Typography
 								variant="caption"
 								sx={{
-									color: "rgba(255, 255, 255, 0.7)",
+									color: "text.secondary",
 									display: "block",
 									overflow: "hidden",
 									textOverflow: "ellipsis",
@@ -331,6 +334,16 @@ export default function AppBar() {
 									size="medium"
 								>
 									<HelpCircle size={20} />
+								</IconButton>
+							</Tooltip>
+
+							<Tooltip title="Theme Settings">
+								<IconButton
+									onClick={() => setIsThemeDialogOpen(true)}
+									aria-label="Theme Settings"
+									size="medium"
+								>
+									<Palette size={20} />
 								</IconButton>
 							</Tooltip>
 
@@ -474,6 +487,18 @@ export default function AppBar() {
 				</MenuItem>
 
 				<MenuItem
+					onClick={() => {
+						handleMobileMenuClose();
+						setIsThemeDialogOpen(true);
+					}}
+				>
+					<ListItemIcon>
+						<Palette size={20} />
+					</ListItemIcon>
+					<ListItemText primary="Theme Settings" />
+				</MenuItem>
+
+				<MenuItem
 					component="a"
 					href="https://sametcc.me/repo/mermaid-viewer"
 					target="_blank"
@@ -514,6 +539,11 @@ export default function AppBar() {
 				}}
 				currentDiagramCode={mermaidCode}
 				currentDiagramName={currentDiagramName ?? undefined}
+			/>
+
+			<ThemeSettingsDialog
+				open={isThemeDialogOpen}
+				onClose={() => setIsThemeDialogOpen(false)}
 			/>
 		</>
 	);
