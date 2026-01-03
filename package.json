@@ -36,7 +36,7 @@
 	},
 	"scripts": {
 		"dev": "next dev --turbopack",
-		"build": "next build",
+		"build": "next build --webpack",
 		"start": "next start",
 		"lint": "biome lint --write",
 		"format": "biome format --write",
