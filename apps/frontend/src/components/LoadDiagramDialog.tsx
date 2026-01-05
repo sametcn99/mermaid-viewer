@@ -14,6 +14,7 @@ import {
 	loadDiagramFromStorage,
 	setCustomAlertMessage,
 } from "@/store/mermaidSlice";
+import { selectIsAuthenticated } from "@/store/authSlice";
 import {
 	compressToBase64,
 	decompressFromBase64,
@@ -49,6 +50,12 @@ const LoadDiagramDialog: React.FC = () => {
 	const { openLoadDialog, currentDiagramId: savedDiagramId } = useAppSelector(
 		(state) => state.mermaid,
 	);
+	const isAuthenticated = useAppSelector(selectIsAuthenticated);
+	useEffect(() => {
+		if (!isAuthenticated && openLoadDialog) {
+			dispatch(closeLoadDialog());
+		}
+	}, [dispatch, isAuthenticated, openLoadDialog]);
 
 	const formatTimestamp = (timestamp: number) =>
 		new Date(timestamp).toLocaleString();

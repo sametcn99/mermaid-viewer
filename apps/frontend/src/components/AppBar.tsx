@@ -162,7 +162,41 @@ export default function AppBar() {
 		await handleSyncData();
 	}, [handleSyncData]);
 
+	const handleRequireAuth = useCallback(
+		(message?: string) => {
+			if (message) {
+				dispatch(setCustomAlertMessage(message));
+			}
+			setIsLoginDialogOpen(true);
+		},
+		[dispatch],
+	);
+
+	useEffect(() => {
+		const listener = (event: Event) => {
+			const detail = (event as CustomEvent<{ message?: string }>).detail;
+			handleRequireAuth(detail?.message);
+		};
+
+		window.addEventListener(
+			"requestAuthentication",
+			listener as EventListener,
+		);
+
+		return () => {
+			window.removeEventListener(
+				"requestAuthentication",
+				listener as EventListener,
+			);
+		};
+	}, [handleRequireAuth]);
+
 	const handleSave = useCallback(() => {
+		if (!isAuthenticated) {
+			handleRequireAuth("Sign in to save diagrams.");
+			return;
+		}
+
 		if (currentDiagramId) {
 			dispatch(saveDiagramChanges(currentDiagramId));
 			return;
@@ -170,16 +204,34 @@ export default function AppBar() {
 
 		setOpenDialog(true);
 		setDiagramName(`Untitled Diagram ${savedDiagrams.length + 1}`);
-	}, [currentDiagramId, dispatch, savedDiagrams.length]);
+	}, [
+		currentDiagramId,
+		dispatch,
+		handleRequireAuth,
+		isAuthenticated,
+		savedDiagrams.length,
+	]);
 
 	const handleSaveSubmit = useCallback(async () => {
+		if (!isAuthenticated) {
+			handleRequireAuth("Sign in to save diagrams.");
+			return;
+		}
+
 		const diagram = await saveDiagramToStorage(diagramName, mermaidCode);
 		refreshDiagrams();
 		setOpenDialog(false);
 		dispatch(setCustomCurrentDiagramId(diagram.id));
 		dispatch(setCustomUnsavedChanges(false));
 		dispatch(setCustomAlertMessage("Diagram saved"));
-	}, [diagramName, mermaidCode, dispatch, refreshDiagrams]);
+	}, [
+		diagramName,
+		dispatch,
+		handleRequireAuth,
+		isAuthenticated,
+		mermaidCode,
+		refreshDiagrams,
+	]);
 
 	const handleMobileMenuOpen = useCallback(
 		(event: React.MouseEvent<HTMLElement>) => {
@@ -214,8 +266,12 @@ export default function AppBar() {
 	}, []);
 
 	const openLoadDialog = useCallback(() => {
+		if (!isAuthenticated) {
+			handleRequireAuth("Sign in to open saved diagrams.");
+			return;
+		}
 		dispatch(setLoadDialogOpen(true));
-	}, [dispatch]);
+	}, [dispatch, handleRequireAuth, isAuthenticated]);
 
 	const showHowToUse = useCallback(() => {
 		setOpenHowToUse(true);
@@ -331,17 +387,19 @@ export default function AppBar() {
 								</IconButton>
 							</Tooltip>
 
-							<Tooltip title={`Open Saved Diagram (${shortcuts.openSaved})`}>
-								<IconButton
-									aria-label="Open Saved Diagram"
-									size="medium"
-									onClick={openLoadDialog}
-								>
-									<Badge badgeContent={savedDiagrams.length} color="primary">
-										<FolderOpen size={20} />
-									</Badge>
-								</IconButton>
-							</Tooltip>
+							{isAuthenticated && (
+								<Tooltip title={`Open Saved Diagram (${shortcuts.openSaved})`}>
+									<IconButton
+										aria-label="Open Saved Diagram"
+										size="medium"
+										onClick={openLoadDialog}
+									>
+										<Badge badgeContent={savedDiagrams.length} color="primary">
+											<FolderOpen size={20} />
+										</Badge>
+									</IconButton>
+								</Tooltip>
+							)}
 
 							<Tooltip
 								title={
@@ -432,20 +490,22 @@ export default function AppBar() {
 										</IconButton>
 									</Tooltip>
 
-									<Tooltip title={`Open (${shortcuts.openSaved})`}>
-										<IconButton
-											aria-label="Open Saved Diagram"
-											size="medium"
-											onClick={openLoadDialog}
-										>
-											<Badge
-												badgeContent={savedDiagrams.length}
-												color="primary"
+									{isAuthenticated && (
+										<Tooltip title={`Open (${shortcuts.openSaved})`}>
+											<IconButton
+												aria-label="Open Saved Diagram"
+												size="medium"
+												onClick={openLoadDialog}
 											>
-												<FolderOpen size={20} />
-											</Badge>
-										</IconButton>
-									</Tooltip>
+												<Badge
+													badgeContent={savedDiagrams.length}
+													color="primary"
+												>
+													<FolderOpen size={20} />
+												</Badge>
+											</IconButton>
+										</Tooltip>
+									)}
 								</>
 							)}
 
@@ -517,7 +577,7 @@ export default function AppBar() {
 					/>
 				</MenuItem>
 
-				{isMobile && (
+				{isMobile && isAuthenticated && (
 					<MenuItem onClick={handleOpenLoad}>
 						<ListItemIcon>
 							<Badge badgeContent={savedDiagrams.length} color="primary">

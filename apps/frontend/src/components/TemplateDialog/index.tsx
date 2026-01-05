@@ -32,6 +32,7 @@ import type {
 } from "@/lib/indexed-db/templates.storage";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "@/store";
+import { selectIsAuthenticated } from "@/store/authSlice";
 import {
 	addCustomTemplateToCollectionThunk,
 	addTemplateToCollectionThunk,
@@ -70,6 +71,27 @@ export default function TemplateDialog({
 	const dispatch = useDispatch<AppDispatch>();
 	const collections = useSelector(
 		(state: RootState) => state.templateCollections.collections,
+	);
+	const isAuthenticated = useSelector(selectIsAuthenticated);
+
+	const requestAuthentication = useCallback((message: string) => {
+		window.dispatchEvent(
+			new CustomEvent("requestAuthentication", {
+				detail: { message },
+			}),
+		);
+	}, []);
+
+	const ensureAuthenticated = useCallback(
+		(message: string) => {
+			if (isAuthenticated) {
+				return true;
+			}
+
+			requestAuthentication(message);
+			return false;
+		},
+		[isAuthenticated, requestAuthentication],
 	);
 
 	const createCollection = useCallback(
@@ -267,10 +289,21 @@ export default function TemplateDialog({
 	const handleAddTemplateToCollection = useCallback(
 		(collectionId: string) => {
 			if (!templatePendingAssignment) return;
+			if (
+				!ensureAuthenticated("Sign in to manage template collections.")
+			) {
+				handleCloseCollectionMenu();
+				return;
+			}
 			void addTemplate(collectionId, templatePendingAssignment.id);
 			handleCloseCollectionMenu();
 		},
-		[addTemplate, handleCloseCollectionMenu, templatePendingAssignment],
+		[
+			addTemplate,
+			ensureAuthenticated,
+			handleCloseCollectionMenu,
+			templatePendingAssignment,
+		],
 	);
 
 	const openNewCollectionDialog = useCallback(
@@ -287,26 +320,39 @@ export default function TemplateDialog({
 	);
 
 	const handleCreateCollectionFromMenu = useCallback(() => {
+		if (!ensureAuthenticated("Sign in to manage template collections.")) {
+			setCollectionMenuAnchorEl(null);
+			return;
+		}
 		openNewCollectionDialog(true);
 		setCollectionMenuAnchorEl(null);
-	}, [openNewCollectionDialog]);
+	}, [ensureAuthenticated, openNewCollectionDialog]);
 
 	const handleStartCreateCollection = useCallback(() => {
+		if (!ensureAuthenticated("Sign in to manage template collections.")) {
+			return;
+		}
 		openNewCollectionDialog(false);
-	}, [openNewCollectionDialog]);
+	}, [ensureAuthenticated, openNewCollectionDialog]);
 
 	const handleEditCollection = useCallback((collection: TemplateCollection) => {
+		if (!ensureAuthenticated("Sign in to manage template collections.")) {
+			return;
+		}
 		setCollectionDialogMode("rename");
 		setCollectionBeingEdited(collection);
 		setCollectionNameInput(collection.name);
 		setCollectionDialogOpen(true);
-	}, []);
+	}, [ensureAuthenticated]);
 
 	const handleDeleteCollection = useCallback(
 		(collectionId: string) => {
+			if (!ensureAuthenticated("Sign in to manage template collections.")) {
+				return;
+			}
 			void deleteStoredCollection(collectionId);
 		},
-		[deleteStoredCollection],
+		[deleteStoredCollection, ensureAuthenticated],
 	);
 
 	const handleCollectionDialogClose = useCallback(() => {
@@ -318,6 +364,9 @@ export default function TemplateDialog({
 	}, []);
 
 	const handleCollectionDialogSubmit = useCallback(async () => {
+		if (!ensureAuthenticated("Sign in to manage template collections.")) {
+			return;
+		}
 		const trimmedName = collectionNameInput.trim();
 		if (!trimmedName) return;
 
@@ -340,6 +389,7 @@ export default function TemplateDialog({
 		collectionDialogMode,
 		collectionNameInput,
 		createCollection,
+		ensureAuthenticated,
 		handleCollectionDialogClose,
 		renameCollection,
 		templatePendingAssignment,
@@ -347,16 +397,22 @@ export default function TemplateDialog({
 
 	const handleRemoveTemplateFromCollection = useCallback(
 		(collectionId: string, templateId: string) => {
+			if (!ensureAuthenticated("Sign in to manage template collections.")) {
+				return;
+			}
 			void removeTemplate(collectionId, templateId);
 		},
-		[removeTemplate],
+		[ensureAuthenticated, removeTemplate],
 	);
 
 	const handleRemoveCustomTemplateFromCollection = useCallback(
 		(collectionId: string, templateId: string) => {
+			if (!ensureAuthenticated("Sign in to manage template collections.")) {
+				return;
+			}
 			void removeCustomTemplate(collectionId, templateId);
 		},
-		[removeCustomTemplate],
+		[ensureAuthenticated, removeCustomTemplate],
 	);
 
 	const handleSelectTemplateByCode = useCallback(
@@ -399,6 +455,9 @@ export default function TemplateDialog({
 	}, [onClose]);
 
 	const handleOpenSaveCurrentDialog = useCallback(() => {
+		if (!ensureAuthenticated("Sign in to save diagrams to collections.")) {
+			return;
+		}
 		const fallbackName =
 			(currentDiagramName && currentDiagramName.trim().length > 0
 				? currentDiagramName.trim()
@@ -411,7 +470,7 @@ export default function TemplateDialog({
 		}
 		setSaveCurrentNewCollectionName("");
 		setSaveCurrentDialogOpen(true);
-	}, [collections, currentDiagramName]);
+	}, [collections, currentDiagramName, ensureAuthenticated]);
 
 	const handleCloseSaveCurrentDialog = useCallback(() => {
 		setSaveCurrentDialogOpen(false);
@@ -419,6 +478,9 @@ export default function TemplateDialog({
 	}, []);
 
 	const handleSaveCurrentDiagramSubmit = useCallback(async () => {
+		if (!ensureAuthenticated("Sign in to save diagrams to collections.")) {
+			return;
+		}
 		if (!hasCurrentDiagram || !currentDiagramCode) return;
 		const trimmedName = saveCurrentName.trim();
 		if (!trimmedName) return;
@@ -445,6 +507,7 @@ export default function TemplateDialog({
 		addCustomTemplate,
 		createCollection,
 		currentDiagramCode,
+		ensureAuthenticated,
 		hasCurrentDiagram,
 		handleCloseSaveCurrentDialog,
 		saveCurrentCollectionId,
@@ -453,6 +516,7 @@ export default function TemplateDialog({
 	]);
 
 	const canSaveCurrentDiagram =
+		isAuthenticated &&
 		hasCurrentDiagram &&
 		saveCurrentName.trim().length > 0 &&
 		(saveCurrentCollectionId === NEW_COLLECTION_OPTION

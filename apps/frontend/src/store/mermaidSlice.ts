@@ -87,7 +87,7 @@ const getCurrentDiagram = async (
 };
 
 export const initializeMermaidState =
-	(): AppThunk<Promise<void>> => async (dispatch) => {
+	(): AppThunk<Promise<void>> => async (dispatch, getState) => {
 		const codeFromUrl = retrieveDiagramCodeFromUrl();
 
 		if (codeFromUrl) {
@@ -102,8 +102,9 @@ export const initializeMermaidState =
 		}
 
 		const savedDiagrams = await getAllDiagramsFromStorage();
-		if (savedDiagrams.length > 0) {
-			dispatch(setOpenLoadDialog(true));
+		const isAuthenticated = getState().auth.isAuthenticated;
+		if (savedDiagrams.length > 0 && isAuthenticated) {
+			dispatch(setLoadDialogOpen(true));
 			return;
 		}
 
@@ -192,7 +193,20 @@ export const dismissMermaidAlert = (): AppThunk => (dispatch) => {
 
 export const setLoadDialogOpen =
 	(open: boolean): AppThunk =>
-	(dispatch) => {
+	(dispatch, getState) => {
+		const { auth } = getState();
+		if (open && !auth.isAuthenticated) {
+			dispatch(setAlertMessage("Sign in to view saved diagrams."));
+			if (typeof window !== "undefined") {
+				window.dispatchEvent(
+					new CustomEvent("requestAuthentication", {
+						detail: { message: "Sign in to view saved diagrams." },
+					}),
+				);
+			}
+			return;
+		}
+
 		dispatch(setOpenLoadDialog(open));
 	};
 
