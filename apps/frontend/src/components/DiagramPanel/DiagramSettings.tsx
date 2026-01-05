@@ -16,20 +16,17 @@ import {
 	TextField,
 	type SelectChangeEvent,
 } from "@mui/material";
-import type { MermaidConfig } from "mermaid";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { saveMermaidConfig } from "@/lib/indexed-db/mermaid-config.storage";
-
-export interface ExtendedMermaidConfig extends MermaidConfig {
-	useCustomColors?: boolean;
-}
+import type { DiagramSettingsConfig } from "@/lib/diagram-settings";
+import { defaultDiagramSettings, mergeDiagramSettings } from "@/lib/diagram-settings";
 
 interface DiagramSettingsProps {
 	open: boolean;
 	onClose: () => void;
-	currentConfig: ExtendedMermaidConfig;
-	onApply: (config: ExtendedMermaidConfig) => void;
+	currentConfig: DiagramSettingsConfig;
+	onApply: (config: DiagramSettingsConfig) => void;
 }
 
 const DiagramSettings: React.FC<DiagramSettingsProps> = ({
@@ -38,7 +35,7 @@ const DiagramSettings: React.FC<DiagramSettingsProps> = ({
 	currentConfig,
 	onApply,
 }) => {
-	const [config, setConfig] = useState<ExtendedMermaidConfig>(currentConfig);
+	const [config, setConfig] = useState<DiagramSettingsConfig>(currentConfig);
 
 	useEffect(() => {
 		if (open) {
@@ -110,15 +107,10 @@ const DiagramSettings: React.FC<DiagramSettingsProps> = ({
 	};
 
 	const handleReset = () => {
-		const defaultConfig: ExtendedMermaidConfig = {
-			theme: "default",
-			themeVariables: {},
-			fontFamily: undefined,
-			useCustomColors: false,
-		};
-		setConfig(defaultConfig);
-		onApply(defaultConfig);
-		saveMermaidConfig(defaultConfig);
+		const resetConfig = mergeDiagramSettings(defaultDiagramSettings);
+		setConfig(resetConfig);
+		onApply(resetConfig);
+		saveMermaidConfig(resetConfig);
 	};
 
 	return (

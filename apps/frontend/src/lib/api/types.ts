@@ -2,6 +2,8 @@
  * API Types for Backend Communication
  */
 
+import type { DiagramSettingsConfig } from "@/lib/diagram-settings";
+
 // Auth Types
 export interface User {
 	id: string;
@@ -47,6 +49,7 @@ export interface DiagramDto {
 	code: string;
 	clientTimestamp: number;
 	updatedAt?: string;
+	settings?: DiagramSettingsConfig | null;
 }
 
 export interface SyncDiagramsRequest {

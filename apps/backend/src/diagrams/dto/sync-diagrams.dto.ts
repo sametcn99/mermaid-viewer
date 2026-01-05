@@ -35,6 +35,9 @@ export class DiagramResponseDto {
   @ApiProperty()
   code: string;
 
+  @ApiProperty({ required: false, nullable: true, type: Object })
+  settings: Record<string, unknown> | null;
+
   @ApiProperty()
   clientId: string;
 

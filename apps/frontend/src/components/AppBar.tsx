@@ -71,6 +71,8 @@ import {
 	setLastSyncAt,
 } from "@/store/authSlice";
 import { performFullSync } from "@/lib/sync";
+import { loadStoredDiagramSettings } from "@/lib/diagram-settings";
+import { subscribeToUrlUpdates } from "@/lib/utils/url.utils";
 
 export default function AppBar() {
 	const theme = useTheme();
@@ -96,6 +98,7 @@ export default function AppBar() {
 	const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
 	const [isRegisterDialogOpen, setIsRegisterDialogOpen] = useState(false);
 	const [isAccountSettingsOpen, setIsAccountSettingsOpen] = useState(false);
+	const [presentationSearch, setPresentationSearch] = useState("");
 	const mobileMenuId = useId();
 
 	// Initialize auth on mount
@@ -134,6 +137,17 @@ export default function AppBar() {
 				"openTemplateDialog",
 				handler as EventListener,
 			);
+		};
+	}, []);
+
+	useEffect(() => {
+		if (typeof window === "undefined") return;
+		setPresentationSearch(window.location.search);
+		const unsubscribe = subscribeToUrlUpdates(() => {
+			setPresentationSearch(window.location.search);
+		});
+		return () => {
+			unsubscribe();
 		};
 	}, []);
 
@@ -218,7 +232,10 @@ export default function AppBar() {
 			return;
 		}
 
-		const diagram = await saveDiagramToStorage(diagramName, mermaidCode);
+		const settings = await loadStoredDiagramSettings();
+		const diagram = await saveDiagramToStorage(diagramName, mermaidCode, {
+			settings,
+		});
 		refreshDiagrams();
 		setOpenDialog(false);
 		dispatch(setCustomCurrentDiagramId(diagram.id));
@@ -249,13 +266,14 @@ export default function AppBar() {
 		return savedDiagrams.find((d) => d.id === currentDiagramId)?.name ?? null;
 	}, [currentDiagramId, savedDiagrams]);
 
-	const presentationHref = useMemo(
-		() =>
-			`/presentation?diagram=${encodeURIComponent(
-				compressToBase64(mermaidCode),
-			)}`,
-		[mermaidCode],
-	);
+	const presentationHref = useMemo(() => {
+		if (presentationSearch) {
+			return `/presentation${presentationSearch}`;
+		}
+		return `/presentation?diagram=${encodeURIComponent(
+			compressToBase64(mermaidCode),
+		)}`;
+	}, [mermaidCode, presentationSearch]);
 
 	const createDiagram = useCallback(() => {
 		dispatch(createNewDiagram());

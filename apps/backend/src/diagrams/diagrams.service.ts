@@ -86,6 +86,7 @@ export class DiagramsService {
         if (clientDiagram.clientTimestamp > (existing.clientTimestamp || 0)) {
           existing.name = clientDiagram.name;
           existing.code = clientDiagram.code;
+          existing.settings = clientDiagram.settings ?? null;
           existing.clientTimestamp = clientDiagram.clientTimestamp;
           await this.diagramRepository.save(existing);
         }
@@ -95,6 +96,7 @@ export class DiagramsService {
           userId,
           name: clientDiagram.name,
           code: clientDiagram.code,
+          settings: clientDiagram.settings ?? null,
           clientId: clientDiagram.clientId,
           clientTimestamp: clientDiagram.clientTimestamp,
         });
@@ -146,6 +148,7 @@ export class DiagramsService {
       id: diagram.id,
       name: diagram.name,
       code: diagram.code,
+      settings: diagram.settings ?? null,
       clientId: diagram.clientId,
       clientTimestamp: diagram.clientTimestamp,
       createdAt: diagram.createdAt,

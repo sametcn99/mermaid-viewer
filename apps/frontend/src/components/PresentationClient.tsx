@@ -12,6 +12,7 @@ import {
 	compressToBase64,
 	decompressFromBase64,
 } from "@/lib/utils/compression.utils";
+import { subscribeToUrlUpdates } from "@/lib/utils/url.utils";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
 	selectTemplateDiagram,
@@ -20,13 +21,16 @@ import {
 	setMermaidCode,
 } from "@/store/mermaidSlice";
 import { selectSavedDiagrams } from "@/store/savedDiagramsSlice";
+import { applyDiagramSettings } from "@/lib/diagram-settings";
 
 interface PresentationClientProps {
 	encodedDiagram?: string;
+	encodedSettings?: string;
 }
 
 export default function PresentationClient({
 	encodedDiagram,
+	encodedSettings,
 }: PresentationClientProps) {
 	const router = useRouter();
 	const dispatch = useAppDispatch();
@@ -36,6 +40,7 @@ export default function PresentationClient({
 	);
 	const savedDiagrams = useAppSelector(selectSavedDiagrams);
 	const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
+	const [queryString, setQueryString] = useState("");
 
 	const currentDiagramName = useMemo(() => {
 		if (!currentDiagramId) return undefined;
@@ -65,6 +70,24 @@ export default function PresentationClient({
 		}
 	}, [dispatch, encodedDiagram, mermaidCode]);
 
+	useEffect(() => {
+		const applySettings = async () => {
+			if (!encodedSettings) {
+				await applyDiagramSettings(null);
+				return;
+			}
+			try {
+				const decoded = decompressFromBase64(encodedSettings);
+				const parsed = JSON.parse(decoded);
+				await applyDiagramSettings(parsed);
+			} catch (error) {
+				console.error("Failed to decode presentation settings", error);
+				await applyDiagramSettings(null);
+			}
+		};
+		void applySettings();
+	}, [encodedSettings]);
+
 	const handleTemplateDialogOpen = useCallback(() => {
 		setIsTemplateDialogOpen(true);
 	}, []);
@@ -80,6 +103,18 @@ export default function PresentationClient({
 		};
 	}, [handleTemplateDialogOpen]);
 
+	useEffect(() => {
+		if (typeof window === "undefined") return;
+		const update = () => {
+			setQueryString(window.location.search);
+		};
+		update();
+		const unsubscribe = subscribeToUrlUpdates(update);
+		return () => {
+			unsubscribe();
+		};
+	}, []);
+
 	const handleTemplateDialogClose = useCallback(() => {
 		setIsTemplateDialogOpen(false);
 	}, []);
@@ -93,6 +128,9 @@ export default function PresentationClient({
 	);
 
 	const backHref = useMemo(() => {
+		if (queryString) {
+			return `/${queryString}`;
+		}
 		let encodedFromCode: string | undefined;
 		if (mermaidCode) {
 			try {
@@ -105,7 +143,7 @@ export default function PresentationClient({
 		const encodedValue = encodedFromCode || encodedFallback;
 
 		return encodedValue ? `/?diagram=${encodedValue}` : "/";
-	}, [encodedDiagram, mermaidCode]);
+	}, [encodedDiagram, mermaidCode, queryString]);
 
 	useEffect(() => {
 		const onKeyDown = (e: KeyboardEvent) => {

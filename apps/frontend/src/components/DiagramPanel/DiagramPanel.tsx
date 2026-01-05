@@ -2,12 +2,16 @@
 
 import { Box } from "@mui/material";
 import mermaid from "mermaid";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import {
 	getMermaidConfig,
 	saveMermaidConfig,
 } from "@/lib/indexed-db/mermaid-config.storage";
+import {
+	retrieveDiagramSettingsFromUrl,
+	updateBrowserUrlWithDiagramSettings,
+} from "@/lib/utils/url.utils";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
 	refreshSavedDiagrams,
@@ -18,10 +22,17 @@ import CopyNotification from "./CopyNotification";
 import DiagramEmpty from "./DiagramEmpty";
 import DiagramError from "./DiagramError";
 import DiagramLoading from "./DiagramLoading";
-import DiagramSettings, { type ExtendedMermaidConfig } from "./DiagramSettings";
+import DiagramSettings from "./DiagramSettings";
 import DiagramSVGViewer from "./DiagramSVGViewer";
 import DiagramToolbar from "./DiagramToolbar";
 import type { AiAssistantConfig } from "@/types/ai-assistant.types";
+import type { DiagramSettingsConfig } from "@/lib/diagram-settings";
+import {
+	DIAGRAM_SETTINGS_EVENT,
+	defaultDiagramSettings,
+	isDefaultDiagramSettings,
+	mergeDiagramSettings,
+} from "@/lib/diagram-settings";
 
 interface DiagramPanelProps {
 	mermaidCode: string;
@@ -33,14 +44,8 @@ interface DiagramPanelProps {
 	};
 }
 
-const defaultMermaidConfig: ExtendedMermaidConfig = {
-	startOnLoad: false,
-	theme: "default",
-	useCustomColors: false,
-};
-
 if (typeof window !== "undefined") {
-	mermaid.initialize(defaultMermaidConfig);
+	mermaid.initialize(defaultDiagramSettings);
 }
 
 export default function DiagramPanel({
@@ -54,7 +59,12 @@ export default function DiagramPanel({
 	const [svgContent, setSvgContent] = useState<string>("");
 	const [showCopyNotification, setShowCopyNotification] = useState(false);
 	const [mermaidConfig, setMermaidConfig] =
-		useState<ExtendedMermaidConfig>(defaultMermaidConfig);
+		useState<DiagramSettingsConfig>(defaultDiagramSettings);
+	const [configInitialized, setConfigInitialized] = useState(false);
+	const isDefaultConfig = useMemo(
+		() => isDefaultDiagramSettings(mermaidConfig),
+		[mermaidConfig],
+	);
 	const [openSettings, setOpenSettings] = useState(false);
 	const [zoomLevel, setZoomLevel] = useState(1);
 	const [aiConfig, setAiConfig] = useState(ai?.config);
@@ -77,16 +87,75 @@ export default function DiagramPanel({
 	}, [dispatch]);
 	const isMobileTouch = isTouchDevice && screen.isMobile;
 
-	// Load saved config on mount
+	const applyConfig = useCallback(
+		(config: unknown) => {
+			if (!config || typeof config !== "object") return false;
+			setMermaidConfig(mergeDiagramSettings(config));
+			setConfigInitialized(true);
+			return true;
+		},
+		[],
+	);
+
+	// Load saved or URL config on mount
 	useEffect(() => {
+		const configFromUrl = retrieveDiagramSettingsFromUrl<DiagramSettingsConfig>();
+		if (configFromUrl && applyConfig(configFromUrl)) {
+			return;
+		}
+
+		let isMounted = true;
 		const loadConfig = async () => {
 			const savedConfig = await getMermaidConfig();
-			if (savedConfig && typeof savedConfig === "object") {
-				setMermaidConfig(savedConfig as ExtendedMermaidConfig);
+			if (isMounted && savedConfig && typeof savedConfig === "object") {
+				applyConfig(savedConfig as DiagramSettingsConfig);
+				return;
+			}
+			if (isMounted) {
+				setConfigInitialized(true);
 			}
 		};
 		loadConfig();
+		return () => {
+			isMounted = false;
+		};
+	}, [applyConfig]);
+
+	useEffect(() => {
+		if (typeof window === "undefined") return;
+		const handler = (event: Event) => {
+			const detail = (event as CustomEvent<DiagramSettingsConfig>).detail;
+			if (!detail) return;
+			setMermaidConfig(mergeDiagramSettings(detail));
+			setConfigInitialized(true);
+		};
+		window.addEventListener(
+			DIAGRAM_SETTINGS_EVENT,
+			handler as EventListener,
+		);
+		return () => {
+			window.removeEventListener(
+				DIAGRAM_SETTINGS_EVENT,
+				handler as EventListener,
+			);
+		};
 	}, []);
+
+	// Persist config updates
+	useEffect(() => {
+		if (!configInitialized) return;
+		saveMermaidConfig(mermaidConfig);
+	}, [configInitialized, mermaidConfig]);
+
+	// Keep URL in sync with current diagram settings
+	useEffect(() => {
+		if (!configInitialized) return;
+		if (isDefaultConfig) {
+			updateBrowserUrlWithDiagramSettings(null);
+			return;
+		}
+		updateBrowserUrlWithDiagramSettings(mermaidConfig);
+	}, [configInitialized, isDefaultConfig, mermaidConfig]);
 	useEffect(() => {
 		setAiConfig(ai?.config);
 	}, [ai?.config]);
@@ -109,7 +178,7 @@ export default function DiagramPanel({
 
 				// If custom colors are not enabled, remove themeVariables
 				// This ensures the selected theme takes precedence
-				if (!(mermaidConfig as ExtendedMermaidConfig).useCustomColors) {
+				if (!mermaidConfig.useCustomColors) {
 					delete configToApply.themeVariables;
 				}
 

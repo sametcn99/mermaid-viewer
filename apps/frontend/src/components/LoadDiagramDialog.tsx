@@ -125,10 +125,24 @@ const LoadDiagramDialog: React.FC = () => {
 		event.stopPropagation();
 
 		if (typeof window === "undefined") return;
-
-		// Create URL with the diagram ID
-		const baseUrl = window.location.origin + window.location.pathname;
-		const diagramUrl = `${baseUrl}?id=${diagramId}`;
+		const diagram = savedDiagrams.find((d) => d.id === diagramId);
+		if (!diagram) return;
+		const shareUrl = new URL(window.location.origin + window.location.pathname);
+		shareUrl.searchParams.set("diagram", compressToBase64(diagram.code));
+		if (diagram.settings) {
+			try {
+				shareUrl.searchParams.set(
+					"settings",
+					compressToBase64(JSON.stringify(diagram.settings)),
+				);
+			} catch (error) {
+				console.error("Failed to encode diagram settings:", error);
+				shareUrl.searchParams.delete("settings");
+			}
+		} else {
+			shareUrl.searchParams.delete("settings");
+		}
+		const diagramUrl = shareUrl.toString();
 
 		// Check if Web Share API is supported
 		if (navigator.share) {
@@ -237,6 +251,7 @@ const LoadDiagramDialog: React.FC = () => {
 				createdAt: string;
 				compressedCode: string;
 				fileName: string;
+				settings?: SavedDiagram["settings"];
 			}> = [];
 
 			savedDiagrams.forEach((diagram, index) => {
@@ -261,6 +276,7 @@ const LoadDiagramDialog: React.FC = () => {
 					createdAt: new Date(diagram.timestamp).toISOString(),
 					compressedCode: compressToBase64(diagram.code),
 					fileName,
+					settings: diagram.settings ?? null,
 				});
 			});
 
@@ -294,6 +310,7 @@ const LoadDiagramDialog: React.FC = () => {
 				name?: string;
 				createdAt?: string;
 				compressedCode?: string;
+				settings?: SavedDiagram["settings"];
 			}
 		>();
 
@@ -308,6 +325,7 @@ const LoadDiagramDialog: React.FC = () => {
 						createdAt?: string;
 						compressedCode?: string;
 						fileName?: string;
+						settings?: SavedDiagram["settings"];
 					}>;
 				};
 				parsed.diagrams?.forEach((meta) => {
@@ -316,6 +334,7 @@ const LoadDiagramDialog: React.FC = () => {
 						name: meta.name,
 						createdAt: meta.createdAt,
 						compressedCode: meta.compressedCode,
+						settings: meta.settings,
 					});
 				});
 			} catch (error) {
@@ -360,6 +379,7 @@ const LoadDiagramDialog: React.FC = () => {
 				name: metadata?.name ?? parseDiagramNameFromFile(fileName),
 				code,
 				timestamp,
+				settings: metadata?.settings ?? null,
 			});
 		}
 

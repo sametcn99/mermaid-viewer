@@ -29,6 +29,9 @@ export class Diagram {
   @Column('text')
   code: string;
 
+  @Column('jsonb', { nullable: true })
+  settings: Record<string, unknown> | null;
+
   @Column({ nullable: true })
   clientId: string; // Original ID from frontend for sync
 

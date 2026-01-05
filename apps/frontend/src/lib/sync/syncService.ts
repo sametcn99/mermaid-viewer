@@ -93,6 +93,7 @@ export async function exportLocalData(): Promise<FullSyncRequest> {
 		name: d.name,
 		code: d.code,
 		clientTimestamp: d.timestamp,
+		settings: d.settings ?? null,
 	}));
 
 	// Export templates
@@ -206,6 +207,7 @@ export async function importServerData(
 		await saveDiagramToStorage(diagram.name, diagram.code, {
 			id: diagram.clientId,
 			timestamp: diagram.clientTimestamp,
+			settings: diagram.settings ?? null,
 		});
 	}
 

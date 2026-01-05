@@ -1,10 +1,12 @@
 import { STORE_NAMES, withDatabase } from ".";
+import type { DiagramSettingsConfig } from "@/lib/diagram-settings";
 
 export interface SavedDiagram {
 	id: string;
 	name: string;
 	code: string;
 	timestamp: number;
+	settings?: DiagramSettingsConfig | null;
 }
 
 const DIAGRAM_STORE = STORE_NAMES.DIAGRAMS;
@@ -30,13 +32,14 @@ async function getUntitledDiagramIndex(): Promise<number> {
 export async function saveDiagramToStorage(
 	name: string,
 	code: string,
-	options?: { id?: string; timestamp?: number },
+	options?: { id?: string; timestamp?: number; settings?: DiagramSettingsConfig | null },
 ): Promise<SavedDiagram> {
 	const trimmedName = name.trim();
 	const diagramName = trimmedName.length
 		? trimmedName
 		: `Untitled Diagram ${await getUntitledDiagramIndex()}`;
 	const timestamp = options?.timestamp ?? Date.now();
+	const settings = options?.settings ?? null;
 	const id =
 		options?.id ??
 		`diagram_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
@@ -46,6 +49,7 @@ export async function saveDiagramToStorage(
 		name: diagramName,
 		code,
 		timestamp,
+		settings,
 	};
 
 	await withDatabase((db) => db.put(DIAGRAM_STORE, newDiagram));

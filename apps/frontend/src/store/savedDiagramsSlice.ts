@@ -6,12 +6,14 @@ import {
 	saveDiagramToStorage,
 	type SavedDiagram,
 } from "@/lib/indexed-db/diagrams.storage";
+import type { DiagramSettingsConfig } from "@/lib/diagram-settings";
 import { setCustomAlertMessage } from "./mermaidSlice";
 
 export interface ImportedDiagramInput {
 	name: string;
 	code: string;
 	timestamp: number;
+	settings?: DiagramSettingsConfig | null;
 }
 
 interface SavedDiagramsState {
@@ -73,6 +75,7 @@ export const importSavedDiagrams =
 		for (const diagram of diagrams) {
 			await saveDiagramToStorage(diagram.name, diagram.code, {
 				timestamp: diagram.timestamp,
+				settings: diagram.settings ?? null,
 			});
 		}
 		dispatch(refreshSavedDiagrams());

@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, IsNumber } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsObject } from 'class-validator';
 
 export class UpdateDiagramDto {
   @ApiPropertyOptional({ description: 'Diagram name' })
@@ -16,4 +16,9 @@ export class UpdateDiagramDto {
   @IsNumber()
   @IsOptional()
   clientTimestamp?: number;
+
+  @ApiPropertyOptional({ description: 'Diagram settings payload', type: Object })
+  @IsObject()
+  @IsOptional()
+  settings?: Record<string, unknown>;
 }
