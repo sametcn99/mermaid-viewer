@@ -82,6 +82,7 @@
 		"@types/react": "^19.2.7",
 		"@types/react-dom": "^19.2.3",
 		"jsdom": "^27.4.0",
+		"monaco-editor": "^0.55.1",
 		"typescript": "^5.9.3",
 		"vitest": "^4.0.16"
 	}

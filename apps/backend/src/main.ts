@@ -10,7 +10,7 @@ class MainApplication {
   async bootstrap(): Promise<void> {
     try {
       await this.createApplication();
-      this.configureBodyParser();
+      this.configureCors();
       this.configureSwagger();
       this.configureGlobalPipes();
       await this.startServer();
@@ -25,15 +25,26 @@ class MainApplication {
     this.logger.log('NestJS application created successfully');
   }
 
-  private configureBodyParser(): void {
-    // Enable CORS if needed
+  private configureCors(): void {
+    const allowedOrigins = (
+      process.env.FRONTEND_URLS ||
+      process.env.FRONTEND_URL ||
+      'http://localhost:4020,http://localhost:3000'
+    )
+      .split(',')
+      .map((origin) => origin.trim())
+      .filter((origin) => origin.length > 0);
+
     this.app.enableCors({
-      origin: process.env.FRONTEND_URL || 'http://localhost:4020',
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+      origin: allowedOrigins,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
+      credentials: true,
     });
 
-    this.logger.log('Body parser and CORS configured');
+    this.logger.log(
+      `CORS configured for origins: ${allowedOrigins.length ? allowedOrigins.join(', ') : 'none'}`,
+    );
   }
 
   private configureSwagger(): void {

@@ -18,6 +18,8 @@ import {
 	Chip,
 	Divider,
 	Badge,
+	Button,
+	CircularProgress,
 } from "@mui/material";
 import {
 	FolderOpen,
@@ -28,11 +30,11 @@ import {
 	MenuIcon,
 	Check,
 	Palette,
+	LogIn,
 } from "lucide-react";
 import type React from "react";
 import { useEffect, useMemo, useState, useId, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import GitHubButton from "./GitHubButton";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Monitor } from "lucide-react";
@@ -56,6 +58,19 @@ import {
 import LoadDiagramDialog from "./LoadDiagramDialog";
 import ThemeSettingsDialog from "./ThemeSettingsDialog";
 import { useAppShortcuts } from "@/hooks/useAppShortcuts";
+import {
+	LoginDialog,
+	RegisterDialog,
+	UserMenu,
+	AccountSettingsDialog,
+} from "./Auth";
+import {
+	selectIsAuthenticated,
+	selectAuthInitialized,
+	initializeAuth,
+	setLastSyncAt,
+} from "@/store/authSlice";
+import { performFullSync } from "@/lib/sync";
 
 export default function AppBar() {
 	const theme = useTheme();
@@ -67,6 +82,8 @@ export default function AppBar() {
 		(state) => state.mermaid,
 	);
 	const savedDiagrams = useAppSelector(selectSavedDiagrams);
+	const isAuthenticated = useAppSelector(selectIsAuthenticated);
+	const authInitialized = useAppSelector(selectAuthInitialized);
 
 	const [openDialog, setOpenDialog] = useState(false);
 	const [diagramName, setDiagramName] = useState("");
@@ -76,7 +93,17 @@ export default function AppBar() {
 		null,
 	);
 	const [isThemeDialogOpen, setIsThemeDialogOpen] = useState(false);
+	const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
+	const [isRegisterDialogOpen, setIsRegisterDialogOpen] = useState(false);
+	const [isAccountSettingsOpen, setIsAccountSettingsOpen] = useState(false);
 	const mobileMenuId = useId();
+
+	// Initialize auth on mount
+	useEffect(() => {
+		if (!authInitialized) {
+			dispatch(initializeAuth());
+		}
+	}, [authInitialized, dispatch]);
 
 	useEffect(() => {
 		let isMounted = true;
@@ -113,6 +140,27 @@ export default function AppBar() {
 	const refreshDiagrams = useCallback(() => {
 		void dispatch(refreshSavedDiagrams());
 	}, [dispatch]);
+
+	// Sync data with server
+	const handleSyncData = useCallback(async () => {
+		try {
+			const result = await performFullSync();
+			dispatch(setLastSyncAt(result.syncedAt));
+			dispatch(setCustomAlertMessage("Data synced successfully"));
+			refreshDiagrams();
+		} catch (error) {
+			dispatch(
+				setCustomAlertMessage(
+					error instanceof Error ? error.message : "Sync failed",
+				),
+			);
+		}
+	}, [dispatch, refreshDiagrams]);
+
+	// Sync on login
+	const handleAuthSuccess = useCallback(async () => {
+		await handleSyncData();
+	}, [handleSyncData]);
 
 	const handleSave = useCallback(() => {
 		if (currentDiagramId) {
@@ -349,7 +397,23 @@ export default function AppBar() {
 
 							<Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
 
-							<GitHubButton />
+							{!authInitialized ? (
+								<CircularProgress size={24} />
+							) : isAuthenticated ? (
+								<UserMenu
+									onOpenSettings={() => setIsAccountSettingsOpen(true)}
+									onSyncData={handleSyncData}
+								/>
+							) : (
+								<Button
+									variant="contained"
+									size="small"
+									startIcon={<LogIn size={16} />}
+									onClick={() => setIsLoginDialogOpen(true)}
+								>
+									Sign In / Sign Up
+								</Button>
+							)}
 						</Box>
 					)}
 
@@ -383,6 +447,24 @@ export default function AppBar() {
 										</IconButton>
 									</Tooltip>
 								</>
+							)}
+
+							{!authInitialized ? (
+								<CircularProgress size={20} />
+							) : isAuthenticated ? (
+								<UserMenu
+									onOpenSettings={() => setIsAccountSettingsOpen(true)}
+									onSyncData={handleSyncData}
+								/>
+							) : (
+								<Button
+									variant="contained"
+									size="small"
+									startIcon={<LogIn size={16} />}
+									onClick={() => setIsLoginDialogOpen(true)}
+								>
+									Sign In / Sign Up
+								</Button>
 							)}
 
 							<Tooltip title="More actions">
@@ -465,6 +547,20 @@ export default function AppBar() {
 
 				<Divider />
 
+				{authInitialized && !isAuthenticated && (
+					<MenuItem
+						onClick={() => {
+							handleMobileMenuClose();
+							setIsLoginDialogOpen(true);
+						}}
+					>
+						<ListItemIcon>
+							<LogIn size={20} />
+						</ListItemIcon>
+						<ListItemText primary="Sign In / Sign Up" />
+					</MenuItem>
+				)}
+
 				<MenuItem onClick={handleOpenHelp}>
 					<ListItemIcon>
 						<HelpCircle size={20} />
@@ -544,6 +640,25 @@ export default function AppBar() {
 			<ThemeSettingsDialog
 				open={isThemeDialogOpen}
 				onClose={() => setIsThemeDialogOpen(false)}
+			/>
+
+			<LoginDialog
+				open={isLoginDialogOpen}
+				onClose={() => setIsLoginDialogOpen(false)}
+				onSwitchToRegister={() => setIsRegisterDialogOpen(true)}
+				onLoginSuccess={handleAuthSuccess}
+			/>
+
+			<RegisterDialog
+				open={isRegisterDialogOpen}
+				onClose={() => setIsRegisterDialogOpen(false)}
+				onSwitchToLogin={() => setIsLoginDialogOpen(true)}
+				onRegisterSuccess={handleAuthSuccess}
+			/>
+
+			<AccountSettingsDialog
+				open={isAccountSettingsOpen}
+				onClose={() => setIsAccountSettingsOpen(false)}
 			/>
 		</>
 	);

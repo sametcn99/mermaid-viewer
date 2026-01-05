@@ -6,6 +6,9 @@
 			"cache": false,
 			"persistent": true
 		},
+		"format": {
+			"outputs": []
+		},
 		"build": {
 			"dependsOn": ["^build"],
 			"outputs": ["dist/**", ".next/**"]

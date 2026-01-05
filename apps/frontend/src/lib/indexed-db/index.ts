@@ -494,6 +494,27 @@ export async function clearAll(): Promise<void> {
 	}
 }
 
+export async function resetAllStores(): Promise<void> {
+	memoryStore.clear();
+
+	if (!isBrowser()) {
+		return;
+	}
+
+	if (!isIndexedDbSupported()) {
+		logSupportWarning(
+			"IndexedDB not supported; cleared data from in-memory store only.",
+		);
+		return;
+	}
+
+	try {
+		await resetDatabase();
+	} catch (error) {
+		console.error("Failed to reset IndexedDB database:", error);
+	}
+}
+
 export async function getJsonItem<T>(key: string): Promise<T | null> {
 	const raw = await getRawItem(key);
 	if (!raw) return null;

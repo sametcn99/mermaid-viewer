@@ -3,6 +3,7 @@ import {
 	type ThunkAction,
 	type AnyAction,
 } from "@reduxjs/toolkit";
+import authReducer from "./authSlice";
 import deviceReducer from "./deviceSlice";
 import mermaidReducer from "./mermaidSlice";
 import resizablePanelsReducer from "./resizablePanelsSlice";
@@ -11,6 +12,7 @@ import templateCollectionsReducer from "./templateCollectionsSlice";
 
 export const store = configureStore({
 	reducer: {
+		auth: authReducer,
 		mermaid: mermaidReducer,
 		resizablePanels: resizablePanelsReducer,
 		templateCollections: templateCollectionsReducer,
