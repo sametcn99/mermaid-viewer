@@ -11,7 +11,7 @@ const rawEnvSchema = z
 	.object({
 		NEXT_PUBLIC_API_URL: requiredUrlEnv,
 		NEXT_PUBLIC_SITE_URL: optionalEnv,
-		GEMINI_API_KEY: optionalEnv,
+		NEXT_PUBLIC_GEMINI_API_KEY: optionalEnv,
 	})
 	.strip();
 
@@ -40,12 +40,12 @@ const ensureAbsoluteUrl = (value: string | undefined): URL | undefined => {
 };
 
 const resolveGemini = (env: RawEnv) => {
-	if (!env.GEMINI_API_KEY) {
-		warnings.push("GEMINI_API_KEY is not set; AI assistant features will be disabled.");
+	if (!env.NEXT_PUBLIC_GEMINI_API_KEY) {
+		warnings.push("NEXT_PUBLIC_GEMINI_API_KEY is not set; AI assistant features will be disabled.");
 	}
 
 	return {
-		apiKey: env.GEMINI_API_KEY,
+		apiKey: env.NEXT_PUBLIC_GEMINI_API_KEY,
 	};
 };
 
@@ -90,7 +90,13 @@ const resolveSite = (env: RawEnv) => {
 	};
 };
 
-const rawEnvResult = rawEnvSchema.safeParse(process.env);
+const rawEnvSource = {
+	NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+	NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+	GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+};
+
+const rawEnvResult = rawEnvSchema.safeParse(rawEnvSource);
 
 if (!rawEnvResult.success) {
 	const aggregated = rawEnvResult.error.issues
