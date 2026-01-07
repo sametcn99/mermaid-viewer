@@ -100,7 +100,7 @@ export class AiAssistantService {
     userId: string,
     dto: UpdateAiConfigDto,
   ): Promise<AiConfig> {
-    let config = await this.getConfig(userId);
+    const config = await this.getConfig(userId);
     Object.assign(config, dto);
     return this.configRepository.save(config);
   }

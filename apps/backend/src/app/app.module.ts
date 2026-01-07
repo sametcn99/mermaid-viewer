@@ -10,6 +10,7 @@ import { TemplatesModule } from '../templates';
 import { AiAssistantModule } from '../ai-assistant';
 import { SettingsModule } from '../settings';
 import { SyncModule } from '../sync';
+import { StatsModule } from '../stats';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { SyncModule } from '../sync';
     AiAssistantModule,
     SettingsModule,
     SyncModule,
+    StatsModule,
   ],
   controllers: [AppController],
   providers: [
