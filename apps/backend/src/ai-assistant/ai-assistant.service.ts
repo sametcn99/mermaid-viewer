@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { decryptContent, encryptContent } from '../common/crypto.util';
 import { ChatMessage, DiagramSnapshot, AiConfig } from './entities';
 import {
   CreateChatMessageDto,
@@ -29,18 +30,21 @@ export class AiAssistantService {
     userId: string,
     dto: CreateChatMessageDto,
   ): Promise<ChatMessage> {
+    const encryptedDiagramCode = encryptContent(dto.diagramCode);
     const message = this.chatMessageRepository.create({
       userId,
       ...dto,
+      diagramCode: encryptedDiagramCode,
     });
     return this.chatMessageRepository.save(message);
   }
 
-  async getChatHistory(userId: string): Promise<ChatMessage[]> {
-    return this.chatMessageRepository.find({
+  async getChatHistory(userId: string): Promise<ChatMessageResponseDto[]> {
+    const messages = await this.chatMessageRepository.find({
       where: { userId },
       order: { timestamp: 'ASC' },
     });
+    return messages.map((m) => this.toMessageResponseDto(m));
   }
 
   async clearChatHistory(userId: string): Promise<void> {
@@ -51,7 +55,7 @@ export class AiAssistantService {
   async saveSnapshots(
     userId: string,
     snapshots: CreateDiagramSnapshotDto[],
-  ): Promise<DiagramSnapshot[]> {
+  ): Promise<DiagramSnapshotResponseDto[]> {
     // Clear existing snapshots for user
     await this.snapshotRepository.delete({ userId });
 
@@ -60,19 +64,22 @@ export class AiAssistantService {
       this.snapshotRepository.create({
         userId,
         messageId: s.messageId,
-        code: s.code,
+        code: encryptContent(s.code),
         timestamp: s.timestamp,
       }),
     );
 
-    return this.snapshotRepository.save(entities);
+    const saved = await this.snapshotRepository.save(entities);
+
+    return saved.map((s) => this.toSnapshotResponseDto(s));
   }
 
-  async getSnapshots(userId: string): Promise<DiagramSnapshot[]> {
-    return this.snapshotRepository.find({
+  async getSnapshots(userId: string): Promise<DiagramSnapshotResponseDto[]> {
+    const snapshots = await this.snapshotRepository.find({
       where: { userId },
       order: { timestamp: 'ASC' },
     });
+    return snapshots.map((s) => this.toSnapshotResponseDto(s));
   }
 
   async clearSnapshots(userId: string): Promise<void> {
@@ -111,7 +118,7 @@ export class AiAssistantService {
     syncRequest: SyncAiAssistantRequestDto,
   ): Promise<SyncAiAssistantResponseDto> {
     const existingMessages = await this.getChatHistory(userId);
-    const existingByClientId = new Map<string, ChatMessage>();
+    const existingByClientId = new Map<string, ChatMessageResponseDto>();
 
     for (const msg of existingMessages) {
       if (msg.clientId) {
@@ -145,8 +152,8 @@ export class AiAssistantService {
     const config = await this.getConfig(userId);
 
     return {
-      messages: allMessages.map(this.toMessageResponseDto),
-      snapshots: allSnapshots.map(this.toSnapshotResponseDto),
+      messages: allMessages,
+      snapshots: allSnapshots,
       config: this.toConfigResponseDto(config),
       syncedAt: Date.now(),
     };
@@ -155,14 +162,16 @@ export class AiAssistantService {
   async bulkSaveMessages(
     userId: string,
     messages: CreateChatMessageDto[],
-  ): Promise<ChatMessage[]> {
+  ): Promise<ChatMessageResponseDto[]> {
     const entities = messages.map((m) =>
       this.chatMessageRepository.create({
         userId,
         ...m,
+        diagramCode: encryptContent(m.diagramCode),
       }),
     );
-    return this.chatMessageRepository.save(entities);
+    const saved = await this.chatMessageRepository.save(entities);
+    return saved.map((m) => this.toMessageResponseDto(m));
   }
 
   private toMessageResponseDto(message: ChatMessage): ChatMessageResponseDto {
@@ -171,7 +180,7 @@ export class AiAssistantService {
       id: message.id,
       role: message.role,
       content: message.content,
-      diagramCode: message.diagramCode,
+      diagramCode: this.decryptCode(message.diagramCode),
       timestamp,
       clientTimestamp: timestamp,
       clientId: message.clientId,
@@ -186,10 +195,23 @@ export class AiAssistantService {
       id: snapshot.id,
       messageId: snapshot.messageId,
       messageClientId: snapshot.messageId,
-      code: snapshot.code,
+      code: this.decryptCode(snapshot.code),
       timestamp,
       clientTimestamp: timestamp,
     };
+  }
+
+  private decryptCode(value?: string | null): string {
+    if (value === undefined || value === null) {
+      return '';
+    }
+
+    try {
+      return decryptContent(value) ?? '';
+    } catch (_) {
+      // If legacy plaintext exists, return as-is to avoid breaking responses.
+      return value;
+    }
   }
 
   private toConfigResponseDto(config: AiConfig): AiConfigResponseDto {

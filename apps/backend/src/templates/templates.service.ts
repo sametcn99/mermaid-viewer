@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { decryptContent, encryptContent } from '../common/crypto.util';
 import {
   TemplateCollection,
   CustomTemplate,
@@ -33,7 +34,7 @@ export class TemplatesService {
   async createCollection(
     userId: string,
     dto: CreateCollectionDto,
-  ): Promise<TemplateCollection> {
+  ): Promise<CollectionResponseDto> {
     const collection = this.collectionRepository.create({
       userId,
       name: dto.name,
@@ -49,7 +50,7 @@ export class TemplatesService {
         this.customTemplateRepository.create({
           collectionId: saved.id,
           name: ct.name,
-          code: ct.code,
+          code: encryptContent(ct.code),
           clientId: ct.clientId,
           clientTimestamp: ct.clientTimestamp,
         }),
@@ -57,46 +58,46 @@ export class TemplatesService {
       await this.customTemplateRepository.save(customTemplates);
     }
 
-    return this.findCollectionById(userId, saved.id);
+    return this.toCollectionResponseDto(
+      await this.findCollectionEntity(userId, saved.id),
+    );
   }
 
-  async findAllCollections(userId: string): Promise<TemplateCollection[]> {
-    return this.collectionRepository.find({
+  async findAllCollections(userId: string): Promise<CollectionResponseDto[]> {
+    const collections = await this.collectionRepository.find({
       where: { userId },
       order: { updatedAt: 'DESC' },
       relations: ['customTemplates'],
     });
+
+    return collections.map((collection) =>
+      this.toCollectionResponseDto(collection),
+    );
   }
 
   async findCollectionById(
     userId: string,
     id: string,
-  ): Promise<TemplateCollection> {
-    const collection = await this.collectionRepository.findOne({
-      where: { id, userId },
-      relations: ['customTemplates'],
-    });
-
-    if (!collection) {
-      throw new NotFoundException('Collection not found');
-    }
-
-    return collection;
+  ): Promise<CollectionResponseDto> {
+    const collection = await this.findCollectionEntity(userId, id);
+    return this.toCollectionResponseDto(collection);
   }
 
   async updateCollection(
     userId: string,
     id: string,
     dto: UpdateCollectionDto,
-  ): Promise<TemplateCollection> {
-    const collection = await this.findCollectionById(userId, id);
+  ): Promise<CollectionResponseDto> {
+    const collection = await this.findCollectionEntity(userId, id);
     Object.assign(collection, dto);
     await this.collectionRepository.save(collection);
-    return this.findCollectionById(userId, id);
+    return this.toCollectionResponseDto(
+      await this.findCollectionEntity(userId, id),
+    );
   }
 
   async deleteCollection(userId: string, id: string): Promise<void> {
-    const collection = await this.findCollectionById(userId, id);
+    const collection = await this.findCollectionEntity(userId, id);
     await this.collectionRepository.remove(collection);
   }
 
@@ -104,26 +105,30 @@ export class TemplatesService {
     userId: string,
     collectionId: string,
     templateId: string,
-  ): Promise<TemplateCollection> {
-    const collection = await this.findCollectionById(userId, collectionId);
+  ): Promise<CollectionResponseDto> {
+    const collection = await this.findCollectionEntity(userId, collectionId);
     if (!collection.templateIds.includes(templateId)) {
       collection.templateIds.push(templateId);
       await this.collectionRepository.save(collection);
     }
-    return collection;
+    return this.toCollectionResponseDto(
+      await this.findCollectionEntity(userId, collectionId),
+    );
   }
 
   async removeTemplateFromCollection(
     userId: string,
     collectionId: string,
     templateId: string,
-  ): Promise<TemplateCollection> {
-    const collection = await this.findCollectionById(userId, collectionId);
+  ): Promise<CollectionResponseDto> {
+    const collection = await this.findCollectionEntity(userId, collectionId);
     collection.templateIds = collection.templateIds.filter(
       (id) => id !== templateId,
     );
     await this.collectionRepository.save(collection);
-    return collection;
+    return this.toCollectionResponseDto(
+      await this.findCollectionEntity(userId, collectionId),
+    );
   }
 
   // Custom Templates
@@ -131,18 +136,19 @@ export class TemplatesService {
     userId: string,
     collectionId: string,
     dto: AddCustomTemplateDto,
-  ): Promise<CustomTemplate> {
-    await this.findCollectionById(userId, collectionId);
+  ): Promise<CustomTemplateResponseDto> {
+    await this.findCollectionEntity(userId, collectionId);
 
     const customTemplate = this.customTemplateRepository.create({
       collectionId,
       name: dto.name,
-      code: dto.code,
+      code: encryptContent(dto.code),
       clientId: dto.clientId,
       clientTimestamp: dto.clientTimestamp,
     });
 
-    return this.customTemplateRepository.save(customTemplate);
+    const saved = await this.customTemplateRepository.save(customTemplate);
+    return this.toCustomTemplateResponseDto(saved);
   }
 
   async updateCustomTemplate(
@@ -150,8 +156,8 @@ export class TemplatesService {
     collectionId: string,
     templateId: string,
     dto: UpdateCustomTemplateDto,
-  ): Promise<CustomTemplate> {
-    await this.findCollectionById(userId, collectionId);
+  ): Promise<CustomTemplateResponseDto> {
+    await this.findCollectionEntity(userId, collectionId);
 
     const template = await this.customTemplateRepository.findOne({
       where: { id: templateId, collectionId },
@@ -161,8 +167,12 @@ export class TemplatesService {
       throw new NotFoundException('Custom template not found');
     }
 
-    Object.assign(template, dto);
-    return this.customTemplateRepository.save(template);
+    Object.assign(template, {
+      ...dto,
+      code: encryptContent(dto.code) ?? template.code,
+    });
+    const saved = await this.customTemplateRepository.save(template);
+    return this.toCustomTemplateResponseDto(saved);
   }
 
   async removeCustomTemplate(
@@ -170,7 +180,7 @@ export class TemplatesService {
     collectionId: string,
     templateId: string,
   ): Promise<void> {
-    await this.findCollectionById(userId, collectionId);
+    await this.findCollectionEntity(userId, collectionId);
 
     const template = await this.customTemplateRepository.findOne({
       where: { id: templateId, collectionId },
@@ -279,7 +289,8 @@ export class TemplatesService {
                   (existingCt.clientTimestamp || 0)
                 ) {
                   existingCt.name = clientCt.name;
-                  existingCt.code = clientCt.code;
+                  existingCt.code =
+                    encryptContent(clientCt.code) ?? existingCt.code;
                   existingCt.clientTimestamp =
                     clientCt.clientTimestamp || Date.now();
                   await this.customTemplateRepository.save(existingCt);
@@ -288,7 +299,7 @@ export class TemplatesService {
                 const newCt = this.customTemplateRepository.create({
                   collectionId: existing.id,
                   name: clientCt.name,
-                  code: clientCt.code,
+                  code: encryptContent(clientCt.code),
                   clientId: clientCt.clientId,
                   clientTimestamp: clientCt.clientTimestamp || Date.now(),
                 });
@@ -320,7 +331,7 @@ export class TemplatesService {
     const allFavorites = await this.findAllFavorites(userId);
 
     return {
-      collections: allCollections.map(this.toCollectionResponseDto),
+      collections: allCollections,
       favorites: allFavorites.map((f) => ({
         templateId: f.templateId,
         clientTimestamp: Number(
@@ -338,21 +349,55 @@ export class TemplatesService {
       id: collection.id,
       name: collection.name,
       templateIds: collection.templateIds,
-      customTemplates: (collection.customTemplates || []).map(
-        (ct): CustomTemplateResponseDto => ({
-          id: ct.id,
-          name: ct.name,
-          code: ct.code,
-          clientId: ct.clientId,
-          clientTimestamp: ct.clientTimestamp,
-          createdAt: ct.createdAt,
-          updatedAt: ct.updatedAt,
-        }),
+      customTemplates: (collection.customTemplates || []).map((ct) =>
+        this.toCustomTemplateResponseDto(ct),
       ),
       clientId: collection.clientId,
       clientTimestamp: collection.clientTimestamp,
       createdAt: collection.createdAt,
       updatedAt: collection.updatedAt,
     };
+  }
+
+  private toCustomTemplateResponseDto(
+    template: CustomTemplate,
+  ): CustomTemplateResponseDto {
+    return {
+      id: template.id,
+      name: template.name,
+      code: this.decryptCode(template.code),
+      clientId: template.clientId,
+      clientTimestamp: template.clientTimestamp,
+      createdAt: template.createdAt,
+      updatedAt: template.updatedAt,
+    };
+  }
+
+  private decryptCode(value?: string | null): string {
+    if (value === undefined || value === null) {
+      return '';
+    }
+
+    try {
+      return decryptContent(value) ?? '';
+    } catch (_) {
+      return value;
+    }
+  }
+
+  private async findCollectionEntity(
+    userId: string,
+    id: string,
+  ): Promise<TemplateCollection> {
+    const collection = await this.collectionRepository.findOne({
+      where: { id, userId },
+      relations: ['customTemplates'],
+    });
+
+    if (!collection) {
+      throw new NotFoundException('Collection not found');
+    }
+
+    return collection;
   }
 }

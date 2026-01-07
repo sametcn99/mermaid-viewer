@@ -33,7 +33,14 @@ import {
 	LogIn,
 } from "lucide-react";
 import type React from "react";
-import { useEffect, useMemo, useState, useId, useCallback, useRef } from "react";
+import {
+	useEffect,
+	useMemo,
+	useState,
+	useId,
+	useCallback,
+	useRef,
+} from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -113,7 +120,6 @@ export default function AppBar() {
 		}
 	}, [authInitialized, dispatch]);
 
-
 	useEffect(() => {
 		let isMounted = true;
 		const loadData = async () => {
@@ -182,7 +188,11 @@ export default function AppBar() {
 	// Auto-sync on auth initialization if authenticated
 	const hasPerformedInitialSync = useRef(false);
 	useEffect(() => {
-		if (authInitialized && isAuthenticated && !hasPerformedInitialSync.current) {
+		if (
+			authInitialized &&
+			isAuthenticated &&
+			!hasPerformedInitialSync.current
+		) {
 			hasPerformedInitialSync.current = true;
 			// Perform initial sync to load data from server
 			void handleSyncData();
@@ -311,9 +321,7 @@ export default function AppBar() {
 
 	const openLoadDialog = useCallback(() => {
 		if (!canUseLocalData) {
-			handleRequireAuth(
-				"Sign in or continue locally to open saved diagrams.",
-			);
+			handleRequireAuth("Sign in or continue locally to open saved diagrams.");
 			return;
 		}
 		dispatch(setLoadDialogOpen(true));

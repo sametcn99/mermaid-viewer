@@ -59,9 +59,12 @@ const LoadDiagramDialog: React.FC = () => {
 
 	const formatTimestamp = (timestamp: number | string) => {
 		// Convert to number if it's a string (PostgreSQL bigint serialization)
-		const ts = typeof timestamp === 'string' ? Number.parseInt(timestamp, 10) : timestamp;
+		const ts =
+			typeof timestamp === "string"
+				? Number.parseInt(timestamp, 10)
+				: timestamp;
 		// Check if timestamp is valid
-		if (Number.isNaN(ts) || ts <= 0) return 'Invalid date';
+		if (Number.isNaN(ts) || ts <= 0) return "Invalid date";
 		return new Date(ts).toLocaleString();
 	};
 

@@ -172,7 +172,6 @@ export default function LoginDialog({
 					/>
 				</Box> */}
 
-
 				<SocialLogin />
 
 				<Box

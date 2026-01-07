@@ -32,9 +32,7 @@ import type {
 } from "@/lib/indexed-db/templates.storage";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "@/store";
-import {
-	selectCanUseLocalData,
-} from "@/store/authSlice";
+import { selectCanUseLocalData } from "@/store/authSlice";
 import {
 	addCustomTemplateToCollectionThunk,
 	addTemplateToCollectionThunk,

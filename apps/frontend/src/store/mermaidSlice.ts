@@ -207,7 +207,9 @@ export const setLoadDialogOpen =
 		const { auth } = getState();
 		const canUseLocalData = auth.isAuthenticated || auth.isLocalOnly;
 		if (open && !canUseLocalData) {
-			dispatch(setAlertMessage("Sign in or continue locally to view saved diagrams."));
+			dispatch(
+				setAlertMessage("Sign in or continue locally to view saved diagrams."),
+			);
 			if (typeof window !== "undefined") {
 				window.dispatchEvent(
 					new CustomEvent("requestAuthentication", {

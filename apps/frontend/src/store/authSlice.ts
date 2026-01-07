@@ -69,31 +69,28 @@ export const initializeAuth = createAsyncThunk<
 	InitializeAuthResult,
 	void,
 	{ rejectValue: InitializeAuthError }
->(
-	"auth/initialize",
-	async (_, { rejectWithValue }) => {
-		try {
-			const isLocalOnly = readLocalModePreference();
-			if (!hasTokens()) {
-				return { user: null, isLocalOnly } satisfies InitializeAuthResult;
-			}
-			const user = await getCurrentUser();
-			persistLocalModePreference(false);
-			return { user, isLocalOnly: false } satisfies InitializeAuthResult;
-		} catch (error) {
-			if (error instanceof ApiRequestError) {
-				return rejectWithValue({
-					message: error.message,
-					isLocalOnly: readLocalModePreference(),
-				} satisfies InitializeAuthError);
-			}
+>("auth/initialize", async (_, { rejectWithValue }) => {
+	try {
+		const isLocalOnly = readLocalModePreference();
+		if (!hasTokens()) {
+			return { user: null, isLocalOnly } satisfies InitializeAuthResult;
+		}
+		const user = await getCurrentUser();
+		persistLocalModePreference(false);
+		return { user, isLocalOnly: false } satisfies InitializeAuthResult;
+	} catch (error) {
+		if (error instanceof ApiRequestError) {
 			return rejectWithValue({
-				message: "Failed to initialize auth",
+				message: error.message,
 				isLocalOnly: readLocalModePreference(),
 			} satisfies InitializeAuthError);
 		}
-	},
-);
+		return rejectWithValue({
+			message: "Failed to initialize auth",
+			isLocalOnly: readLocalModePreference(),
+		} satisfies InitializeAuthError);
+	}
+});
 
 export const login = createAsyncThunk(
 	"auth/login",
