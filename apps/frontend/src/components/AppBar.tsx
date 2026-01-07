@@ -33,7 +33,7 @@ import {
 	LogIn,
 } from "lucide-react";
 import type React from "react";
-import { useEffect, useMemo, useState, useId, useCallback } from "react";
+import { useEffect, useMemo, useState, useId, useCallback, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -55,6 +55,7 @@ import {
 	refreshSavedDiagrams,
 	selectSavedDiagrams,
 } from "@/store/savedDiagramsSlice";
+import { refreshTemplateCollections } from "@/store/templateCollectionsSlice";
 import LoadDiagramDialog from "./LoadDiagramDialog";
 import ThemeSettingsDialog from "./ThemeSettingsDialog";
 import { useAppShortcuts } from "@/hooks/useAppShortcuts";
@@ -107,6 +108,7 @@ export default function AppBar() {
 			dispatch(initializeAuth());
 		}
 	}, [authInitialized, dispatch]);
+
 
 	useEffect(() => {
 		let isMounted = true;
@@ -162,6 +164,8 @@ export default function AppBar() {
 			dispatch(setLastSyncAt(result.syncedAt));
 			dispatch(setCustomAlertMessage("Data synced successfully"));
 			refreshDiagrams();
+			// Refresh template collections too
+			void dispatch(refreshTemplateCollections());
 		} catch (error) {
 			dispatch(
 				setCustomAlertMessage(
@@ -170,6 +174,21 @@ export default function AppBar() {
 			);
 		}
 	}, [dispatch, refreshDiagrams]);
+
+	// Auto-sync on auth initialization if authenticated
+	const hasPerformedInitialSync = useRef(false);
+	useEffect(() => {
+		if (authInitialized && isAuthenticated && !hasPerformedInitialSync.current) {
+			hasPerformedInitialSync.current = true;
+			// Perform initial sync to load data from server
+			void handleSyncData();
+		}
+
+		// Reset sync flag when user logs out
+		if (!isAuthenticated) {
+			hasPerformedInitialSync.current = false;
+		}
+	}, [authInitialized, isAuthenticated, handleSyncData]);
 
 	// Sync on login
 	const handleAuthSuccess = useCallback(async () => {
