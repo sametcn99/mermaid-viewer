@@ -106,8 +106,9 @@ export const initializeMermaidState =
 		}
 
 		const savedDiagrams = await getAllDiagramsFromStorage();
-		const isAuthenticated = getState().auth.isAuthenticated;
-		if (savedDiagrams.length > 0 && isAuthenticated) {
+		const { auth } = getState();
+		const canUseLocalData = auth.isAuthenticated || auth.isLocalOnly;
+		if (savedDiagrams.length > 0 && canUseLocalData) {
 			dispatch(setLoadDialogOpen(true));
 			return;
 		}
@@ -204,12 +205,15 @@ export const setLoadDialogOpen =
 	(open: boolean): AppThunk =>
 	(dispatch, getState) => {
 		const { auth } = getState();
-		if (open && !auth.isAuthenticated) {
-			dispatch(setAlertMessage("Sign in to view saved diagrams."));
+		const canUseLocalData = auth.isAuthenticated || auth.isLocalOnly;
+		if (open && !canUseLocalData) {
+			dispatch(setAlertMessage("Sign in or continue locally to view saved diagrams."));
 			if (typeof window !== "undefined") {
 				window.dispatchEvent(
 					new CustomEvent("requestAuthentication", {
-						detail: { message: "Sign in to view saved diagrams." },
+						detail: {
+							message: "Sign in or continue locally to view saved diagrams.",
+						},
 					}),
 				);
 			}

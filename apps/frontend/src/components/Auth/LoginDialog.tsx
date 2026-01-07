@@ -19,6 +19,7 @@ import {
 import { Eye, EyeOff } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
+	continueWithLocalMode,
 	login,
 	clearError,
 	selectAuthLoading,
@@ -59,6 +60,11 @@ export default function LoginDialog({
 		dispatch(clearError());
 		onClose();
 	}, [dispatch, onClose]);
+
+	const handleContinueLocal = useCallback(() => {
+		dispatch(continueWithLocalMode());
+		handleClose();
+	}, [dispatch, handleClose]);
 
 	const validate = useCallback(() => {
 		const errors: { email?: string; password?: string } = {};
@@ -166,7 +172,38 @@ export default function LoginDialog({
 					/>
 				</Box> */}
 
+
 				<SocialLogin />
+
+				<Box
+					sx={{
+						mt: 3,
+						p: 2,
+						border: 1,
+						borderColor: "divider",
+						borderRadius: 2,
+						backgroundColor: "background.default",
+						display: "flex",
+						flexDirection: "column",
+						gap: 1,
+					}}
+				>
+					<Typography variant="subtitle2" fontWeight={700}>
+						Continue without signing in
+					</Typography>
+					<Typography variant="body2" color="text.secondary">
+						Stay on this device using local storage only. Nothing is sent to the
+						backend and diagrams will not sync across devices.
+					</Typography>
+					<Button
+						variant="outlined"
+						fullWidth
+						onClick={handleContinueLocal}
+						disabled={isLoading}
+					>
+						Continue using local storage
+					</Button>
+				</Box>
 			</DialogContent>
 
 			<DialogActions sx={{ px: 3, pb: 3, flexDirection: "column", gap: 1 }}>

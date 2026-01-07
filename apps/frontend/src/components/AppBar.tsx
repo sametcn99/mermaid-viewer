@@ -67,6 +67,8 @@ import {
 } from "./Auth";
 import {
 	selectIsAuthenticated,
+	selectCanUseLocalData,
+	selectIsLocalOnly,
 	selectAuthInitialized,
 	initializeAuth,
 	setLastSyncAt,
@@ -86,6 +88,8 @@ export default function AppBar() {
 	);
 	const savedDiagrams = useAppSelector(selectSavedDiagrams);
 	const isAuthenticated = useAppSelector(selectIsAuthenticated);
+	const canUseLocalData = useAppSelector(selectCanUseLocalData);
+	const isLocalOnly = useAppSelector(selectIsLocalOnly);
 	const authInitialized = useAppSelector(selectAuthInitialized);
 
 	const [openDialog, setOpenDialog] = useState(false);
@@ -197,12 +201,18 @@ export default function AppBar() {
 
 	const handleRequireAuth = useCallback(
 		(message?: string) => {
+			if (canUseLocalData) {
+				if (message) {
+					dispatch(setCustomAlertMessage(message));
+				}
+				return;
+			}
 			if (message) {
 				dispatch(setCustomAlertMessage(message));
 			}
 			setIsLoginDialogOpen(true);
 		},
-		[dispatch],
+		[canUseLocalData, dispatch],
 	);
 
 	useEffect(() => {
@@ -222,8 +232,8 @@ export default function AppBar() {
 	}, [handleRequireAuth]);
 
 	const handleSave = useCallback(() => {
-		if (!isAuthenticated) {
-			handleRequireAuth("Sign in to save diagrams.");
+		if (!canUseLocalData) {
+			handleRequireAuth("Sign in or continue locally to save diagrams.");
 			return;
 		}
 
@@ -235,16 +245,16 @@ export default function AppBar() {
 		setOpenDialog(true);
 		setDiagramName(`Untitled Diagram ${savedDiagrams.length + 1}`);
 	}, [
+		canUseLocalData,
 		currentDiagramId,
 		dispatch,
 		handleRequireAuth,
-		isAuthenticated,
 		savedDiagrams.length,
 	]);
 
 	const handleSaveSubmit = useCallback(async () => {
-		if (!isAuthenticated) {
-			handleRequireAuth("Sign in to save diagrams.");
+		if (!canUseLocalData) {
+			handleRequireAuth("Sign in or continue locally to save diagrams.");
 			return;
 		}
 
@@ -258,10 +268,10 @@ export default function AppBar() {
 		dispatch(setCustomUnsavedChanges(false));
 		dispatch(setCustomAlertMessage("Diagram saved"));
 	}, [
+		canUseLocalData,
 		diagramName,
 		dispatch,
 		handleRequireAuth,
-		isAuthenticated,
 		mermaidCode,
 		refreshDiagrams,
 	]);
@@ -300,12 +310,14 @@ export default function AppBar() {
 	}, []);
 
 	const openLoadDialog = useCallback(() => {
-		if (!isAuthenticated) {
-			handleRequireAuth("Sign in to open saved diagrams.");
+		if (!canUseLocalData) {
+			handleRequireAuth(
+				"Sign in or continue locally to open saved diagrams.",
+			);
 			return;
 		}
 		dispatch(setLoadDialogOpen(true));
-	}, [dispatch, handleRequireAuth, isAuthenticated]);
+	}, [canUseLocalData, dispatch, handleRequireAuth]);
 
 	const showHowToUse = useCallback(() => {
 		setOpenHowToUse(true);
@@ -421,7 +433,7 @@ export default function AppBar() {
 								</IconButton>
 							</Tooltip>
 
-							{isAuthenticated && (
+							{canUseLocalData && (
 								<Tooltip title={`Open Saved Diagram (${shortcuts.openSaved})`}>
 									<IconButton
 										aria-label="Open Saved Diagram"
@@ -497,14 +509,24 @@ export default function AppBar() {
 									onSyncData={handleSyncData}
 								/>
 							) : (
-								<Button
-									variant="contained"
-									size="small"
-									startIcon={<LogIn size={16} />}
-									onClick={() => setIsLoginDialogOpen(true)}
-								>
-									Sign In / Sign Up
-								</Button>
+								<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+									{isLocalOnly && (
+										<Chip
+											label="Local storage only"
+											size="small"
+											variant="outlined"
+											color="default"
+										/>
+									)}
+									<Button
+										variant="contained"
+										size="small"
+										startIcon={<LogIn size={16} />}
+										onClick={() => setIsLoginDialogOpen(true)}
+									>
+										Sign In
+									</Button>
+								</Box>
 							)}
 						</Box>
 					)}
@@ -524,7 +546,7 @@ export default function AppBar() {
 										</IconButton>
 									</Tooltip>
 
-									{isAuthenticated && (
+									{canUseLocalData && (
 										<Tooltip title={`Open (${shortcuts.openSaved})`}>
 											<IconButton
 												aria-label="Open Saved Diagram"
@@ -551,14 +573,24 @@ export default function AppBar() {
 									onSyncData={handleSyncData}
 								/>
 							) : (
-								<Button
-									variant="contained"
-									size="small"
-									startIcon={<LogIn size={16} />}
-									onClick={() => setIsLoginDialogOpen(true)}
-								>
-									Sign In / Sign Up
-								</Button>
+								<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+									{isLocalOnly && (
+										<Chip
+											label="Local storage only"
+											size="small"
+											variant="outlined"
+											color="default"
+										/>
+									)}
+									<Button
+										variant="contained"
+										size="small"
+										startIcon={<LogIn size={16} />}
+										onClick={() => setIsLoginDialogOpen(true)}
+									>
+										Sign In
+									</Button>
+								</Box>
 							)}
 
 							<Tooltip title="More actions">
@@ -611,7 +643,7 @@ export default function AppBar() {
 					/>
 				</MenuItem>
 
-				{isMobile && isAuthenticated && (
+				{isMobile && canUseLocalData && (
 					<MenuItem onClick={handleOpenLoad}>
 						<ListItemIcon>
 							<Badge badgeContent={savedDiagrams.length} color="primary">
@@ -651,7 +683,7 @@ export default function AppBar() {
 						<ListItemIcon>
 							<LogIn size={20} />
 						</ListItemIcon>
-						<ListItemText primary="Sign In / Sign Up" />
+						<ListItemText primary="Sign In" />
 					</MenuItem>
 				)}
 

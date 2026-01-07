@@ -14,7 +14,7 @@ import {
 	loadDiagramFromStorage,
 	setCustomAlertMessage,
 } from "@/store/mermaidSlice";
-import { selectIsAuthenticated } from "@/store/authSlice";
+import { selectCanUseLocalData } from "@/store/authSlice";
 import {
 	compressToBase64,
 	decompressFromBase64,
@@ -50,12 +50,12 @@ const LoadDiagramDialog: React.FC = () => {
 	const { openLoadDialog, currentDiagramId: savedDiagramId } = useAppSelector(
 		(state) => state.mermaid,
 	);
-	const isAuthenticated = useAppSelector(selectIsAuthenticated);
+	const canUseLocalData = useAppSelector(selectCanUseLocalData);
 	useEffect(() => {
-		if (!isAuthenticated && openLoadDialog) {
+		if (!canUseLocalData && openLoadDialog) {
 			dispatch(closeLoadDialog());
 		}
-	}, [dispatch, isAuthenticated, openLoadDialog]);
+	}, [dispatch, canUseLocalData, openLoadDialog]);
 
 	const formatTimestamp = (timestamp: number | string) => {
 		// Convert to number if it's a string (PostgreSQL bigint serialization)

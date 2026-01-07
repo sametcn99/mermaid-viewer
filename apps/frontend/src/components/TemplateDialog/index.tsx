@@ -32,7 +32,9 @@ import type {
 } from "@/lib/indexed-db/templates.storage";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "@/store";
-import { selectIsAuthenticated } from "@/store/authSlice";
+import {
+	selectCanUseLocalData,
+} from "@/store/authSlice";
 import {
 	addCustomTemplateToCollectionThunk,
 	addTemplateToCollectionThunk,
@@ -72,7 +74,7 @@ export default function TemplateDialog({
 	const collections = useSelector(
 		(state: RootState) => state.templateCollections.collections,
 	);
-	const isAuthenticated = useSelector(selectIsAuthenticated);
+	const canUseLocalData = useSelector(selectCanUseLocalData);
 
 	const requestAuthentication = useCallback((message: string) => {
 		window.dispatchEvent(
@@ -84,14 +86,14 @@ export default function TemplateDialog({
 
 	const ensureAuthenticated = useCallback(
 		(message: string) => {
-			if (isAuthenticated) {
+			if (canUseLocalData) {
 				return true;
 			}
 
 			requestAuthentication(message);
 			return false;
 		},
-		[isAuthenticated, requestAuthentication],
+		[canUseLocalData, requestAuthentication],
 	);
 
 	const createCollection = useCallback(
@@ -517,7 +519,7 @@ export default function TemplateDialog({
 	]);
 
 	const canSaveCurrentDiagram =
-		isAuthenticated &&
+		canUseLocalData &&
 		hasCurrentDiagram &&
 		saveCurrentName.trim().length > 0 &&
 		(saveCurrentCollectionId === NEW_COLLECTION_OPTION

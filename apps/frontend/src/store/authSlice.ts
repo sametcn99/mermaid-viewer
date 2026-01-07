@@ -18,9 +18,36 @@ import {
 } from "@/lib/api";
 import { performFullSync, clearLocalSyncData } from "@/lib/sync";
 
+const LOCAL_MODE_STORAGE_KEY = "mermaid-viewer-auth-mode";
+const LOCAL_MODE_STORAGE_VALUE = "local-only";
+
+const readLocalModePreference = (): boolean => {
+	if (typeof window === "undefined") return false;
+	return (
+		window.localStorage.getItem(LOCAL_MODE_STORAGE_KEY) ===
+		LOCAL_MODE_STORAGE_VALUE
+	);
+};
+
+const persistLocalModePreference = (enabled: boolean) => {
+	if (typeof window === "undefined") return;
+	if (enabled) {
+		window.localStorage.setItem(
+			LOCAL_MODE_STORAGE_KEY,
+			LOCAL_MODE_STORAGE_VALUE,
+		);
+		return;
+	}
+	window.localStorage.removeItem(LOCAL_MODE_STORAGE_KEY);
+};
+
+type InitializeAuthResult = { user: User | null; isLocalOnly: boolean };
+type InitializeAuthError = { message: string; isLocalOnly: boolean };
+
 export interface AuthState {
 	user: User | null;
 	isAuthenticated: boolean;
+	isLocalOnly: boolean;
 	isLoading: boolean;
 	isInitialized: boolean;
 	error: string | null;
@@ -30,6 +57,7 @@ export interface AuthState {
 const initialState: AuthState = {
 	user: null,
 	isAuthenticated: false,
+	isLocalOnly: false,
 	isLoading: false,
 	isInitialized: false,
 	error: null,
@@ -37,20 +65,32 @@ const initialState: AuthState = {
 };
 
 // Async thunks
-export const initializeAuth = createAsyncThunk(
+export const initializeAuth = createAsyncThunk<
+	InitializeAuthResult,
+	void,
+	{ rejectValue: InitializeAuthError }
+>(
 	"auth/initialize",
 	async (_, { rejectWithValue }) => {
 		try {
+			const isLocalOnly = readLocalModePreference();
 			if (!hasTokens()) {
-				return null;
+				return { user: null, isLocalOnly } satisfies InitializeAuthResult;
 			}
 			const user = await getCurrentUser();
-			return user;
+			persistLocalModePreference(false);
+			return { user, isLocalOnly: false } satisfies InitializeAuthResult;
 		} catch (error) {
 			if (error instanceof ApiRequestError) {
-				return rejectWithValue(error.message);
+				return rejectWithValue({
+					message: error.message,
+					isLocalOnly: readLocalModePreference(),
+				} satisfies InitializeAuthError);
 			}
-			return rejectWithValue("Failed to initialize auth");
+			return rejectWithValue({
+				message: "Failed to initialize auth",
+				isLocalOnly: readLocalModePreference(),
+			} satisfies InitializeAuthError);
 		}
 	},
 );
@@ -60,6 +100,7 @@ export const login = createAsyncThunk(
 	async (credentials: LoginRequest, { rejectWithValue }) => {
 		try {
 			const response = await apiLogin(credentials);
+			persistLocalModePreference(false);
 			return response.user;
 		} catch (error) {
 			if (error instanceof ApiRequestError) {
@@ -75,6 +116,7 @@ export const register = createAsyncThunk(
 	async (data: RegisterRequest, { rejectWithValue }) => {
 		try {
 			const response = await apiRegister(data);
+			persistLocalModePreference(false);
 			return response.user;
 		} catch (error) {
 			if (error instanceof ApiRequestError) {
@@ -107,6 +149,8 @@ export const logout = createAsyncThunk(
 			console.error("Logout error:", error);
 		}
 
+		persistLocalModePreference(false);
+
 		if (wasAuthenticated && syncCompleted) {
 			try {
 				await clearLocalSyncData();
@@ -114,6 +158,14 @@ export const logout = createAsyncThunk(
 				console.error("Failed to clear local sync data:", error);
 			}
 		}
+	},
+);
+
+export const continueWithLocalMode = createAsyncThunk(
+	"auth/continueWithLocalMode",
+	async () => {
+		persistLocalModePreference(true);
+		return true;
 	},
 );
 
@@ -152,9 +204,11 @@ const authSlice = createSlice({
 			.addCase(initializeAuth.fulfilled, (state, action) => {
 				state.isLoading = false;
 				state.isInitialized = true;
-				if (action.payload) {
-					state.user = action.payload;
+				state.isLocalOnly = action.payload.isLocalOnly;
+				if (action.payload.user) {
+					state.user = action.payload.user;
 					state.isAuthenticated = true;
+					state.isLocalOnly = false;
 				}
 			})
 			.addCase(initializeAuth.rejected, (state, action) => {
@@ -162,6 +216,7 @@ const authSlice = createSlice({
 				state.isInitialized = true;
 				state.user = null;
 				state.isAuthenticated = false;
+				state.isLocalOnly = action.payload?.isLocalOnly ?? false;
 				// Don't show error for initialization failures - just not logged in
 			});
 
@@ -175,6 +230,7 @@ const authSlice = createSlice({
 				state.isLoading = false;
 				state.user = action.payload;
 				state.isAuthenticated = true;
+				state.isLocalOnly = false;
 				state.error = null;
 			})
 			.addCase(login.rejected, (state, action) => {
@@ -192,6 +248,7 @@ const authSlice = createSlice({
 				state.isLoading = false;
 				state.user = action.payload;
 				state.isAuthenticated = true;
+				state.isLocalOnly = false;
 				state.error = null;
 			})
 			.addCase(register.rejected, (state, action) => {
@@ -208,6 +265,7 @@ const authSlice = createSlice({
 				state.isLoading = false;
 				state.user = null;
 				state.isAuthenticated = false;
+				state.isLocalOnly = false;
 				state.lastSyncAt = null;
 				state.error = null;
 			})
@@ -216,8 +274,20 @@ const authSlice = createSlice({
 				state.isLoading = false;
 				state.user = null;
 				state.isAuthenticated = false;
+				state.isLocalOnly = false;
 				state.lastSyncAt = null;
 			});
+
+		// Continue with local storage
+		builder.addCase(continueWithLocalMode.fulfilled, (state) => {
+			state.isLocalOnly = true;
+			state.isAuthenticated = false;
+			state.user = null;
+			state.isInitialized = true;
+			state.isLoading = false;
+			state.error = null;
+			state.lastSyncAt = null;
+		});
 
 		// Update profile
 		builder
@@ -243,6 +313,10 @@ export const { clearError, setLastSyncAt } = authSlice.actions;
 export const selectUser = (state: { auth: AuthState }) => state.auth.user;
 export const selectIsAuthenticated = (state: { auth: AuthState }) =>
 	state.auth.isAuthenticated;
+export const selectIsLocalOnly = (state: { auth: AuthState }) =>
+	state.auth.isLocalOnly;
+export const selectCanUseLocalData = (state: { auth: AuthState }) =>
+	state.auth.isAuthenticated || state.auth.isLocalOnly;
 export const selectAuthLoading = (state: { auth: AuthState }) =>
 	state.auth.isLoading;
 export const selectAuthError = (state: { auth: AuthState }) => state.auth.error;
