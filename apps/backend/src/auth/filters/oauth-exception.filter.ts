@@ -14,13 +14,13 @@ export class OAuthExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const exceptionResponse = exception.getResponse();
 
-    let message = 'Authentication failed';
-    if (
-      typeof exceptionResponse === 'object' &&
-      exceptionResponse !== null &&
-      'message' in exceptionResponse
-    ) {
-      message = (exceptionResponse as any).message;
+    type ExceptionPayload = { message?: string | string[] };
+    let message: string | string[] = 'Authentication failed';
+    if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
+      const payload = exceptionResponse as ExceptionPayload;
+      if (payload.message !== undefined) {
+        message = payload.message;
+      }
     } else if (typeof exceptionResponse === 'string') {
       message = exceptionResponse;
     }

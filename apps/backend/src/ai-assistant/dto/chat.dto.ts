@@ -26,10 +26,11 @@ export class CreateChatMessageDto {
   @IsNumber()
   @IsOptional()
   @Transform(({ value, obj }) => {
-    if (obj && obj.timestamp === undefined && value !== undefined) {
-      obj.timestamp = value;
+    const target = obj as Partial<CreateChatMessageDto>;
+    if (target && target.timestamp === undefined && value !== undefined) {
+      target.timestamp = Number(value);
     }
-    return value;
+    return typeof value === 'number' ? value : Number(value);
   })
   clientTimestamp?: number;
 

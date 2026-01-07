@@ -13,10 +13,11 @@ export class CreateDiagramSnapshotDto {
   @IsString()
   @IsOptional()
   @Transform(({ value, obj }) => {
-    if (obj && !obj.messageId && value) {
-      obj.messageId = value;
+    const target = obj as Partial<CreateDiagramSnapshotDto>;
+    if (target && !target.messageId && value) {
+      target.messageId = String(value);
     }
-    return value;
+    return typeof value === 'string' ? value : String(value);
   })
   messageClientId?: string;
 
@@ -32,10 +33,11 @@ export class CreateDiagramSnapshotDto {
   @IsNumber()
   @IsOptional()
   @Transform(({ value, obj }) => {
-    if (obj && obj.timestamp === undefined && value !== undefined) {
-      obj.timestamp = value;
+    const target = obj as Partial<CreateDiagramSnapshotDto>;
+    if (target && target.timestamp === undefined && value !== undefined) {
+      target.timestamp = Number(value);
     }
-    return value;
+    return typeof value === 'number' ? value : Number(value);
   })
   clientTimestamp?: number;
 }

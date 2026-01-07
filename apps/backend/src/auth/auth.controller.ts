@@ -37,6 +37,7 @@ import {
 } from './decorators/current-user.decorator';
 import { OAuthExceptionFilter } from './filters/oauth-exception.filter';
 import { environment } from '../config/environment';
+import { User } from './entities/user.entity';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -121,20 +122,13 @@ export class AuthController {
       githubId: fullUser.githubId,
     };
   }
-  @Public()
-  @Get('google')
-  @UseGuards(AuthGuard('google'))
-  @ApiOperation({ summary: 'Login with Google' })
-  async googleAuth() {
-    // Initiates the Google OAuth flow
-  }
 
   @Public()
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   @UseFilters(OAuthExceptionFilter)
   @ApiOperation({ summary: 'Google OAuth callback' })
-  async googleAuthRedirect(@CurrentUser() user: any, @Res() res: Response) {
+  async googleAuthRedirect(@CurrentUser() user: User, @Res() res: Response) {
     const tokens = await this.authService.generateTokens(user);
     await this.authService.updateRefreshToken(user.id, tokens.refreshToken);
 
@@ -158,7 +152,7 @@ export class AuthController {
   @UseGuards(AuthGuard('github'))
   @UseFilters(OAuthExceptionFilter)
   @ApiOperation({ summary: 'GitHub OAuth callback' })
-  async githubAuthRedirect(@CurrentUser() user: any, @Res() res: Response) {
+  async githubAuthRedirect(@CurrentUser() user: User, @Res() res: Response) {
     const tokens = await this.authService.generateTokens(user);
     await this.authService.updateRefreshToken(user.id, tokens.refreshToken);
 

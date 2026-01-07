@@ -1,6 +1,6 @@
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, VerifyCallback } from 'passport-google-oauth20';
-import { Injectable } from '@nestjs/common';
+import { Profile, Strategy, VerifyCallback } from 'passport-google-oauth20';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from '../auth.service';
 
@@ -21,15 +21,24 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   async validate(
     accessToken: string,
     refreshToken: string,
-    profile: any,
+    profile: Profile,
     done: VerifyCallback,
-  ): Promise<any> {
+  ): Promise<void> {
     const { id, displayName, emails, photos } = profile;
+    const primaryEmail = emails?.[0]?.value;
+    const resolvedDisplayName =
+      displayName ?? primaryEmail?.split('@')[0] ?? 'Google User';
+    const avatarUrl = photos?.[0]?.value;
+
+    if (!primaryEmail) {
+      return done(new UnauthorizedException('Email not available from Google'));
+    }
+
     const user = await this.authService.validateOAuthUser({
-      email: emails[0].value,
-      displayName,
+      email: primaryEmail,
+      displayName: resolvedDisplayName,
       googleId: id,
-      avatarUrl: photos[0]?.value,
+      avatarUrl,
     });
     done(null, user);
   }
