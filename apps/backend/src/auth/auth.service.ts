@@ -2,6 +2,7 @@ import {
   Injectable,
   ConflictException,
   UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -14,6 +15,7 @@ import {
   LoginDto,
   TokenResponseDto,
   AuthResponseDto,
+  UpdateProfileDto,
 } from './dto';
 
 export interface JwtPayload {
@@ -65,6 +67,8 @@ export class AuthService {
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         displayName: user.displayName,
+        googleId: user.googleId,
+        githubId: user.githubId,
       },
     };
   }
@@ -189,23 +193,18 @@ export class AuthService {
     });
 
     if (user) {
-      // Update missing IDs if email matches
-      let updated = false;
+      // Check for conflicts
       if (googleId && !user.googleId) {
-        user.googleId = googleId;
-        updated = true;
+        throw new ConflictException(
+          'Account already exists with a different sign-in method',
+        );
       }
       if (githubId && !user.githubId) {
-        user.githubId = githubId;
-        updated = true;
+        throw new ConflictException(
+          'Account already exists with a different sign-in method',
+        );
       }
-      if (avatarUrl && !user.avatarUrl) {
-        user.avatarUrl = avatarUrl;
-        updated = true;
-      }
-      if (updated) {
-        await this.userRepository.save(user);
-      }
+
       return user;
     }
 
@@ -217,6 +216,42 @@ export class AuthService {
       githubId,
       avatarUrl,
     });
+
+    return this.userRepository.save(user);
+  }
+
+  async deleteAccount(userId: string): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    await this.userRepository.delete(userId);
+  }
+
+  async updateProfile(userId: string, dto: UpdateProfileDto): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (dto.displayName !== undefined) {
+      user.displayName = dto.displayName;
+    }
+
+    if (dto.newPassword) {
+      if (!user.passwordHash) {
+        throw new ConflictException('Cannot update password for social login account');
+      }
+      if (!dto.currentPassword) {
+        throw new UnauthorizedException('Current password is required');
+      }
+      const isPasswordValid = await bcrypt.compare(dto.currentPassword, user.passwordHash);
+      if (!isPasswordValid) {
+        throw new UnauthorizedException('Invalid current password');
+      }
+      user.passwordHash = await this.hashPassword(dto.newPassword);
+    }
 
     return this.userRepository.save(user);
   }

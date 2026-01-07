@@ -19,7 +19,9 @@ import {
 	AccordionSummary,
 	AccordionDetails,
 } from "@mui/material";
-import { Eye, EyeOff, ChevronDown, AlertTriangle } from "lucide-react";
+import { Eye, EyeOff, ChevronDown, AlertTriangle, Mail } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGithub, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
 	updateProfile,
@@ -50,7 +52,6 @@ export default function AccountSettingsDialog({
 	const [newPassword, setNewPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [showPasswords, setShowPasswords] = useState(false);
-	const [deletePassword, setDeletePassword] = useState("");
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [deleteError, setDeleteError] = useState<string | null>(null);
 	const [success, setSuccess] = useState<string | null>(null);
@@ -58,7 +59,6 @@ export default function AccountSettingsDialog({
 		currentPassword?: string;
 		newPassword?: string;
 		confirmPassword?: string;
-		deletePassword?: string;
 	}>({});
 
 	const handleClose = useCallback(() => {
@@ -66,7 +66,9 @@ export default function AccountSettingsDialog({
 		setNewPassword("");
 		setConfirmPassword("");
 		setShowPasswords(false);
-		setDeletePassword("");
+		setNewPassword("");
+		setConfirmPassword("");
+		setShowPasswords(false);
 		setDeleteError(null);
 		setSuccess(null);
 		setValidationErrors({});
@@ -148,27 +150,28 @@ export default function AccountSettingsDialog({
 		],
 	);
 
-	const handleDeleteAccount = useCallback(async () => {
-		if (!deletePassword) {
-			setValidationErrors({ deletePassword: "Password is required" });
-			return;
-		}
+	const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
 
+	const handleDeleteCountClick = () => {
+		setDeleteConfirmationOpen(true);
+	};
+
+	const handleDeleteConfirm = useCallback(async () => {
+		setDeleteConfirmationOpen(false);
 		setIsDeleting(true);
 		setDeleteError(null);
 
 		try {
-			await deleteAccount(deletePassword);
+			await deleteAccount(""); // Password no longer required
 			await dispatch(logout());
 			handleClose();
 		} catch (err) {
 			setDeleteError(
 				err instanceof Error ? err.message : "Failed to delete account",
 			);
-		} finally {
-			setIsDeleting(false);
+			setIsDeleting(false); // Only reset if failed
 		}
-	}, [deletePassword, dispatch, handleClose]);
+	}, [dispatch, handleClose]);
 
 	if (!user) return null;
 
@@ -214,61 +217,88 @@ export default function AccountSettingsDialog({
 						fullWidth
 					/>
 
-					<Divider sx={{ my: 1 }}>
-						<Typography variant="caption" color="text.secondary">
-							Change Password
+					<Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
+						<Typography variant="body2" color="text.secondary">
+							Signed in with:
 						</Typography>
-					</Divider>
+						{user.googleId ? (
+							<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+								<FontAwesomeIcon icon={faGoogle} />
+								<Typography variant="body2" fontWeight={500}>Google</Typography>
+							</Box>
+						) : user.githubId ? (
+							<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+								<FontAwesomeIcon icon={faGithub} />
+								<Typography variant="body2" fontWeight={500}>GitHub</Typography>
+							</Box>
+						) : (
+							<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+								<Mail size={16} />
+								<Typography variant="body2" fontWeight={500}>Email</Typography>
+							</Box>
+						)}
+					</Box>
 
-					<TextField
-						label="Current Password"
-						type={showPasswords ? "text" : "password"}
-						value={currentPassword}
-						onChange={(e) => setCurrentPassword(e.target.value)}
-						error={!!validationErrors.currentPassword}
-						helperText={validationErrors.currentPassword}
-						disabled={isLoading}
-						fullWidth
-						autoComplete="current-password"
-						InputProps={{
-							endAdornment: (
-								<InputAdornment position="end">
-									<IconButton
-										onClick={() => setShowPasswords(!showPasswords)}
-										edge="end"
-										size="small"
-										tabIndex={-1}
-									>
-										{showPasswords ? <EyeOff size={18} /> : <Eye size={18} />}
-									</IconButton>
-								</InputAdornment>
-							),
-						}}
-					/>
 
-					<TextField
-						label="New Password"
-						type={showPasswords ? "text" : "password"}
-						value={newPassword}
-						onChange={(e) => setNewPassword(e.target.value)}
-						error={!!validationErrors.newPassword}
-						helperText={validationErrors.newPassword || "At least 8 characters"}
-						disabled={isLoading}
-						fullWidth
-						autoComplete="new-password"
-					/>
+					{!user.googleId && !user.githubId && (
+						<>
+							<Divider sx={{ my: 1 }}>
+								<Typography variant="caption" color="text.secondary">
+									Change Password
+								</Typography>
+							</Divider>
 
-					<TextField
-						label="Confirm New Password"
-						type={showPasswords ? "text" : "password"}
-						value={confirmPassword}
-						onChange={(e) => setConfirmPassword(e.target.value)}
-						error={!!validationErrors.confirmPassword}
-						helperText={validationErrors.confirmPassword}
-						disabled={isLoading}
-						fullWidth
-						autoComplete="new-password"
-					/>
+							<TextField
+								label="Current Password"
+								type={showPasswords ? "text" : "password"}
+								value={currentPassword}
+								onChange={(e) => setCurrentPassword(e.target.value)}
+								error={!!validationErrors.currentPassword}
+								helperText={validationErrors.currentPassword}
+								disabled={isLoading}
+								fullWidth
+								autoComplete="current-password"
+								InputProps={{
+									endAdornment: (
+										<InputAdornment position="end">
+											<IconButton
+												onClick={() => setShowPasswords(!showPasswords)}
+												edge="end"
+												size="small"
+												tabIndex={-1}
+											>
+												{showPasswords ? <EyeOff size={18} /> : <Eye size={18} />}
+											</IconButton>
+										</InputAdornment>
+									),
+								}}
+							/>
+
+							<TextField
+								label="New Password"
+								type={showPasswords ? "text" : "password"}
+								value={newPassword}
+								onChange={(e) => setNewPassword(e.target.value)}
+								error={!!validationErrors.newPassword}
+								helperText={validationErrors.newPassword || "At least 8 characters"}
+								disabled={isLoading}
+								fullWidth
+								autoComplete="new-password"
+							/>
+
+							<TextField
+								label="Confirm New Password"
+								type={showPasswords ? "text" : "password"}
+								value={confirmPassword}
+								onChange={(e) => setConfirmPassword(e.target.value)}
+								error={!!validationErrors.confirmPassword}
+								helperText={validationErrors.confirmPassword}
+								disabled={isLoading}
+								fullWidth
+								autoComplete="new-password"
+							/>
+						</>
+					)}
 
 					<Button
 						type="submit"
@@ -308,24 +338,11 @@ export default function AccountSettingsDialog({
 							</Alert>
 						)}
 
-						<TextField
-							label="Enter your password to confirm"
-							type="password"
-							value={deletePassword}
-							onChange={(e) => setDeletePassword(e.target.value)}
-							error={!!validationErrors.deletePassword}
-							helperText={validationErrors.deletePassword}
-							disabled={isDeleting}
-							fullWidth
-							size="small"
-							sx={{ mb: 2 }}
-						/>
-
 						<Button
 							variant="contained"
 							color="error"
-							onClick={handleDeleteAccount}
-							disabled={isDeleting || !deletePassword}
+							onClick={handleDeleteCountClick}
+							disabled={isDeleting}
 							fullWidth
 						>
 							{isDeleting ? (
@@ -343,6 +360,26 @@ export default function AccountSettingsDialog({
 					Close
 				</Button>
 			</DialogActions>
-		</Dialog>
+
+			{/* Confirmation Dialog */}
+			<Dialog
+				open={deleteConfirmationOpen}
+				onClose={() => setDeleteConfirmationOpen(false)}
+			>
+				<DialogTitle>Confirm Account Deletion</DialogTitle>
+				<DialogContent>
+					<Typography>
+						Are you sure you want to delete your account? This action cannot be
+						undone and all your data will be permanently lost.
+					</Typography>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={() => setDeleteConfirmationOpen(false)}>Cancel</Button>
+					<Button onClick={handleDeleteConfirm} color="error" variant="contained">
+						Delete
+					</Button>
+				</DialogActions>
+			</Dialog>
+		</Dialog >
 	);
 }

@@ -9,6 +9,8 @@ export interface User {
 	id: string;
 	email: string;
 	displayName: string | null;
+	googleId?: string;
+	githubId?: string;
 	createdAt: string;
 	updatedAt: string;
 }

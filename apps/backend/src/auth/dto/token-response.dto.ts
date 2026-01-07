@@ -23,6 +23,12 @@ export class UserResponseDto {
 
   @ApiProperty({ description: 'Last update date' })
   updatedAt: Date;
+
+  @ApiProperty({ description: 'Google ID (if connected)', required: false })
+  googleId?: string;
+
+  @ApiProperty({ description: 'GitHub ID (if connected)', required: false })
+  githubId?: string;
 }
 
 export class AuthResponseDto extends TokenResponseDto {

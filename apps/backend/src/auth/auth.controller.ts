@@ -3,6 +3,9 @@ import {
   Post,
   Body,
   Get,
+  Param,
+  Delete,
+  Patch,
   HttpCode,
   HttpStatus,
   NotFoundException,
@@ -25,6 +28,8 @@ import {
   TokenResponseDto,
   AuthResponseDto,
   UserResponseDto,
+  DeleteAccountDto,
+  UpdateProfileDto,
 } from './dto';
 import { Public } from './decorators/public.decorator';
 import {
@@ -111,6 +116,8 @@ export class AuthController {
       createdAt: fullUser.createdAt,
       updatedAt: fullUser.updatedAt,
       displayName: fullUser.displayName,
+      googleId: fullUser.googleId,
+      githubId: fullUser.githubId,
     };
   }
   @Public()
@@ -157,5 +164,54 @@ export class AuthController {
     res.redirect(
       `${frontendUrl}/auth/callback?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`,
     );
+  }
+
+  @Post('account')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.NO_CONTENT) // For backward compatibility if frontend uses POST
+  @ApiOperation({ summary: 'Delete user account' })
+  @ApiResponse({ status: 204, description: 'Account deleted successfully' })
+  async deleteAccountPost(
+    @CurrentUser('id') userId: string,
+  ): Promise<void> {
+    await this.authService.deleteAccount(userId);
+  }
+
+  @Delete('account')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete user account' })
+  @ApiResponse({ status: 204, description: 'Account deleted successfully' })
+  async deleteAccount(
+    @CurrentUser('id') userId: string,
+  ): Promise<void> {
+    await this.authService.deleteAccount(userId);
+  }
+
+  @Patch('profile')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update user profile' })
+  @ApiResponse({
+    status: 200,
+    description: 'Profile updated successfully',
+    type: UserResponseDto,
+  })
+  async updateProfile(
+    @CurrentUser('id') userId: string,
+    @Body() dto: UpdateProfileDto,
+  ): Promise<UserResponseDto> {
+    const user = await this.authService.updateProfile(userId, dto);
+    return {
+      id: user.id,
+      email: user.email,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      displayName: user.displayName,
+      googleId: user.googleId,
+      githubId: user.githubId,
+    };
   }
 }
