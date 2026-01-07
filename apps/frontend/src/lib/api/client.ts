@@ -8,8 +8,8 @@ import type { ApiError, AuthTokens } from "./types";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 // Token storage keys
-const ACCESS_TOKEN_KEY = "mermaid-viewer-access-token";
-const REFRESH_TOKEN_KEY = "mermaid-viewer-refresh-token";
+export const ACCESS_TOKEN_KEY = "mermaid-viewer-access-token";
+export const REFRESH_TOKEN_KEY = "mermaid-viewer-refresh-token";
 
 // Token management
 export function getAccessToken(): string | null {

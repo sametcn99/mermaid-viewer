@@ -6,7 +6,11 @@ import {
   HttpCode,
   HttpStatus,
   NotFoundException,
+  UseGuards,
+  Res,
 } from '@nestjs/common';
+import { Response } from 'express';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ApiTags,
   ApiOperation,
@@ -31,7 +35,7 @@ import {
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Public()
   @Post('register')
@@ -108,5 +112,50 @@ export class AuthController {
       updatedAt: fullUser.updatedAt,
       displayName: fullUser.displayName,
     };
+  }
+  @Public()
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  @ApiOperation({ summary: 'Login with Google' })
+  async googleAuth() {
+    // Initiates the Google OAuth flow
+  }
+
+  @Public()
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  @ApiOperation({ summary: 'Google OAuth callback' })
+  async googleAuthRedirect(@CurrentUser() user: any, @Res() res: Response) {
+    const tokens = await this.authService.generateTokens(user);
+    await this.authService.updateRefreshToken(user.id, tokens.refreshToken);
+
+    // Redirect to frontend with tokens
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    res.redirect(
+      `${frontendUrl}/auth/callback?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`,
+    );
+  }
+
+  @Public()
+  @Get('github')
+  @UseGuards(AuthGuard('github'))
+  @ApiOperation({ summary: 'Login with GitHub' })
+  async githubAuth() {
+    // Initiates the GitHub OAuth flow
+  }
+
+  @Public()
+  @Get('github/callback')
+  @UseGuards(AuthGuard('github'))
+  @ApiOperation({ summary: 'GitHub OAuth callback' })
+  async githubAuthRedirect(@CurrentUser() user: any, @Res() res: Response) {
+    const tokens = await this.authService.generateTokens(user);
+    await this.authService.updateRefreshToken(user.id, tokens.refreshToken);
+
+    // Redirect to frontend with tokens
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    res.redirect(
+      `${frontendUrl}/auth/callback?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`,
+    );
   }
 }

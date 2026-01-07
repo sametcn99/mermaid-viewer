@@ -28,7 +28,7 @@ export class AuthService {
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
     const existingUser = await this.userRepository.findOne({
@@ -149,7 +149,7 @@ export class AuthService {
     return bcrypt.hash(password, saltRounds);
   }
 
-  private async generateTokens(user: User): Promise<TokenResponseDto> {
+  async generateTokens(user: User): Promise<TokenResponseDto> {
     const payload: JwtPayload = { sub: user.id, email: user.email };
 
     const [accessToken, refreshToken] = await Promise.all([
@@ -166,7 +166,7 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  private async updateRefreshToken(
+  async updateRefreshToken(
     userId: string,
     refreshToken: string,
   ): Promise<void> {
@@ -174,5 +174,50 @@ export class AuthService {
     await this.userRepository.update(userId, {
       refreshToken: hashedRefreshToken,
     });
+  }
+  async validateOAuthUser(details: {
+    email: string;
+    displayName: string;
+    googleId?: string;
+    githubId?: string;
+    avatarUrl?: string;
+  }): Promise<User> {
+    const { email, displayName, googleId, githubId, avatarUrl } = details;
+
+    let user = await this.userRepository.findOne({
+      where: [{ email: email.toLowerCase() }, { googleId }, { githubId }],
+    });
+
+    if (user) {
+      // Update missing IDs if email matches
+      let updated = false;
+      if (googleId && !user.googleId) {
+        user.googleId = googleId;
+        updated = true;
+      }
+      if (githubId && !user.githubId) {
+        user.githubId = githubId;
+        updated = true;
+      }
+      if (avatarUrl && !user.avatarUrl) {
+        user.avatarUrl = avatarUrl;
+        updated = true;
+      }
+      if (updated) {
+        await this.userRepository.save(user);
+      }
+      return user;
+    }
+
+    // Create new user
+    user = this.userRepository.create({
+      email: email.toLowerCase(),
+      displayName,
+      googleId,
+      githubId,
+      avatarUrl,
+    });
+
+    return this.userRepository.save(user);
   }
 }

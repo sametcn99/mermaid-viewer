@@ -24,6 +24,7 @@ import {
 	selectAuthLoading,
 	selectAuthError,
 } from "@/store/authSlice";
+import { SocialLogin } from "./SocialLogin";
 
 interface LoginDialogProps {
 	open: boolean;
@@ -164,6 +165,8 @@ export default function LoginDialog({
 						}}
 					/>
 				</Box>
+
+				<SocialLogin />
 			</DialogContent>
 
 			<DialogActions sx={{ px: 3, pb: 3, flexDirection: "column", gap: 1 }}>

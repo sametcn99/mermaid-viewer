@@ -29,7 +29,7 @@ class MainApplication {
     const allowedOrigins = (
       process.env.FRONTEND_URLS ||
       process.env.FRONTEND_URL ||
-      'http://localhost:4020,http://localhost:3000'
+      'http://localhost:3000'
     )
       .split(',')
       .map((origin) => origin.trim())

@@ -14,11 +14,20 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   passwordHash: string;
 
   @Column({ type: 'varchar', length: 120, nullable: true })
   displayName: string | null;
+
+  @Column({ unique: true, nullable: true })
+  googleId: string;
+
+  @Column({ unique: true, nullable: true })
+  githubId: string;
+
+  @Column({ nullable: true })
+  avatarUrl: string;
 
   @Column({ nullable: true })
   refreshToken: string;
