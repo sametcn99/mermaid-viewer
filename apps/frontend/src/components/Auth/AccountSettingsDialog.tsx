@@ -178,7 +178,7 @@ export default function AccountSettingsDialog({
 	return (
 		<Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
 			<DialogTitle>
-				<Typography variant="h5" fontWeight={600}>
+				<Typography variant="h5" fontWeight={600} component="div">
 					Account Settings
 				</Typography>
 			</DialogTitle>

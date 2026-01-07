@@ -12,9 +12,16 @@ export default function AuthCallbackPage() {
 	const searchParams = useSearchParams();
 	const dispatch = useAppDispatch();
 
+
 	useEffect(() => {
 		const accessToken = searchParams.get("accessToken");
 		const refreshToken = searchParams.get("refreshToken");
+		const error = searchParams.get("error");
+
+		if (error) {
+			router.push(`/login?error=${encodeURIComponent(error)}`);
+			return;
+		}
 
 		if (accessToken && refreshToken) {
 			// Store tokens

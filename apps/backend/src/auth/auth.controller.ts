@@ -11,6 +11,7 @@ import {
   NotFoundException,
   UseGuards,
   Res,
+  UseFilters,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
@@ -36,11 +37,12 @@ import {
   CurrentUser,
   CurrentUserData,
 } from './decorators/current-user.decorator';
+import { OAuthExceptionFilter } from './filters/oauth-exception.filter';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Public()
   @Post('register')
@@ -131,6 +133,7 @@ export class AuthController {
   @Public()
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
+  @UseFilters(OAuthExceptionFilter)
   @ApiOperation({ summary: 'Google OAuth callback' })
   async googleAuthRedirect(@CurrentUser() user: any, @Res() res: Response) {
     const tokens = await this.authService.generateTokens(user);
@@ -154,6 +157,7 @@ export class AuthController {
   @Public()
   @Get('github/callback')
   @UseGuards(AuthGuard('github'))
+  @UseFilters(OAuthExceptionFilter)
   @ApiOperation({ summary: 'GitHub OAuth callback' })
   async githubAuthRedirect(@CurrentUser() user: any, @Res() res: Response) {
     const tokens = await this.authService.generateTokens(user);
