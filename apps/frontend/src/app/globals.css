@@ -22,7 +22,6 @@ body {
 	height: 100%;
 	margin: 0;
 	padding: 0;
-	overflow: hidden; /* Prevent body scrollbars */
 	/* Touch optimizations */
 	-webkit-tap-highlight-color: transparent;
 	touch-action: manipulation;

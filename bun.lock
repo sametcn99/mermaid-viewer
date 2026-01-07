@@ -5,7 +5,7 @@
     "": {
       "name": "mermaid-viewer",
       "devDependencies": {
-        "turbo": "latest",
+        "turbo": "^2.7.3",
       },
     },
     "apps/backend": {

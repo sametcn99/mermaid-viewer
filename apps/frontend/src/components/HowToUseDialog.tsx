@@ -24,6 +24,7 @@ import {
 	FilePlus,
 	FolderOpen,
 	FolderPlus,
+	Heart,
 	Monitor,
 	Palette,
 	Save,
@@ -525,6 +526,81 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 					>
 						View on GitHub →
 					</Link>
+				</Box>
+				<Box
+					sx={{
+						mt: 4,
+						p: 2,
+						borderRadius: 2,
+						background:
+							"linear-gradient(135deg, rgba(255,204,128,0.18) 0%, rgba(255,111,97,0.16) 100%)",
+						border: (theme) => `1px solid ${theme.palette.warning.light}`,
+						display: "flex",
+						alignItems: "center",
+						gap: 1.5,
+						justifyContent: "space-between",
+						flexWrap: "wrap",
+					}}
+				>
+					<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+						<Heart size={20} color="#d81b60" />
+						<Box>
+							<Typography variant="subtitle1" fontWeight={700}>
+								Enjoying Mermaid Viewer?
+							</Typography>
+							<Typography variant="body2" color="text.secondary">
+								Sponsor the project to help me ship faster and keep features
+								free.
+							</Typography>
+						</Box>
+					</Box>
+					<Link
+						href="https://github.com/sponsors/sametcn99"
+						target="_blank"
+						rel="noopener noreferrer"
+						underline="none"
+						sx={{
+							px: 2.5,
+							py: 1,
+							borderRadius: 999,
+							fontWeight: 700,
+							color: (theme) => theme.palette.primary.contrastText,
+							backgroundColor: (theme) => theme.palette.primary.main,
+							boxShadow: (theme) => theme.shadows[3],
+							border: (theme) => `1px solid ${theme.palette.primary.dark}`,
+							"&:hover": {
+								backgroundColor: (theme) => theme.palette.primary.dark,
+								textDecoration: "none",
+							},
+						}}
+					>
+						Become a Sponsor
+					</Link>
+				</Box>
+				<Box sx={{ mt: 3, textAlign: "center" }}>
+					<Typography
+						variant="caption"
+						color="text.secondary"
+						sx={{ display: "inline-flex", gap: 1.5 }}
+					>
+						<Link
+							href="/privacy"
+							underline="hover"
+							color="inherit"
+							target="_blank"
+						>
+							Privacy Policy
+						</Link>
+						·
+						<Link
+							href="/terms"
+							underline="hover"
+							color="inherit"
+							target="_blank"
+						>
+							Terms of Service
+						</Link>
+					</Typography>
 				</Box>
 			</DialogContent>
 		</Dialog>
