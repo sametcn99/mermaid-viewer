@@ -1,6 +1,7 @@
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import ThemeRegistry from "@/components/ThemeRegistry";
 import DeviceStateInitializer from "@/components/DeviceStateInitializer";
+import SyncManager from "@/components/SyncManager";
 import StoreProvider from "@/store/StoreProvider";
 import appMetadata, {
 	APP_DESCRIPTION,
@@ -103,6 +104,7 @@ export default function RootLayout({
 					<ThemeRegistry>
 						<StoreProvider>
 							<DeviceStateInitializer />
+							<SyncManager />
 							{children}
 						</StoreProvider>
 					</ThemeRegistry>

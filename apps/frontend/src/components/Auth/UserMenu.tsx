@@ -21,13 +21,9 @@ import { logout, selectUser, selectAuthLoading } from "@/store/authSlice";
 
 interface UserMenuProps {
 	onOpenSettings?: () => void;
-	onSyncData?: () => Promise<void>;
 }
 
-export default function UserMenu({
-	onOpenSettings,
-	onSyncData,
-}: UserMenuProps) {
+export default function UserMenu({ onOpenSettings }: UserMenuProps) {
 	const dispatch = useAppDispatch();
 	const user = useAppSelector(selectUser);
 	const isLoading = useAppSelector(selectAuthLoading);
@@ -53,17 +49,6 @@ export default function UserMenu({
 		handleClose();
 		onOpenSettings?.();
 	}, [handleClose, onOpenSettings]);
-
-	const handleSync = useCallback(async () => {
-		if (isSyncing || !onSyncData) return;
-
-		setIsSyncing(true);
-		try {
-			await onSyncData();
-		} finally {
-			setIsSyncing(false);
-		}
-	}, [isSyncing, onSyncData]);
 
 	if (!user) return null;
 
@@ -122,19 +107,6 @@ export default function UserMenu({
 				</Box>
 
 				<Divider />
-
-				{onSyncData && (
-					<MenuItem onClick={handleSync} disabled={isSyncing}>
-						<ListItemIcon>
-							{isSyncing ? (
-								<CircularProgress size={18} />
-							) : (
-								<RefreshCw size={18} />
-							)}
-						</ListItemIcon>
-						<ListItemText>Sync Data</ListItemText>
-					</MenuItem>
-				)}
 
 				{onOpenSettings && (
 					<MenuItem onClick={handleSettings}>

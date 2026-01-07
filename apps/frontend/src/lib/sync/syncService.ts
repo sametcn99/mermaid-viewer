@@ -62,6 +62,48 @@ import type {
 	AiAssistantConfig,
 } from "@/types/ai-assistant.types";
 
+export type SyncRequestPriority = "immediate" | "background";
+
+export interface SyncRequest {
+	reason: string;
+	priority: SyncRequestPriority;
+	requestedAt: number;
+}
+
+type SyncListener = (request: SyncRequest) => void;
+
+const syncListeners = new Set<SyncListener>();
+
+export function subscribeToSyncRequests(listener: SyncListener): () => void {
+	syncListeners.add(listener);
+	return () => {
+		syncListeners.delete(listener);
+	};
+}
+
+function dispatchSyncRequest(
+	reason: string,
+	priority: SyncRequestPriority,
+): void {
+	const payload: SyncRequest = {
+		reason,
+		priority,
+		requestedAt: Date.now(),
+	};
+
+	for (const listener of syncListeners) {
+		listener(payload);
+	}
+}
+
+export function requestImmediateSync(reason: string): void {
+	dispatchSyncRequest(reason, "immediate");
+}
+
+export function requestBackgroundSync(reason: string): void {
+	dispatchSyncRequest(reason, "background");
+}
+
 // Storage keys for sync metadata
 const LAST_SYNC_KEY = "mermaid-viewer-last-sync";
 

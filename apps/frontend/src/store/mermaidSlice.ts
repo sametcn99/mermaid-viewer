@@ -15,6 +15,7 @@ import {
 	applyDiagramSettings,
 	loadStoredDiagramSettings,
 } from "@/lib/diagram-settings";
+import { requestImmediateSync } from "@/lib/sync";
 import type { AppDispatch, AppThunk, RootState } from "./index";
 
 export interface MermaidState {
@@ -176,6 +177,7 @@ export const saveDiagramChanges =
 		if (updated) {
 			dispatch(setHasUnsavedChanges(false));
 			dispatch(setAlertMessage("Diagram updated"));
+			requestImmediateSync("diagram-updated");
 		}
 	};
 

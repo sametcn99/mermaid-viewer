@@ -62,7 +62,6 @@ import {
 	refreshSavedDiagrams,
 	selectSavedDiagrams,
 } from "@/store/savedDiagramsSlice";
-import { refreshTemplateCollections } from "@/store/templateCollectionsSlice";
 import LoadDiagramDialog from "./LoadDiagramDialog";
 import ThemeSettingsDialog from "./ThemeSettingsDialog";
 import { useAppShortcuts } from "@/hooks/useAppShortcuts";
@@ -78,9 +77,8 @@ import {
 	selectIsLocalOnly,
 	selectAuthInitialized,
 	initializeAuth,
-	setLastSyncAt,
 } from "@/store/authSlice";
-import { performFullSync } from "@/lib/sync";
+import { requestImmediateSync } from "@/lib/sync";
 import { loadStoredDiagramSettings } from "@/lib/diagram-settings";
 import { subscribeToUrlUpdates } from "@/lib/utils/url.utils";
 
@@ -167,47 +165,27 @@ export default function AppBar() {
 		void dispatch(refreshSavedDiagrams());
 	}, [dispatch]);
 
-	// Sync data with server
-	const handleSyncData = useCallback(async () => {
-		try {
-			const result = await performFullSync();
-			dispatch(setLastSyncAt(result.syncedAt));
-			dispatch(setCustomAlertMessage("Data synced successfully"));
-			refreshDiagrams();
-			// Refresh template collections too
-			void dispatch(refreshTemplateCollections());
-		} catch (error) {
-			dispatch(
-				setCustomAlertMessage(
-					error instanceof Error ? error.message : "Sync failed",
-				),
-			);
-		}
-	}, [dispatch, refreshDiagrams]);
-
 	// Auto-sync on auth initialization if authenticated
-	const hasPerformedInitialSync = useRef(false);
+	const hasRequestedInitialSync = useRef(false);
 	useEffect(() => {
 		if (
 			authInitialized &&
 			isAuthenticated &&
-			!hasPerformedInitialSync.current
+			!hasRequestedInitialSync.current
 		) {
-			hasPerformedInitialSync.current = true;
-			// Perform initial sync to load data from server
-			void handleSyncData();
+			hasRequestedInitialSync.current = true;
+			requestImmediateSync("auth-initial-sync");
 		}
 
-		// Reset sync flag when user logs out
 		if (!isAuthenticated) {
-			hasPerformedInitialSync.current = false;
+			hasRequestedInitialSync.current = false;
 		}
-	}, [authInitialized, isAuthenticated, handleSyncData]);
+	}, [authInitialized, isAuthenticated]);
 
 	// Sync on login
-	const handleAuthSuccess = useCallback(async () => {
-		await handleSyncData();
-	}, [handleSyncData]);
+	const handleAuthSuccess = useCallback(() => {
+		requestImmediateSync("auth-success");
+	}, []);
 
 	const handleRequireAuth = useCallback(
 		(message?: string) => {
@@ -277,6 +255,7 @@ export default function AppBar() {
 		dispatch(setCustomCurrentDiagramId(diagram.id));
 		dispatch(setCustomUnsavedChanges(false));
 		dispatch(setCustomAlertMessage("Diagram saved"));
+		requestImmediateSync("diagram-saved");
 	}, [
 		canUseLocalData,
 		diagramName,
@@ -514,7 +493,6 @@ export default function AppBar() {
 							) : isAuthenticated ? (
 								<UserMenu
 									onOpenSettings={() => setIsAccountSettingsOpen(true)}
-									onSyncData={handleSyncData}
 								/>
 							) : (
 								<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -578,7 +556,6 @@ export default function AppBar() {
 							) : isAuthenticated ? (
 								<UserMenu
 									onOpenSettings={() => setIsAccountSettingsOpen(true)}
-									onSyncData={handleSyncData}
 								/>
 							) : (
 								<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>

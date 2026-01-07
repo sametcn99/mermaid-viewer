@@ -13,6 +13,7 @@ import {
 	removeTemplateFromCollection,
 	renameTemplateCollection,
 } from "@/lib/indexed-db/templates.storage";
+import { requestImmediateSync } from "@/lib/sync";
 import type { AppThunk } from "./index";
 
 export interface TemplateCollectionsState {
@@ -58,6 +59,7 @@ export const createTemplateCollectionThunk =
 		if (!trimmed) return null;
 		const collection = await createTemplateCollection(trimmed);
 		await dispatch(refreshTemplateCollections());
+		requestImmediateSync("template-collection-created");
 		return collection;
 	};
 
@@ -71,6 +73,7 @@ export const renameTemplateCollectionThunk =
 		if (!trimmed) return undefined;
 		const updated = await renameTemplateCollection(id, trimmed);
 		await dispatch(refreshTemplateCollections());
+		requestImmediateSync("template-collection-renamed");
 		return updated;
 	};
 
@@ -80,6 +83,7 @@ export const deleteTemplateCollectionThunk =
 		const result = await deleteTemplateCollection(id);
 		if (result) {
 			await dispatch(refreshTemplateCollections());
+			requestImmediateSync("template-collection-deleted");
 		}
 		return result;
 	};
@@ -92,6 +96,7 @@ export const addTemplateToCollectionThunk =
 	async (dispatch) => {
 		const updated = await addTemplateToCollection(collectionId, templateId);
 		await dispatch(refreshTemplateCollections());
+		requestImmediateSync("template-added-to-collection");
 		return updated;
 	};
 
@@ -106,6 +111,7 @@ export const removeTemplateFromCollectionThunk =
 			templateId,
 		);
 		await dispatch(refreshTemplateCollections());
+		requestImmediateSync("template-removed-from-collection");
 		return updated;
 	};
 
@@ -120,6 +126,7 @@ export const addCustomTemplateToCollectionThunk =
 			template,
 		);
 		await dispatch(refreshTemplateCollections());
+		requestImmediateSync("custom-template-added");
 		return customTemplate;
 	};
 
@@ -134,5 +141,6 @@ export const removeCustomTemplateFromCollectionThunk =
 			customTemplateId,
 		);
 		await dispatch(refreshTemplateCollections());
+		requestImmediateSync("custom-template-removed");
 		return updated;
 	};

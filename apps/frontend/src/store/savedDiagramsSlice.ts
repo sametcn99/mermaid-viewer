@@ -6,6 +6,7 @@ import {
 	saveDiagramToStorage,
 	type SavedDiagram,
 } from "@/lib/indexed-db/diagrams.storage";
+import { requestImmediateSync } from "@/lib/sync";
 import type { DiagramSettingsConfig } from "@/lib/diagram-settings";
 import { setCustomAlertMessage } from "./mermaidSlice";
 
@@ -66,6 +67,7 @@ export const deleteSavedDiagram =
 		await deleteDiagramFromStorage(id);
 		dispatch(setCustomAlertMessage("Diagram deleted"));
 		dispatch(refreshSavedDiagrams());
+		requestImmediateSync("diagram-deleted");
 	};
 
 export const importSavedDiagrams =
@@ -86,4 +88,5 @@ export const importSavedDiagrams =
 					: `${diagrams.length} diagrams imported`,
 			),
 		);
+		requestImmediateSync("diagram-imported");
 	};
