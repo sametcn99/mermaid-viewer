@@ -7,6 +7,12 @@ const nextConfig: NextConfig = {
 	// Enable standalone output for Docker builds
 	output: "standalone",
 
+	// Explicitly define environment variables for client-side access
+	env: {
+		NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+		NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+	},
+
 	// Optimize webpack configuration
 	webpack: (config, { dev, isServer }) => {
 		// Enable source maps in production
