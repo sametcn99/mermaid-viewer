@@ -41,6 +41,13 @@ export class Diagram {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column({ type: 'bigint', nullable: true })
+  @Column({
+    type: 'bigint',
+    nullable: true,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => (value ? Number.parseInt(value, 10) : null),
+    },
+  })
   clientTimestamp: number; // Original timestamp from frontend for sync
 }
