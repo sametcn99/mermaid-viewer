@@ -380,7 +380,7 @@ export class TemplatesService {
 
     try {
       return decryptContent(value) ?? '';
-    } catch (_) {
+    } catch {
       return value;
     }
   }

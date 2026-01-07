@@ -208,7 +208,7 @@ export class AiAssistantService {
 
     try {
       return decryptContent(value) ?? '';
-    } catch (_) {
+    } catch {
       // If legacy plaintext exists, return as-is to avoid breaking responses.
       return value;
     }

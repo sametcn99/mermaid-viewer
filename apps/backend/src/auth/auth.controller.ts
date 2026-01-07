@@ -3,7 +3,6 @@ import {
   Post,
   Body,
   Get,
-  Param,
   Delete,
   Patch,
   HttpCode,
@@ -29,7 +28,6 @@ import {
   TokenResponseDto,
   AuthResponseDto,
   UserResponseDto,
-  DeleteAccountDto,
   UpdateProfileDto,
 } from './dto';
 import { Public } from './decorators/public.decorator';

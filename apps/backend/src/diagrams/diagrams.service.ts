@@ -172,7 +172,7 @@ export class DiagramsService {
 
     try {
       return decryptContent(value) ?? '';
-    } catch (_) {
+    } catch {
       // In case legacy plaintext is encountered, pass it through.
       return value;
     }
