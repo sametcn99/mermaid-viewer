@@ -15,7 +15,9 @@ export default async function PresentationPage({ searchParams }: PageProps) {
 	const raw = params?.diagram;
 	const encodedDiagram = Array.isArray(raw) ? raw[0] : raw;
 	const rawSettings = params?.settings;
-	const encodedSettings = Array.isArray(rawSettings) ? rawSettings[0] : rawSettings;
+	const encodedSettings = Array.isArray(rawSettings)
+		? rawSettings[0]
+		: rawSettings;
 
 	return (
 		<PresentationClient

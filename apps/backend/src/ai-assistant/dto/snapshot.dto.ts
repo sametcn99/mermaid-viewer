@@ -7,7 +7,9 @@ export class CreateDiagramSnapshotDto {
   @IsString()
   messageId: string;
 
-  @ApiPropertyOptional({ description: 'Alias for message ID (messageClientId)' })
+  @ApiPropertyOptional({
+    description: 'Alias for message ID (messageClientId)',
+  })
   @IsString()
   @IsOptional()
   @Transform(({ value, obj }) => {

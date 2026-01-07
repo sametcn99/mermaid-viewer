@@ -192,10 +192,7 @@ export default function AppBar() {
 			handleRequireAuth(detail?.message);
 		};
 
-		window.addEventListener(
-			"requestAuthentication",
-			listener as EventListener,
-		);
+		window.addEventListener("requestAuthentication", listener as EventListener);
 
 		return () => {
 			window.removeEventListener(

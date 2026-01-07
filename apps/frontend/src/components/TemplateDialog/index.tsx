@@ -289,9 +289,7 @@ export default function TemplateDialog({
 	const handleAddTemplateToCollection = useCallback(
 		(collectionId: string) => {
 			if (!templatePendingAssignment) return;
-			if (
-				!ensureAuthenticated("Sign in to manage template collections.")
-			) {
+			if (!ensureAuthenticated("Sign in to manage template collections.")) {
 				handleCloseCollectionMenu();
 				return;
 			}
@@ -335,15 +333,18 @@ export default function TemplateDialog({
 		openNewCollectionDialog(false);
 	}, [ensureAuthenticated, openNewCollectionDialog]);
 
-	const handleEditCollection = useCallback((collection: TemplateCollection) => {
-		if (!ensureAuthenticated("Sign in to manage template collections.")) {
-			return;
-		}
-		setCollectionDialogMode("rename");
-		setCollectionBeingEdited(collection);
-		setCollectionNameInput(collection.name);
-		setCollectionDialogOpen(true);
-	}, [ensureAuthenticated]);
+	const handleEditCollection = useCallback(
+		(collection: TemplateCollection) => {
+			if (!ensureAuthenticated("Sign in to manage template collections.")) {
+				return;
+			}
+			setCollectionDialogMode("rename");
+			setCollectionBeingEdited(collection);
+			setCollectionNameInput(collection.name);
+			setCollectionDialogOpen(true);
+		},
+		[ensureAuthenticated],
+	);
 
 	const handleDeleteCollection = useCallback(
 		(collectionId: string) => {

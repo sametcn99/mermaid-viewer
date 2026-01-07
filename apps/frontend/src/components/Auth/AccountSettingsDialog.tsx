@@ -217,28 +217,42 @@ export default function AccountSettingsDialog({
 						fullWidth
 					/>
 
-					<Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
+					<Box
+						sx={{
+							display: "flex",
+							alignItems: "center",
+							gap: 2,
+							p: 2,
+							bgcolor: "action.hover",
+							borderRadius: 1,
+						}}
+					>
 						<Typography variant="body2" color="text.secondary">
 							Signed in with:
 						</Typography>
 						{user.googleId ? (
-							<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+							<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
 								<FontAwesomeIcon icon={faGoogle} />
-								<Typography variant="body2" fontWeight={500}>Google</Typography>
+								<Typography variant="body2" fontWeight={500}>
+									Google
+								</Typography>
 							</Box>
 						) : user.githubId ? (
-							<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+							<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
 								<FontAwesomeIcon icon={faGithub} />
-								<Typography variant="body2" fontWeight={500}>GitHub</Typography>
+								<Typography variant="body2" fontWeight={500}>
+									GitHub
+								</Typography>
 							</Box>
 						) : (
-							<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+							<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
 								<Mail size={16} />
-								<Typography variant="body2" fontWeight={500}>Email</Typography>
+								<Typography variant="body2" fontWeight={500}>
+									Email
+								</Typography>
 							</Box>
 						)}
 					</Box>
-
 
 					{!user.googleId && !user.githubId && (
 						<>
@@ -267,7 +281,11 @@ export default function AccountSettingsDialog({
 												size="small"
 												tabIndex={-1}
 											>
-												{showPasswords ? <EyeOff size={18} /> : <Eye size={18} />}
+												{showPasswords ? (
+													<EyeOff size={18} />
+												) : (
+													<Eye size={18} />
+												)}
 											</IconButton>
 										</InputAdornment>
 									),
@@ -280,7 +298,9 @@ export default function AccountSettingsDialog({
 								value={newPassword}
 								onChange={(e) => setNewPassword(e.target.value)}
 								error={!!validationErrors.newPassword}
-								helperText={validationErrors.newPassword || "At least 8 characters"}
+								helperText={
+									validationErrors.newPassword || "At least 8 characters"
+								}
 								disabled={isLoading}
 								fullWidth
 								autoComplete="new-password"
@@ -374,12 +394,18 @@ export default function AccountSettingsDialog({
 					</Typography>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={() => setDeleteConfirmationOpen(false)}>Cancel</Button>
-					<Button onClick={handleDeleteConfirm} color="error" variant="contained">
+					<Button onClick={() => setDeleteConfirmationOpen(false)}>
+						Cancel
+					</Button>
+					<Button
+						onClick={handleDeleteConfirm}
+						color="error"
+						variant="contained"
+					>
 						Delete
 					</Button>
 				</DialogActions>
 			</Dialog>
-		</Dialog >
+		</Dialog>
 	);
 }

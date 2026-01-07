@@ -7,7 +7,6 @@ const URL_UPDATE_EVENT = "mermaidUrlUpdated";
 const EMPTY_STATE = "{}";
 
 function notifyUrlUpdated(url: URL) {
-
 	window.history.replaceState({}, "", url.toString());
 	window.dispatchEvent(new CustomEvent(URL_UPDATE_EVENT));
 }

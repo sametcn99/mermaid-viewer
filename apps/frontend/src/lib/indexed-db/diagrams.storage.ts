@@ -32,7 +32,11 @@ async function getUntitledDiagramIndex(): Promise<number> {
 export async function saveDiagramToStorage(
 	name: string,
 	code: string,
-	options?: { id?: string; timestamp?: number; settings?: DiagramSettingsConfig | null },
+	options?: {
+		id?: string;
+		timestamp?: number;
+		settings?: DiagramSettingsConfig | null;
+	},
 ): Promise<SavedDiagram> {
 	const trimmedName = name.trim();
 	const diagramName = trimmedName.length

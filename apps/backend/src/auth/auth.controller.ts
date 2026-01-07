@@ -40,7 +40,7 @@ import {
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Public()
   @Post('register')
@@ -172,9 +172,7 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT) // For backward compatibility if frontend uses POST
   @ApiOperation({ summary: 'Delete user account' })
   @ApiResponse({ status: 204, description: 'Account deleted successfully' })
-  async deleteAccountPost(
-    @CurrentUser('id') userId: string,
-  ): Promise<void> {
+  async deleteAccountPost(@CurrentUser('id') userId: string): Promise<void> {
     await this.authService.deleteAccount(userId);
   }
 
@@ -184,9 +182,7 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete user account' })
   @ApiResponse({ status: 204, description: 'Account deleted successfully' })
-  async deleteAccount(
-    @CurrentUser('id') userId: string,
-  ): Promise<void> {
+  async deleteAccount(@CurrentUser('id') userId: string): Promise<void> {
     await this.authService.deleteAccount(userId);
   }
 

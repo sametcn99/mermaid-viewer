@@ -17,7 +17,10 @@ export class UpdateDiagramDto {
   @IsOptional()
   clientTimestamp?: number;
 
-  @ApiPropertyOptional({ description: 'Diagram settings payload', type: Object })
+  @ApiPropertyOptional({
+    description: 'Diagram settings payload',
+    type: Object,
+  })
   @IsObject()
   @IsOptional()
   settings?: Record<string, unknown>;

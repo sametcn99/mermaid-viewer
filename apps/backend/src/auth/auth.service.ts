@@ -30,7 +30,7 @@ export class AuthService {
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) { }
+  ) {}
 
   async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
     const existingUser = await this.userRepository.findOne({
@@ -241,12 +241,17 @@ export class AuthService {
 
     if (dto.newPassword) {
       if (!user.passwordHash) {
-        throw new ConflictException('Cannot update password for social login account');
+        throw new ConflictException(
+          'Cannot update password for social login account',
+        );
       }
       if (!dto.currentPassword) {
         throw new UnauthorizedException('Current password is required');
       }
-      const isPasswordValid = await bcrypt.compare(dto.currentPassword, user.passwordHash);
+      const isPasswordValid = await bcrypt.compare(
+        dto.currentPassword,
+        user.passwordHash,
+      );
       if (!isPasswordValid) {
         throw new UnauthorizedException('Invalid current password');
       }

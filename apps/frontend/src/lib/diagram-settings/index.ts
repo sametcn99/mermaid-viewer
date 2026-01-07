@@ -123,7 +123,8 @@ export const applyDiagramSettings = async (
 	return merged;
 };
 
-export const loadStoredDiagramSettings = async (): Promise<DiagramSettingsConfig> => {
-	const stored = (await getMermaidConfig()) as DiagramSettingsInput;
-	return mergeDiagramSettings(stored);
-};
+export const loadStoredDiagramSettings =
+	async (): Promise<DiagramSettingsConfig> => {
+		const stored = (await getMermaidConfig()) as DiagramSettingsInput;
+		return mergeDiagramSettings(stored);
+	};

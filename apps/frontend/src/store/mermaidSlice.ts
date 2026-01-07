@@ -118,7 +118,6 @@ export const initializeMermaidState =
 		return;
 	};
 
-
 export const updateMermaidFromEditor =
 	(value: string | undefined): AppThunk<Promise<void>> =>
 	async (dispatch, getState) => {
@@ -136,7 +135,7 @@ export const updateMermaidFromEditor =
 			const changed = newCode !== "";
 			dispatch(setHasUnsavedChanges(changed));
 		}
-};
+	};
 
 export const loadDiagramFromStorage =
 	(diagram: SavedDiagram): AppThunk<Promise<void>> =>

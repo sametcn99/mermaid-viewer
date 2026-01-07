@@ -58,8 +58,9 @@ export default function DiagramPanel({
 	const [error, setError] = useState<string | null>(null);
 	const [svgContent, setSvgContent] = useState<string>("");
 	const [showCopyNotification, setShowCopyNotification] = useState(false);
-	const [mermaidConfig, setMermaidConfig] =
-		useState<DiagramSettingsConfig>(defaultDiagramSettings);
+	const [mermaidConfig, setMermaidConfig] = useState<DiagramSettingsConfig>(
+		defaultDiagramSettings,
+	);
 	const [configInitialized, setConfigInitialized] = useState(false);
 	const isDefaultConfig = useMemo(
 		() => isDefaultDiagramSettings(mermaidConfig),
@@ -87,19 +88,17 @@ export default function DiagramPanel({
 	}, [dispatch]);
 	const isMobileTouch = isTouchDevice && screen.isMobile;
 
-	const applyConfig = useCallback(
-		(config: unknown) => {
-			if (!config || typeof config !== "object") return false;
-			setMermaidConfig(mergeDiagramSettings(config));
-			setConfigInitialized(true);
-			return true;
-		},
-		[],
-	);
+	const applyConfig = useCallback((config: unknown) => {
+		if (!config || typeof config !== "object") return false;
+		setMermaidConfig(mergeDiagramSettings(config));
+		setConfigInitialized(true);
+		return true;
+	}, []);
 
 	// Load saved or URL config on mount
 	useEffect(() => {
-		const configFromUrl = retrieveDiagramSettingsFromUrl<DiagramSettingsConfig>();
+		const configFromUrl =
+			retrieveDiagramSettingsFromUrl<DiagramSettingsConfig>();
 		if (configFromUrl && applyConfig(configFromUrl)) {
 			return;
 		}
@@ -129,10 +128,7 @@ export default function DiagramPanel({
 			setMermaidConfig(mergeDiagramSettings(detail));
 			setConfigInitialized(true);
 		};
-		window.addEventListener(
-			DIAGRAM_SETTINGS_EVENT,
-			handler as EventListener,
-		);
+		window.addEventListener(DIAGRAM_SETTINGS_EVENT, handler as EventListener);
 		return () => {
 			window.removeEventListener(
 				DIAGRAM_SETTINGS_EVENT,
