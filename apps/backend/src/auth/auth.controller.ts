@@ -124,6 +124,14 @@ export class AuthController {
   }
 
   @Public()
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  @ApiOperation({ summary: 'Login with Google' })
+  async googleAuth(): Promise<void> {
+    // Trigger Google OAuth flow handled by Passport
+  }
+
+  @Public()
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   @UseFilters(OAuthExceptionFilter)

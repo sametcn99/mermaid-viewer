@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, FindOptionsWhere } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
@@ -187,37 +187,79 @@ export class AuthService {
     avatarUrl?: string;
   }): Promise<User> {
     const { email, displayName, googleId, githubId, avatarUrl } = details;
+    const normalizedEmail = email.toLowerCase();
+    const trimmedDisplayName = displayName?.trim();
 
-    let user = await this.userRepository.findOne({
-      where: [{ email: email.toLowerCase() }, { googleId }, { githubId }],
+    const searchConditions: FindOptionsWhere<User>[] = [
+      { email: normalizedEmail },
+    ];
+
+    if (googleId) {
+      searchConditions.push({ googleId });
+    }
+    if (githubId) {
+      searchConditions.push({ githubId });
+    }
+
+    const user = await this.userRepository.findOne({
+      where: searchConditions,
     });
 
     if (user) {
-      // Check for conflicts
-      if (googleId && !user.googleId) {
+      let shouldPersist = false;
+
+      if (googleId && user.googleId && user.googleId !== googleId) {
         throw new ConflictException(
-          'Account already exists with a different sign-in method',
+          'Account already linked to another Google profile',
         );
       }
-      if (githubId && !user.githubId) {
+      if (githubId && user.githubId && user.githubId !== githubId) {
         throw new ConflictException(
-          'Account already exists with a different sign-in method',
+          'Account already linked to another GitHub profile',
         );
+      }
+
+      if (googleId && !user.googleId) {
+        user.googleId = googleId;
+        shouldPersist = true;
+      }
+
+      if (githubId && !user.githubId) {
+        user.githubId = githubId;
+        shouldPersist = true;
+      }
+
+      if (trimmedDisplayName && trimmedDisplayName !== user.displayName) {
+        user.displayName = trimmedDisplayName;
+        shouldPersist = true;
+      }
+
+      if (avatarUrl && avatarUrl !== user.avatarUrl) {
+        user.avatarUrl = avatarUrl;
+        shouldPersist = true;
+      }
+
+      if (shouldPersist) {
+        return this.userRepository.save(user);
       }
 
       return user;
     }
 
-    // Create new user
-    user = this.userRepository.create({
-      email: email.toLowerCase(),
-      displayName,
+    const resolvedDisplayName =
+      trimmedDisplayName && trimmedDisplayName.length > 0
+        ? trimmedDisplayName
+        : normalizedEmail.split('@')[0];
+
+    const newUser = this.userRepository.create({
+      email: normalizedEmail,
+      displayName: resolvedDisplayName,
       googleId,
       githubId,
       avatarUrl,
     });
 
-    return this.userRepository.save(user);
+    return this.userRepository.save(newUser);
   }
 
   async deleteAccount(userId: string): Promise<void> {
