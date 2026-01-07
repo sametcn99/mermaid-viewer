@@ -5,6 +5,7 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { environment } from '../../config/environment';
 
 @Catch(HttpException)
 export class OAuthExceptionFilter implements ExceptionFilter {
@@ -24,7 +25,7 @@ export class OAuthExceptionFilter implements ExceptionFilter {
       message = exceptionResponse;
     }
 
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const frontendUrl = environment.frontendUrl;
 
     // Check if message is array (class-validator)
     if (Array.isArray(message)) {

@@ -1,10 +1,10 @@
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
+import { environment } from '../config/environment';
 
 const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 12;
 const AUTH_TAG_LENGTH = 16;
-const ENV_KEY =
-  process.env.APP_ENCRYPTION_KEY || process.env.AI_CRYPTO_SECRET || '';
+const ENV_KEY = environment.encryptionKey;
 
 let cachedKey: Buffer | null = null;
 

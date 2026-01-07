@@ -2,6 +2,7 @@ import { INestApplication, Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
+import { environment } from './config/environment';
 
 class MainApplication {
   private readonly logger = new Logger(MainApplication.name);
@@ -26,14 +27,7 @@ class MainApplication {
   }
 
   private configureCors(): void {
-    const allowedOrigins = (
-      process.env.FRONTEND_URLS ||
-      process.env.FRONTEND_URL ||
-      'http://localhost:3000'
-    )
-      .split(',')
-      .map((origin) => origin.trim())
-      .filter((origin) => origin.length > 0);
+    const allowedOrigins = environment.frontendOrigins;
 
     this.app.enableCors({
       origin: allowedOrigins,
@@ -80,7 +74,7 @@ class MainApplication {
   }
 
   private async startServer(): Promise<void> {
-    const port = process.env.PORT ?? 4020;
+    const port = environment.port;
     await this.app.listen(port);
     this.logger.log(`Application is running on: http://localhost:${port}`);
     this.logger.log(

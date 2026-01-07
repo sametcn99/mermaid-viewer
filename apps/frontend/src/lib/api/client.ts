@@ -3,9 +3,10 @@
  * Handles authentication tokens, request/response, and error handling
  */
 
+import { appConfig } from "../config";
 import type { ApiError, AuthTokens } from "./types";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const API_URL = appConfig.api.baseUrl;
 
 // Token storage keys
 export const ACCESS_TOKEN_KEY = "mermaid-viewer-access-token";

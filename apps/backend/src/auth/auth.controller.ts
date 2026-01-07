@@ -38,6 +38,7 @@ import {
   CurrentUserData,
 } from './decorators/current-user.decorator';
 import { OAuthExceptionFilter } from './filters/oauth-exception.filter';
+import { environment } from '../config/environment';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -140,7 +141,7 @@ export class AuthController {
     await this.authService.updateRefreshToken(user.id, tokens.refreshToken);
 
     // Redirect to frontend with tokens
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const frontendUrl = environment.frontendUrl;
     res.redirect(
       `${frontendUrl}/auth/callback?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`,
     );
@@ -164,7 +165,7 @@ export class AuthController {
     await this.authService.updateRefreshToken(user.id, tokens.refreshToken);
 
     // Redirect to frontend with tokens
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const frontendUrl = environment.frontendUrl;
     res.redirect(
       `${frontendUrl}/auth/callback?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`,
     );
