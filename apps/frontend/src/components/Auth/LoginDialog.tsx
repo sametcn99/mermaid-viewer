@@ -116,7 +116,7 @@ export default function LoginDialog({
 				onSubmit: handleSubmit,
 			}}
 		>
-			<DialogTitle>
+			<DialogTitle component="div">
 				<Typography variant="h5" fontWeight={600}>
 					Welcome Back
 				</Typography>

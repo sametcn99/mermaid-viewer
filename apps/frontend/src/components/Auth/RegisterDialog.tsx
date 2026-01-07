@@ -142,7 +142,7 @@ export default function RegisterDialog({
 				onSubmit: handleSubmit,
 			}}
 		>
-			<DialogTitle>
+			<DialogTitle component="div">
 				<Typography variant="h5" fontWeight={600}>
 					Create Account
 				</Typography>
