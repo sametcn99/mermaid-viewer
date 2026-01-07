@@ -16,11 +16,11 @@ export const SocialLogin = () => {
 
     return (
         <Box sx={{ width: '100%', mt: 2 }}>
-            <Divider sx={{ my: 2 }}>
+            {/* <Divider sx={{ my: 2 }}>
                 <Typography variant="body2" color="text.secondary">
                     OR
                 </Typography>
-            </Divider>
+            </Divider> */}
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <Button
                     variant="outlined"

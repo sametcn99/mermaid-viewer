@@ -125,7 +125,7 @@ export default function LoginDialog({
 					</Alert>
 				)}
 
-				<Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
+				{/* <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
 					<TextField
 						label="Email"
 						type="email"
@@ -164,13 +164,13 @@ export default function LoginDialog({
 							),
 						}}
 					/>
-				</Box>
+				</Box> */}
 
 				<SocialLogin />
 			</DialogContent>
 
 			<DialogActions sx={{ px: 3, pb: 3, flexDirection: "column", gap: 1 }}>
-				<Button
+				{/* <Button
 					type="submit"
 					variant="contained"
 					fullWidth
@@ -194,7 +194,7 @@ export default function LoginDialog({
 					>
 						Sign up
 					</Link>
-				</Typography>
+				</Typography> */}
 			</DialogActions>
 		</Dialog>
 	);
