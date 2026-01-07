@@ -5,7 +5,10 @@ const optionalEnv = z
 	.optional()
 	.transform((value) => value?.trim() || undefined);
 
-const requiredUrlEnv = z.string().trim().min(1, "NEXT_PUBLIC_API_URL is required");
+const requiredUrlEnv = z
+	.string()
+	.trim()
+	.min(1, "NEXT_PUBLIC_API_URL is required");
 
 const rawEnvSchema = z
 	.object({
@@ -26,7 +29,10 @@ const ensureAbsoluteUrl = (value: string | undefined): URL | undefined => {
 		return undefined;
 	}
 
-	const normalized = value.startsWith("http://") || value.startsWith("https://") ? value : `https://${value}`;
+	const normalized =
+		value.startsWith("http://") || value.startsWith("https://")
+			? value
+			: `https://${value}`;
 
 	try {
 		const url = new URL(normalized);
@@ -41,7 +47,9 @@ const ensureAbsoluteUrl = (value: string | undefined): URL | undefined => {
 
 const resolveGemini = (env: RawEnv) => {
 	if (!env.NEXT_PUBLIC_GEMINI_API_KEY) {
-		warnings.push("NEXT_PUBLIC_GEMINI_API_KEY is not set; AI assistant features will be disabled.");
+		warnings.push(
+			"NEXT_PUBLIC_GEMINI_API_KEY is not set; AI assistant features will be disabled.",
+		);
 	}
 
 	return {
@@ -50,15 +58,21 @@ const resolveGemini = (env: RawEnv) => {
 };
 
 const resolveApi = (env: RawEnv) => {
-	const hasProtocol = env.NEXT_PUBLIC_API_URL.startsWith("http://") || env.NEXT_PUBLIC_API_URL.startsWith("https://");
+	const hasProtocol =
+		env.NEXT_PUBLIC_API_URL.startsWith("http://") ||
+		env.NEXT_PUBLIC_API_URL.startsWith("https://");
 
 	if (!hasProtocol) {
-		throw new Error("NEXT_PUBLIC_API_URL must include a protocol (http:// or https://)");
+		throw new Error(
+			"NEXT_PUBLIC_API_URL must include a protocol (http:// or https://)",
+		);
 	}
 
 	const apiUrl = ensureAbsoluteUrl(env.NEXT_PUBLIC_API_URL);
 	if (!apiUrl) {
-		throw new Error("NEXT_PUBLIC_API_URL must be an absolute http(s) URL (e.g., https://api.example.com)");
+		throw new Error(
+			"NEXT_PUBLIC_API_URL must be an absolute http(s) URL (e.g., https://api.example.com)",
+		);
 	}
 
 	return {
@@ -68,10 +82,14 @@ const resolveApi = (env: RawEnv) => {
 
 const resolveSite = (env: RawEnv) => {
 	if (!env.NEXT_PUBLIC_SITE_URL) {
-		warnings.push("NEXT_PUBLIC_SITE_URL is not set; using API URL as site URL.");
+		warnings.push(
+			"NEXT_PUBLIC_SITE_URL is not set; using API URL as site URL.",
+		);
 		const apiUrl = ensureAbsoluteUrl(env.NEXT_PUBLIC_API_URL);
 		if (!apiUrl) {
-			throw new Error("Cannot determine site URL: both NEXT_PUBLIC_SITE_URL and NEXT_PUBLIC_API_URL are invalid");
+			throw new Error(
+				"Cannot determine site URL: both NEXT_PUBLIC_SITE_URL and NEXT_PUBLIC_API_URL are invalid",
+			);
 		}
 		return {
 			url: apiUrl,
@@ -81,7 +99,9 @@ const resolveSite = (env: RawEnv) => {
 
 	const siteUrl = ensureAbsoluteUrl(env.NEXT_PUBLIC_SITE_URL);
 	if (!siteUrl) {
-		throw new Error("NEXT_PUBLIC_SITE_URL must be an absolute http(s) URL (e.g., https://example.com)");
+		throw new Error(
+			"NEXT_PUBLIC_SITE_URL must be an absolute http(s) URL (e.g., https://example.com)",
+		);
 	}
 
 	return {

@@ -6,7 +6,8 @@
 import { appConfig } from "../config";
 import type { ApiError, AuthTokens } from "./types";
 
-const API_URL = appConfig.api.baseUrl;
+// Normalize base URL to avoid double slashes when concatenating endpoints
+const API_URL = appConfig.api.baseUrl.replace(/\/+$/, "");
 
 // Token storage keys
 export const ACCESS_TOKEN_KEY = "mermaid-viewer-access-token";
@@ -91,6 +92,9 @@ export async function apiRequest<T>(
 	endpoint: string,
 	options: RequestOptions = {},
 ): Promise<T> {
+	const normalizedEndpoint = endpoint.startsWith("/")
+		? endpoint
+		: `/${endpoint}`;
 	const { body, skipAuth = false, ...fetchOptions } = options;
 
 	const headers: HeadersInit = {
@@ -116,14 +120,14 @@ export async function apiRequest<T>(
 		config.body = JSON.stringify(body);
 	}
 
-	let response = await fetch(`${API_URL}${endpoint}`, config);
+	let response = await fetch(`${API_URL}${normalizedEndpoint}`, config);
 
 	// If unauthorized, try to refresh token
 	if (response.status === 401 && !skipAuth) {
 		const newToken = await refreshAccessToken();
 		if (newToken) {
 			(headers as Record<string, string>).Authorization = `Bearer ${newToken}`;
-			response = await fetch(`${API_URL}${endpoint}`, {
+			response = await fetch(`${API_URL}${normalizedEndpoint}`, {
 				...config,
 				headers,
 			});
