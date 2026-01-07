@@ -1,10 +1,9 @@
-import appConfig from "@/lib/config";
 import type { Metadata, Viewport } from "next";
 
 const OG_IMAGE_PATH = "/window.svg";
 
-export const SITE_URL = appConfig.site.url;
-export const SITE_URL_STRING = appConfig.site.urlString;
+export const SITE_URL = "https://mermaid.sametcc.me";
+export const SITE_URL_STRING = "https://mermaid.sametcc.me";
 export const OG_IMAGE_URL = new URL(OG_IMAGE_PATH, SITE_URL).toString();
 
 export const APP_DESCRIPTION =
@@ -54,12 +53,12 @@ const appMetadata: Metadata = {
 	],
 	authors: [
 		{
-			name: appConfig.publisher.name,
-			url: appConfig.publisher.repository,
+			name: "sametcn99",
+			url: "https://github.com/sametcn99/mermaid-viewer",
 		},
 	],
-	creator: appConfig.publisher.name,
-	publisher: appConfig.publisher.name,
+	creator: "sametcn99",
+	publisher: "sametcn99",
 	formatDetection: {
 		email: true,
 		address: false,

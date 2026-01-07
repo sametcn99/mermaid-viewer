@@ -1,4 +1,3 @@
-import appConfig from "@/lib/config";
 import { IconButton, Tooltip } from "@mui/material";
 import Link from "next/link";
 import type React from "react";
@@ -6,7 +5,7 @@ import { siGithub } from "simple-icons/icons";
 
 const GitHubButton: React.FC = () => (
 	<Link
-		href={appConfig.publisher.repository}
+		href={"https://github.com/sametcn99/mermaid-viewer"}
 		target="_blank"
 		rel="noopener noreferrer"
 		passHref

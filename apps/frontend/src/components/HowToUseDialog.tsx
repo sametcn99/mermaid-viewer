@@ -32,8 +32,6 @@ import {
 	Zap,
 	Upload,
 } from "lucide-react";
-import appConfig from "@/lib/config";
-
 interface HowToUseDialogProps {
 	open: boolean;
 	onClose: () => void;
@@ -512,7 +510,7 @@ export default function HowToUseDialog({ open, onClose }: HowToUseDialogProps) {
 						source code and contribute!
 					</Typography>
 					<Link
-						href={appConfig.publisher.repository}
+						href={"https://github.com/sametcn99/mermaid-viewer"}
 						target="_blank"
 						rel="noopener noreferrer"
 						underline="hover"

@@ -9,7 +9,6 @@ import appMetadata, {
 	SITE_URL_STRING,
 	appViewport,
 } from "@/lib/metadata";
-import appConfig from "@/lib/config";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -42,13 +41,13 @@ const structuredData = [
 		},
 		author: {
 			"@type": "Person",
-			name: appConfig.publisher.name,
-			url: appConfig.publisher.repository,
+			name: "sametcn99",
+			url: "https://github.com/sametcn99/mermaid-viewer",
 		},
 		publisher: {
 			"@type": "Person",
-			name: appConfig.publisher.name,
-			url: appConfig.publisher.website,
+			name: "sametcn99",
+			url: "https://sametcc.me",
 		},
 		browserRequirements: "Requires JavaScript. Requires HTML5.",
 	},
@@ -60,8 +59,8 @@ const structuredData = [
 		inLanguage: "en-US",
 		description: APP_DESCRIPTION,
 		sameAs: [
-			appConfig.publisher.repository,
-			appConfig.publisher.website,
+			"https://github.com/sametcn99/mermaid-viewer",
+			"https://sametcc.me",
 			SITE_URL_STRING,
 		],
 	},
