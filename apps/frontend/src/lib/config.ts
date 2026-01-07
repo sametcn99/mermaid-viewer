@@ -93,7 +93,7 @@ const resolveSite = (env: RawEnv) => {
 const rawEnvSource = {
 	NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
 	NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
-	GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+	NEXT_PUBLIC_GEMINI_API_KEY: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
 };
 
 const rawEnvResult = rawEnvSchema.safeParse(rawEnvSource);
