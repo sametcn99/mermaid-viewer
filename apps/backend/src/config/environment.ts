@@ -5,8 +5,6 @@ import { z } from 'zod';
 const logger = new Logger('Environment');
 
 const envSchema = z.object({
-  APP_ENCRYPTION_KEY: z.string().trim().optional(),
-  AI_CRYPTO_SECRET: z.string().trim().optional(),
   FRONTEND_URL: z.string().trim().optional(),
   FRONTEND_URLS: z.string().trim().optional(),
   PORT: z
@@ -71,17 +69,6 @@ const parseEnv = () => {
   const env = result.data;
   const warnings: string[] = [];
 
-  const encryptionKey = env.APP_ENCRYPTION_KEY || env.AI_CRYPTO_SECRET;
-  if (!encryptionKey) {
-    throw new Error('APP_ENCRYPTION_KEY (or AI_CRYPTO_SECRET) is required.');
-  }
-
-  if (!env.APP_ENCRYPTION_KEY && env.AI_CRYPTO_SECRET) {
-    warnings.push(
-      'APP_ENCRYPTION_KEY is not set; falling back to AI_CRYPTO_SECRET.',
-    );
-  }
-
   const frontendUrl = env.FRONTEND_URL ?? 'http://localhost:3000';
   if (!isHttpUrl(frontendUrl)) {
     throw new Error('FRONTEND_URL must be a valid http(s) URL when provided.');
@@ -109,7 +96,6 @@ const parseEnv = () => {
   }
 
   return {
-    encryptionKey,
     frontendUrl: new URL(frontendUrl).origin,
     frontendOrigins,
     port,
