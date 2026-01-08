@@ -1,36 +1,30 @@
-# Optimized Next.js + Bun Dockerfile
-FROM oven/bun:1 AS base
-ENV NODE_ENV=production BUN_INSTALL_CACHE=/tmp/.bun-cache
+FROM oven/bun:latest
+
 WORKDIR /app
 
-# Dependencies
-FROM base AS deps
-COPY package.json bun.lock* ./
-RUN --mount=type=cache,target=/tmp/.bun-cache bun install --frozen-lockfile
+# Copy configuration files
+COPY package.json bun.lock turbo.json ./
 
-# Build
-FROM base AS build
-COPY --from=deps /app/node_modules ./node_modules
+# Copy all source code (respecting .dockerignore)
 COPY . .
+
+# Install build dependencies for native modules
+RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
+
+# Install dependencies
+RUN bun install
+
+# Set environment variables for build
+ENV BUILD_CPU_LIMIT=1
+ENV DISABLE_SOURCE_MAPS=true
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Build the frontend
+WORKDIR /app/apps/frontend
 RUN bun run build
 
-# Runtime
-FROM base AS runtime
-COPY --from=build /app/public ./public
-COPY --from=build /app/.next/standalone ./
-COPY --from=build /app/.next/static ./.next/static
-
-# Install curl for health check
-RUN apt-get update && apt-get install -y curl adduser && rm -rf /var/lib/apt/lists/*
-
-RUN adduser --system --uid 1001 nextjs
-USER nextjs
+# Expose port
 EXPOSE 3000
-ENV HOSTNAME="0.0.0.0"
-ENV PORT=3000
 
-# Add health check with process check fallback
-HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
-  CMD curl -f http://0.0.0.0:3000 2>/dev/null || curl -f http://127.0.0.1:3000 2>/dev/null || curl -f http://localhost:3000 2>/dev/null || pgrep -f "bun.*server.js" > /dev/null || exit 1
-
-CMD ["bun", "server.js"]
+# Start the application
+CMD ["bun", "run", "start"]

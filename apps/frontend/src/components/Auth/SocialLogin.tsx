@@ -1,17 +1,20 @@
 "use client";
 
-import { Box, Button, Divider, Typography } from "@mui/material";
+import { Box, Button,  } from "@mui/material";
 import { faGithub, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
+import appConfig from "@/lib/config";
 
 export const SocialLogin = () => {
+
 	const handleGoogleLogin = () => {
-		window.location.href = "http://localhost:3001/auth/google"; // Backend URL
+		// Use proxied API path so the browser hits nginx (no direct 3001 exposure)
+		window.location.href = `/api/auth/google`;
 	};
 
 	const handleGithubLogin = () => {
-		window.location.href = "http://localhost:3001/auth/github"; // Backend URL
+		// Use proxied API path so the browser hits nginx (no direct 3001 exposure)
+		window.location.href = `/api/auth/github`;
 	};
 
 	return (

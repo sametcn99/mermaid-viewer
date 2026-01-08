@@ -10,6 +10,9 @@ class MainApplication {
 
   async bootstrap(): Promise<void> {
     try {
+      this.logger.log(`DB_HOST: ${process.env.DB_HOST}`);
+      this.logger.log(`DB_PORT: ${process.env.DB_PORT}`);
+      this.logger.log(`DB_USERNAME: ${process.env.DB_USERNAME}`);
       await this.createApplication();
       this.configureCors();
       this.configureSwagger();
@@ -75,7 +78,7 @@ class MainApplication {
 
   private async startServer(): Promise<void> {
     const port = environment.port;
-    await this.app.listen(port);
+    await this.app.listen(port, '0.0.0.0');
     this.logger.log(`Application is running on: http://localhost:${port}`);
     this.logger.log(
       `Swagger documentation available at: http://localhost:${port}/api/docs`,
