@@ -2,7 +2,6 @@ import { INestApplication, Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
-import { environment } from './config/environment';
 
 class MainApplication {
   private readonly logger = new Logger(MainApplication.name);
@@ -10,9 +9,6 @@ class MainApplication {
 
   async bootstrap(): Promise<void> {
     try {
-      this.logger.log(`DB_HOST: ${process.env.DB_HOST}`);
-      this.logger.log(`DB_PORT: ${process.env.DB_PORT}`);
-      this.logger.log(`DB_USERNAME: ${process.env.DB_USERNAME}`);
       await this.createApplication();
       this.configureCors();
       this.configureSwagger();
@@ -30,18 +26,12 @@ class MainApplication {
   }
 
   private configureCors(): void {
-    const allowedOrigins = environment.frontendOrigins;
-
     this.app.enableCors({
-      origin: allowedOrigins,
+      origin: ['http://localhost'],
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
       credentials: true,
     });
-
-    this.logger.log(
-      `CORS configured for origins: ${allowedOrigins.length ? allowedOrigins.join(', ') : 'none'}`,
-    );
   }
 
   private configureSwagger(): void {
@@ -77,11 +67,10 @@ class MainApplication {
   }
 
   private async startServer(): Promise<void> {
-    const port = environment.port;
-    await this.app.listen(port, '0.0.0.0');
-    this.logger.log(`Application is running on: http://localhost:${port}`);
+    await this.app.listen(3001, '0.0.0.0');
+    this.logger.log(`Application is running on: http://localhost:3001`);
     this.logger.log(
-      `Swagger documentation available at: http://localhost:${port}/api/docs`,
+      `Swagger documentation available at: http://localhost:3001/api/docs`,
     );
   }
 }
