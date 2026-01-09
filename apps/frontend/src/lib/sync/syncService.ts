@@ -22,14 +22,6 @@ import {
 	type CustomTemplate,
 } from "@/lib/indexed-db/templates.storage";
 import {
-	getAiChatHistory,
-	saveAiChatHistory,
-	getDiagramSnapshots,
-	saveDiagramSnapshots,
-	getAiAssistantConfig,
-	saveAiAssistantConfig,
-} from "@/lib/indexed-db/ai-assistant.storage";
-import {
 	getMermaidConfig,
 	saveMermaidConfig,
 } from "@/lib/indexed-db/mermaid-config.storage";
@@ -49,18 +41,10 @@ import type {
 	DiagramDto,
 	TemplateCollectionDto,
 	FavoriteTemplateDto,
-	ChatMessageDto,
-	DiagramSnapshotDto,
-	AiConfigDto,
 	SettingsDto,
 	CustomTemplateDto,
 } from "@/lib/api/types";
 import type { ThemeSettings } from "@/lib/theme";
-import type {
-	ChatMessage,
-	DiagramSnapshot,
-	AiAssistantConfig,
-} from "@/types/ai-assistant.types";
 
 export type SyncRequestPriority = "immediate" | "background";
 
@@ -159,35 +143,6 @@ export async function exportLocalData(): Promise<FullSyncRequest> {
 		clientTimestamp: f.timestamp,
 	}));
 
-	// Export AI data
-	const chatHistory = await getAiChatHistory();
-	const chatMessageDtos: ChatMessageDto[] = (chatHistory?.messages ?? []).map(
-		(m) => ({
-			clientId: m.id,
-			role: m.role,
-			content: m.content,
-			diagramCode: m.diagramCode,
-			clientTimestamp: m.timestamp,
-		}),
-	);
-
-	const snapshots = await getDiagramSnapshots();
-	const snapshotDtos: DiagramSnapshotDto[] = snapshots.map((s) => ({
-		messageClientId: s.messageId,
-		code: s.code,
-		clientTimestamp: s.timestamp,
-	}));
-
-	const aiConfig = await getAiAssistantConfig();
-	const aiConfigDto: AiConfigDto | undefined = aiConfig
-		? {
-				consentGiven: aiConfig.consentGiven,
-				userApiKey: aiConfig.userApiKey,
-				selectedModel: aiConfig.selectedModel,
-				lastConsentDate: aiConfig.lastConsentDate,
-			}
-		: undefined;
-
 	// Export settings
 	const mermaidConfig = await getMermaidConfig();
 	const themeSettings = await getThemeSettings();
@@ -223,12 +178,6 @@ export async function exportLocalData(): Promise<FullSyncRequest> {
 		templates: {
 			collections: collectionDtos,
 			favorites: favoriteDtos,
-			lastSyncAt,
-		},
-		ai: {
-			chatMessages: chatMessageDtos,
-			snapshots: snapshotDtos,
-			config: aiConfigDto,
 			lastSyncAt,
 		},
 		settings: {
@@ -294,42 +243,6 @@ export async function importServerData(
 		if (!serverFavoriteIds.has(currentFav.templateId)) {
 			await removeFavoriteTemplate(currentFav.templateId);
 		}
-	}
-
-	// Import AI chat history
-	if (response.ai.chatMessages.length > 0) {
-		const messages: ChatMessage[] = response.ai.chatMessages.map((m) => ({
-			id: m.clientId,
-			role: m.role,
-			content: m.content,
-			diagramCode: m.diagramCode,
-			timestamp: m.clientTimestamp,
-		}));
-		await saveAiChatHistory({
-			messages,
-			lastUpdated: Date.now(),
-		});
-	}
-
-	// Import diagram snapshots
-	if (response.ai.snapshots.length > 0) {
-		const snapshots: DiagramSnapshot[] = response.ai.snapshots.map((s) => ({
-			messageId: s.messageClientId,
-			code: s.code,
-			timestamp: s.clientTimestamp,
-		}));
-		await saveDiagramSnapshots(snapshots);
-	}
-
-	// Import AI config
-	if (response.ai.config) {
-		const config: AiAssistantConfig = {
-			consentGiven: response.ai.config.consentGiven,
-			userApiKey: response.ai.config.userApiKey,
-			selectedModel: response.ai.config.selectedModel,
-			lastConsentDate: response.ai.config.lastConsentDate,
-		};
-		await saveAiAssistantConfig(config);
 	}
 
 	// Import settings

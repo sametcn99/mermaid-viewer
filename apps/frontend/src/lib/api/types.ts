@@ -99,45 +99,6 @@ export interface SyncTemplatesResponse {
 	syncedAt: number;
 }
 
-// AI Assistant Types
-export interface ChatMessageDto {
-	id?: string;
-	clientId: string;
-	role: "user" | "assistant";
-	content: string;
-	diagramCode?: string;
-	clientTimestamp: number;
-}
-
-export interface DiagramSnapshotDto {
-	id?: string;
-	messageClientId: string;
-	code: string;
-	clientTimestamp: number;
-}
-
-export interface AiConfigDto {
-	consentGiven: boolean;
-	userApiKey?: string;
-	selectedModel?: string;
-	lastConsentDate?: number;
-	updatedAt?: number;
-}
-
-export interface SyncAiRequest {
-	chatMessages: ChatMessageDto[];
-	snapshots: DiagramSnapshotDto[];
-	config?: AiConfigDto;
-	lastSyncAt?: number;
-}
-
-export interface SyncAiResponse {
-	chatMessages: ChatMessageDto[];
-	snapshots: DiagramSnapshotDto[];
-	config: AiConfigDto | null;
-	syncedAt: number;
-}
-
 // Settings Types
 export interface SettingsDto {
 	mermaidConfig?: Record<string, unknown>;
@@ -160,14 +121,12 @@ export interface SyncSettingsResponse {
 export interface FullSyncRequest {
 	diagrams: SyncDiagramsRequest;
 	templates: SyncTemplatesRequest;
-	ai: SyncAiRequest;
 	settings: SyncSettingsRequest;
 }
 
 export interface FullSyncResponse {
 	diagrams: SyncDiagramsResponse;
 	templates: SyncTemplatesResponse;
-	ai: SyncAiResponse;
 	settings: SyncSettingsResponse;
 	syncedAt: number;
 }

@@ -26,7 +26,6 @@ export {
 export {
 	syncDiagrams,
 	syncTemplates,
-	syncAi,
 	syncSettings,
 	fullSync,
 } from "./sync";

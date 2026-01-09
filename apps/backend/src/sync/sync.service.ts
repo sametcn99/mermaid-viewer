@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DiagramsService } from '../diagrams/diagrams.service';
 import { TemplatesService } from '../templates/templates.service';
-import { AiAssistantService } from '../ai-assistant/ai-assistant.service';
 import { SettingsService } from '../settings/settings.service';
 import { FullSyncRequestDto, FullSyncResponseDto } from './dto';
 
@@ -10,7 +9,6 @@ export class SyncService {
   constructor(
     private readonly diagramsService: DiagramsService,
     private readonly templatesService: TemplatesService,
-    private readonly aiAssistantService: AiAssistantService,
     private readonly settingsService: SettingsService,
   ) {}
 
@@ -20,13 +18,11 @@ export class SyncService {
   ): Promise<FullSyncResponseDto> {
     const diagramSection = syncRequest.diagrams;
     const templateSection = syncRequest.templates;
-    const aiSection = syncRequest.ai;
     const settingsSection = syncRequest.settings;
 
     const resolvedLastSync =
       diagramSection.lastSyncAt ??
       templateSection.lastSyncAt ??
-      aiSection.lastSyncAt ??
       settingsSection.lastSyncAt ??
       0;
     const isFirstSync = resolvedLastSync === 0;
@@ -42,14 +38,6 @@ export class SyncService {
       collections: templateSection.collections,
       favorites: templateSection.favorites,
       lastSyncTimestamp: templateSection.lastSyncAt ?? 0,
-    });
-
-    // 3. Sync AI Assistant
-    const aiResult = await this.aiAssistantService.sync(userId, {
-      messages: aiSection.chatMessages,
-      snapshots: aiSection.snapshots,
-      config: aiSection.config,
-      lastSyncTimestamp: aiSection.lastSyncAt ?? 0,
     });
 
     // 4. Sync Settings
@@ -78,12 +66,6 @@ export class SyncService {
         collections: templatesResult.collections,
         favorites: templatesResult.favorites,
         syncedAt: templatesResult.syncedAt,
-      },
-      ai: {
-        chatMessages: aiResult.messages,
-        snapshots: aiResult.snapshots,
-        config: aiResult.config ?? null,
-        syncedAt: aiResult.syncedAt,
       },
       settings: {
         settings: {

@@ -10,8 +10,6 @@ import type {
 	SyncDiagramsResponse,
 	SyncTemplatesRequest,
 	SyncTemplatesResponse,
-	SyncAiRequest,
-	SyncAiResponse,
 	SyncSettingsRequest,
 	SyncSettingsResponse,
 } from "./types";
@@ -32,13 +30,6 @@ export async function syncTemplates(
 	data: SyncTemplatesRequest,
 ): Promise<SyncTemplatesResponse> {
 	return api.post<SyncTemplatesResponse>("/templates/sync", data);
-}
-
-/**
- * Sync AI assistant data with the server
- */
-export async function syncAi(data: SyncAiRequest): Promise<SyncAiResponse> {
-	return api.post<SyncAiResponse>("/ai/sync", data);
 }
 
 /**

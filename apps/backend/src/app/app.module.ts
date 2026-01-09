@@ -7,7 +7,6 @@ import { AppService } from './app.service';
 import { AuthModule, JwtAuthGuard } from '../auth';
 import { DiagramsModule } from '../diagrams';
 import { TemplatesModule } from '../templates';
-import { AiAssistantModule } from '../ai-assistant';
 import { SettingsModule } from '../settings';
 import { SyncModule } from '../sync';
 import { StatsModule } from '../stats';
@@ -35,7 +34,6 @@ import { StatsModule } from '../stats';
     AuthModule,
     DiagramsModule,
     TemplatesModule,
-    AiAssistantModule,
     SettingsModule,
     SyncModule,
     StatsModule,

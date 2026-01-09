@@ -12,9 +12,6 @@ import {
   SyncCollectionDto,
   SyncFavoriteDto,
 } from '../../templates/dto/sync-templates.dto';
-import { CreateChatMessageDto } from '../../ai-assistant/dto/chat.dto';
-import { CreateDiagramSnapshotDto } from '../../ai-assistant/dto/snapshot.dto';
-import { UpdateAiConfigDto } from '../../ai-assistant/dto/config.dto';
 import { ThemeSettingsDto } from '../../settings/dto/settings.dto';
 
 export class FullSyncDiagramsSectionDto {
@@ -42,31 +39,6 @@ export class FullSyncTemplatesSectionDto {
   @ValidateNested({ each: true })
   @Type(() => SyncFavoriteDto)
   favorites: SyncFavoriteDto[];
-
-  @ApiPropertyOptional({ description: 'Last sync timestamp from client' })
-  @IsNumber()
-  @IsOptional()
-  lastSyncAt?: number;
-}
-
-export class FullSyncAiSectionDto {
-  @ApiProperty({ type: [CreateChatMessageDto] })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CreateChatMessageDto)
-  chatMessages: CreateChatMessageDto[];
-
-  @ApiProperty({ type: [CreateDiagramSnapshotDto] })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CreateDiagramSnapshotDto)
-  snapshots: CreateDiagramSnapshotDto[];
-
-  @ApiPropertyOptional({ type: UpdateAiConfigDto })
-  @ValidateNested()
-  @Type(() => UpdateAiConfigDto)
-  @IsOptional()
-  config?: UpdateAiConfigDto;
 
   @ApiPropertyOptional({ description: 'Last sync timestamp from client' })
   @IsNumber()
@@ -119,11 +91,6 @@ export class FullSyncRequestDto {
   @ValidateNested()
   @Type(() => FullSyncTemplatesSectionDto)
   templates: FullSyncTemplatesSectionDto;
-
-  @ApiProperty({ type: FullSyncAiSectionDto })
-  @ValidateNested()
-  @Type(() => FullSyncAiSectionDto)
-  ai: FullSyncAiSectionDto;
 
   @ApiProperty({ type: FullSyncSettingsSectionDto })
   @ValidateNested()

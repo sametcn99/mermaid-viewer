@@ -4,9 +4,6 @@ import {
   CollectionResponseDto,
   SyncFavoriteDto,
 } from '../../templates/dto/sync-templates.dto';
-import { ChatMessageResponseDto } from '../../ai-assistant/dto/chat.dto';
-import { DiagramSnapshotResponseDto } from '../../ai-assistant/dto/snapshot.dto';
-import { AiConfigResponseDto } from '../../ai-assistant/dto/config.dto';
 import { ThemeSettingsDto } from '../../settings/dto/settings.dto';
 
 export class FullSyncDiagramsResponseDto {
@@ -23,20 +20,6 @@ export class FullSyncTemplatesResponseDto {
 
   @ApiProperty({ type: [SyncFavoriteDto] })
   favorites: SyncFavoriteDto[];
-
-  @ApiProperty({ description: 'Server sync timestamp' })
-  syncedAt: number;
-}
-
-export class FullSyncAiResponseDto {
-  @ApiProperty({ type: [ChatMessageResponseDto] })
-  chatMessages: ChatMessageResponseDto[];
-
-  @ApiProperty({ type: [DiagramSnapshotResponseDto] })
-  snapshots: DiagramSnapshotResponseDto[];
-
-  @ApiProperty({ type: AiConfigResponseDto })
-  config: AiConfigResponseDto | null;
 
   @ApiProperty({ description: 'Server sync timestamp' })
   syncedAt: number;
@@ -70,9 +53,6 @@ export class FullSyncResponseDto {
 
   @ApiProperty({ type: FullSyncTemplatesResponseDto })
   templates: FullSyncTemplatesResponseDto;
-
-  @ApiProperty({ type: FullSyncAiResponseDto })
-  ai: FullSyncAiResponseDto;
 
   @ApiProperty({ type: FullSyncSettingsResponseDto })
   settings: FullSyncSettingsResponseDto;
