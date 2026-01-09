@@ -31,6 +31,7 @@ import {
 	selectAuthLoading,
 	selectIsLocalOnly,
 } from "@/store/authSlice";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 interface UserMenuProps {
 	onOpenSettings?: () => void;
@@ -42,6 +43,7 @@ export default function UserMenu({ onOpenSettings, onSignIn }: UserMenuProps) {
 	const user = useAppSelector(selectUser);
 	const isLocalOnly = useAppSelector(selectIsLocalOnly);
 	const isLoading = useAppSelector(selectAuthLoading);
+	const { track } = useAnalytics();
 
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const [isSyncing, setIsSyncing] = useState(false);
@@ -56,9 +58,10 @@ export default function UserMenu({ onOpenSettings, onSignIn }: UserMenuProps) {
 	}, []);
 
 	const handleLogout = useCallback(async () => {
+		track("logout_click");
 		handleClose();
 		await dispatch(logout());
-	}, [dispatch, handleClose]);
+	}, [dispatch, handleClose, track]);
 
 	const handleSettings = useCallback(() => {
 		handleClose();
@@ -66,9 +69,10 @@ export default function UserMenu({ onOpenSettings, onSignIn }: UserMenuProps) {
 	}, [handleClose, onOpenSettings]);
 
 	const handleSignIn = useCallback(() => {
+		track("signin_menu_click");
 		handleClose();
 		onSignIn?.();
-	}, [handleClose, onSignIn]);
+	}, [handleClose, onSignIn, track]);
 
 	if (!user && !isLocalOnly) return null;
 

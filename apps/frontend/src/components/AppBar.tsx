@@ -81,6 +81,7 @@ import {
 import { requestImmediateSync } from "@/lib/sync";
 import { loadStoredDiagramSettings } from "@/lib/diagram-settings";
 import { subscribeToUrlUpdates } from "@/lib/utils/url.utils";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 export default function AppBar() {
 	const theme = useTheme();
@@ -96,6 +97,7 @@ export default function AppBar() {
 	const canUseLocalData = useAppSelector(selectCanUseLocalData);
 	const isLocalOnly = useAppSelector(selectIsLocalOnly);
 	const authInitialized = useAppSelector(selectAuthInitialized);
+	const { track } = useAnalytics();
 
 	const [openDialog, setOpenDialog] = useState(false);
 	const [diagramName, setDiagramName] = useState("");
@@ -198,9 +200,10 @@ export default function AppBar() {
 			if (message) {
 				dispatch(setCustomAlertMessage(message));
 			}
+			track("signin_required_dialog_open", { message: message || "unknown" });
 			setIsLoginDialogOpen(true);
 		},
-		[canUseLocalData, dispatch],
+		[canUseLocalData, dispatch, track],
 	);
 
 	useEffect(() => {
@@ -348,6 +351,11 @@ export default function AppBar() {
 		handleMobileMenuClose();
 		showHowToUse();
 	}, [handleMobileMenuClose, showHowToUse]);
+
+	const handleOpenLogin = useCallback(() => {
+		track("signin_nav_click");
+		setIsLoginDialogOpen(true);
+	}, [track]);
 
 	return (
 		<>
@@ -549,7 +557,7 @@ export default function AppBar() {
 							) : isAuthenticated || isLocalOnly ? (
 								<UserMenu
 									onOpenSettings={() => setIsAccountSettingsOpen(true)}
-									onSignIn={() => setIsLoginDialogOpen(true)}
+									onSignIn={handleOpenLogin}
 								/>
 							) : (
 								<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -557,7 +565,7 @@ export default function AppBar() {
 										variant="contained"
 										size="small"
 										startIcon={<LogIn size={16} />}
-										onClick={() => setIsLoginDialogOpen(true)}
+										onClick={handleOpenLogin}
 									>
 										Sign In
 									</Button>
@@ -648,7 +656,7 @@ export default function AppBar() {
 					<MenuItem
 						onClick={() => {
 							handleMobileMenuClose();
-							setIsLoginDialogOpen(true);
+							handleOpenLogin();
 						}}
 					>
 						<ListItemIcon>

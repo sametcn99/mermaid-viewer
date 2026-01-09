@@ -4,14 +4,19 @@ import { Box, Button } from "@mui/material";
 import { faGithub, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import appConfig from "@/lib/config";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 export const SocialLogin = () => {
+	const { track } = useAnalytics();
+
 	const handleGoogleLogin = () => {
+		track("login_google_click");
 		// Use proxied API path so the browser hits nginx (no direct 3001 exposure)
 		window.location.href = `/api/auth/google`;
 	};
 
 	const handleGithubLogin = () => {
+		track("login_github_click");
 		// Use proxied API path so the browser hits nginx (no direct 3001 exposure)
 		window.location.href = `/api/auth/github`;
 	};

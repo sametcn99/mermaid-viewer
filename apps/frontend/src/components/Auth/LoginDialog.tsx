@@ -27,6 +27,7 @@ import {
 	selectAuthError,
 } from "@/store/authSlice";
 import { SocialLogin } from "./SocialLogin";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 interface LoginDialogProps {
 	open: boolean;
@@ -44,6 +45,7 @@ export default function LoginDialog({
 	const dispatch = useAppDispatch();
 	const isLoading = useAppSelector(selectAuthLoading);
 	const error = useAppSelector(selectAuthError);
+	const { track } = useAnalytics();
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -63,9 +65,10 @@ export default function LoginDialog({
 	}, [dispatch, onClose]);
 
 	const handleContinueLocal = useCallback(() => {
+		track("continue_local_click");
 		dispatch(continueWithLocalMode());
 		handleClose();
-	}, [dispatch, handleClose]);
+	}, [dispatch, handleClose, track]);
 
 	const validate = useCallback(() => {
 		const errors: { email?: string; password?: string } = {};

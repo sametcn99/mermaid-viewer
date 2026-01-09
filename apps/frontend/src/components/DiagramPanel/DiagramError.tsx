@@ -1,8 +1,10 @@
+"use client";
 import { Alert, Box, Button, CircularProgress } from "@mui/material";
 import { Bot } from "lucide-react";
 import type React from "react";
 import { useState, useEffect } from "react";
 import { getAiAssistantConfig } from "@/lib/indexed-db/ai-assistant.storage";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 interface DiagramErrorProps {
 	error: string;
@@ -24,6 +26,7 @@ const DiagramError: React.FC<DiagramErrorProps> = ({
 	const [localAiConsentGiven, setLocalAiConsentGiven] = useState(
 		ai?.consentGiven || false,
 	);
+	const { track } = useAnalytics();
 
 	// Listen for AI config changes
 	useEffect(() => {
@@ -53,6 +56,8 @@ const DiagramError: React.FC<DiagramErrorProps> = ({
 	}, [ai?.consentGiven]);
 
 	const handleFixWithAI = async () => {
+		track("autofix_click", { has_consent: localAiConsentGiven ? 1 : 0 });
+
 		if (!localAiConsentGiven) {
 			ai?.onRequestConsent();
 			return;
