@@ -36,7 +36,7 @@ ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-${SERVICE_FQDN_BACKEND:-$SERVICE_
 
 # Build the frontend
 WORKDIR /app/apps/frontend
-RUN bun run build
+RUN NODE_ENV=production bun run build
 
 # Expose port
 EXPOSE 3000

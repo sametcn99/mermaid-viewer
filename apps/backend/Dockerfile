@@ -24,7 +24,7 @@ ENV NODE_ENV=production
 
 # Build the backend
 WORKDIR /app/apps/backend
-RUN bun run build
+RUN NODE_ENV=production bun run build
 
 # Expose port (default NestJS port is often 3000, but we will configure it)
 EXPOSE 3001
