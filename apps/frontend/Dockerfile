@@ -19,6 +19,13 @@ ENV BUILD_CPU_LIMIT=1
 ENV DISABLE_SOURCE_MAPS=true
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Add ARGs for Next.js build time variables
+ARG NEXT_PUBLIC_SITE_URL
+ARG NEXT_PUBLIC_API_URL
+# Make them available during build
+ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+
 # Build the frontend
 WORKDIR /app/apps/frontend
 RUN bun run build
