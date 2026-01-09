@@ -26,7 +26,7 @@ export class OAuthExceptionFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       const exceptionResponse = exception.getResponse();
       type ExceptionPayload = { message?: string | string[] };
-      
+
       if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
         const payload = exceptionResponse as ExceptionPayload;
         if (payload.message !== undefined) {
@@ -37,7 +37,7 @@ export class OAuthExceptionFilter implements ExceptionFilter {
         message = exceptionResponse;
       }
     } else if (exception instanceof Error) {
-       message = exception.message;
+      message = exception.message;
     }
 
     const frontendUrl = new ConfigService().get<string>('FRONTEND_URL');

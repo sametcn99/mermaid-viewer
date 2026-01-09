@@ -14,7 +14,6 @@ const rawEnvSchema = z
 	.object({
 		NEXT_PUBLIC_API_URL: requiredUrlEnv,
 		NEXT_PUBLIC_SITE_URL: optionalEnv,
-		GEMINI_API_KEY: optionalEnv,
 	})
 	.strip();
 
@@ -43,18 +42,6 @@ const ensureAbsoluteUrl = (value: string | undefined): URL | undefined => {
 	} catch {
 		return undefined;
 	}
-};
-
-const resolveGemini = (env: RawEnv) => {
-	if (!env.GEMINI_API_KEY) {
-		warnings.push(
-			"GEMINI_API_KEY is not set; AI assistant features will be disabled.",
-		);
-	}
-
-	return {
-		apiKey: env.GEMINI_API_KEY,
-	};
 };
 
 const resolveApi = (env: RawEnv) => {
@@ -113,7 +100,6 @@ const resolveSite = (env: RawEnv) => {
 const rawEnvSource = {
 	NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
 	NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
-	GEMINI_API_KEY: process.env.GEMINI_API_KEY,
 };
 
 const rawEnvResult = rawEnvSchema.safeParse(rawEnvSource);
@@ -131,7 +117,6 @@ const rawEnv = rawEnvResult.data;
 const computedConfig = {
 	api: resolveApi(rawEnv),
 	site: resolveSite(rawEnv),
-	gemini: resolveGemini(rawEnv),
 };
 
 const configSchema = z.object({
@@ -152,9 +137,6 @@ const configSchema = z.object({
 				});
 			}
 		}),
-	gemini: z.object({
-		apiKey: z.string().min(1).optional(),
-	}),
 });
 
 const configResult = configSchema.safeParse(computedConfig);
@@ -180,9 +162,6 @@ export const appConfig = freeze({
 	site: freeze({
 		url: data.site.url,
 		urlString: data.site.urlString,
-	}),
-	gemini: freeze({
-		apiKey: data.gemini.apiKey,
 	}),
 });
 

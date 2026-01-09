@@ -13,6 +13,7 @@ import {
 	getDiagramSnapshots,
 	saveDiagramSnapshots,
 } from "@/lib/indexed-db/ai-assistant.storage";
+import appConfig from "@/lib/config";
 import {
 	Alert,
 	Box,
@@ -100,7 +101,7 @@ export default function AiAssistantChat({
 		try {
 			await addMessageToAiChatHistory(userMessage);
 
-			const response = await fetch("/api/gemini", {
+			const response = await fetch(`${appConfig.api.baseUrl}/ai/generate`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -195,7 +196,7 @@ export default function AiAssistantChat({
 	const handleTestApiKey = useCallback(
 		async (apiKey: string, model: string): Promise<boolean> => {
 			try {
-				const response = await fetch("/api/gemini", {
+				const response = await fetch(`${appConfig.api.baseUrl}/ai/generate`, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",

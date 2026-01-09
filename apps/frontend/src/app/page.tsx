@@ -4,6 +4,7 @@ import AiAssistantFab from "@/components/AiAssistant/AiAssistantFab";
 import AlertSnackbar from "@/components/AlertSnackbar";
 import ResizablePanels from "@/components/ResizablePanels";
 import { getAiAssistantConfig } from "@/lib/indexed-db/ai-assistant.storage";
+import appConfig from "@/lib/config";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import type { AiAssistantConfig } from "@/types/ai-assistant.types";
 import { useCallback, useEffect, useState } from "react";
@@ -105,7 +106,7 @@ export default function Home() {
 				const aiConfig = await getAiAssistantConfig();
 
 				// Send a direct request to the API
-				const response = await fetch("/api/gemini", {
+				const response = await fetch(`${appConfig.api.baseUrl}/ai/generate`, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
