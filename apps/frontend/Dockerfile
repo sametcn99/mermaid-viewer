@@ -22,9 +22,16 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # Add ARGs for Next.js build time variables
 ARG NEXT_PUBLIC_SITE_URL
 ARG NEXT_PUBLIC_API_URL
-# Make them available during build
-ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
-ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+# Add Coolify service URLs as potential fallbacks
+ARG SERVICE_URL_BACKEND
+ARG SERVICE_URL_FRONTEND
+ARG SERVICE_FQDN_BACKEND
+ARG SERVICE_FQDN_FRONTEND
+
+# Make them available during build, using Coolify variables as fallback if explicit variables are missing
+# Prefer FQDN (public) -> URL (internal/fallback)
+ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-${SERVICE_FQDN_FRONTEND:-$SERVICE_URL_FRONTEND}}
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-${SERVICE_FQDN_BACKEND:-$SERVICE_URL_BACKEND}}
 
 # Build the frontend
 WORKDIR /app/apps/frontend
