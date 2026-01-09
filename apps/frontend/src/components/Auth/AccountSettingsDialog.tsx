@@ -203,8 +203,16 @@ export default function AccountSettingsDialog({
 			if (isAuthenticated) {
 				requestImmediateSync("auth-success");
 				setSuccess("Local storage cleared and sync requested.");
+				// Reload to ensure app state reflects cleared local stores
+				if (typeof window !== "undefined") {
+					window.location.reload();
+				}
 			} else {
 				setSuccess("Local storage cleared.");
+				// Reload so the UI reflects cleared local-only data
+				if (typeof window !== "undefined") {
+					window.location.reload();
+				}
 			}
 		} catch (err) {
 			setDeleteError(

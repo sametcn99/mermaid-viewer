@@ -20,7 +20,6 @@ export const defaultDiagramSettings: DiagramSettingsConfig = {
 	theme: "default",
 	useCustomColors: false,
 	themeVariables: {},
-	flowchart: {},
 };
 
 const isPlainObject = (value: unknown): value is Record<string, unknown> =>
@@ -81,10 +80,6 @@ export const mergeDiagramSettings = (
 		themeVariables: {
 			...(defaultDiagramSettings.themeVariables ?? {}),
 			...(overrides.themeVariables ?? {}),
-		},
-		flowchart: {
-			...(defaultDiagramSettings.flowchart ?? {}),
-			...(overrides.flowchart ?? {}),
 		},
 	};
 };

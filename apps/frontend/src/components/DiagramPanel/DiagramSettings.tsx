@@ -94,16 +94,6 @@ const DiagramSettings: React.FC<DiagramSettingsProps> = ({
 		});
 	};
 
-	const handleFlowchartChange = (key: string, value: string | number) => {
-		setConfig({
-			...config,
-			flowchart: {
-				...config.flowchart,
-				[key]: value,
-			},
-		});
-	};
-
 	const handleApply = () => {
 		onApply(config);
 		onClose();
@@ -292,54 +282,6 @@ const DiagramSettings: React.FC<DiagramSettingsProps> = ({
 										<MenuItem value="32px">32px</MenuItem>
 									</Select>
 								</FormControl>
-							</Box>
-						</Box>
-					</Box>
-
-					{/* Flowchart Settings */}
-					<Box>
-						<InputLabel sx={{ mb: 2 }}>Flowchart Settings</InputLabel>
-						<Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-							<TextField
-								fullWidth
-								label="Diagram Padding"
-								type="number"
-								value={config.flowchart?.diagramPadding || 8}
-								onChange={(e) =>
-									handleFlowchartChange(
-										"diagramPadding",
-										Number.parseInt(e.target.value, 10),
-									)
-								}
-								helperText="Padding around the diagram"
-							/>
-							<Box sx={{ display: "flex", gap: 2 }}>
-								<TextField
-									fullWidth
-									label="Node Spacing"
-									type="number"
-									value={config.flowchart?.nodeSpacing || 50}
-									onChange={(e) =>
-										handleFlowchartChange(
-											"nodeSpacing",
-											Number.parseInt(e.target.value, 10),
-										)
-									}
-									helperText="Horizontal spacing between nodes"
-								/>
-								<TextField
-									fullWidth
-									label="Rank Spacing"
-									type="number"
-									value={config.flowchart?.rankSpacing || 50}
-									onChange={(e) =>
-										handleFlowchartChange(
-											"rankSpacing",
-											Number.parseInt(e.target.value, 10),
-										)
-									}
-									helperText="Vertical spacing between ranks"
-								/>
 							</Box>
 						</Box>
 					</Box>

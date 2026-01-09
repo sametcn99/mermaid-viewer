@@ -162,7 +162,14 @@ export default function Home() {
 	);
 
 	return (
-		<Box sx={{ height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+		<Box
+			sx={{
+				height: "100vh",
+				display: "flex",
+				flexDirection: "column",
+				overflow: "hidden",
+			}}
+		>
 			<AppBar />
 			<ResizablePanels
 				isSmallScreen={isSmallScreen}

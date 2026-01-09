@@ -37,10 +37,7 @@ interface UserMenuProps {
 	onSignIn?: () => void;
 }
 
-export default function UserMenu({
-	onOpenSettings,
-	onSignIn,
-}: UserMenuProps) {
+export default function UserMenu({ onOpenSettings, onSignIn }: UserMenuProps) {
 	const dispatch = useAppDispatch();
 	const user = useAppSelector(selectUser);
 	const isLocalOnly = useAppSelector(selectIsLocalOnly);
