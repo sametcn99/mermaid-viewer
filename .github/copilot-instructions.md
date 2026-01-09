@@ -2,6 +2,8 @@
 
 ## Development Standards
 
+- Use Bun.js as the runtime environmentt and package manager for all JavaScript/TypeScript development.
+- Write all code in TypeScript, leveraging its type system for enhanced reliability and maintainability.
 - Keep dependencies in `package.json` aligned with the latest stable releases, validating compatibility before upgrading.
 - Follow security-aware and performance-oriented engineering practices across the codebase.
 - Maintain full compatibility with existing functionality and integrations.
@@ -10,6 +12,8 @@
 - Ensure configuration, environment variables, and secrets remain externalized and never hard-coded.
 - Provide migration notes or fallbacks whenever a change could affect downstream consumers.
 - Always create components using React functional components and hooks; avoid class components.
+- This codebase uses turborepo for monorepo management; ensure changes respect package boundaries and build processes.
+- Use filters to target specific applications or packages within the monorepo when applicable.(e.g., `--filter=@mermaid-viewer/backend` or `--filter=@mermaid-viewer/frontend`).
 
 ## Code Quality
 
