@@ -56,6 +56,7 @@
 		"@mui/material": "^7.3.7",
 		"@mui/material-nextjs": "^7.3.7",
 		"@reduxjs/toolkit": "^2.11.2",
+		"framer-motion": "^12.25.0",
 		"idb": "^8.0.3",
 		"jszip": "^3.10.1",
 		"lodash.debounce": "^4.0.8",

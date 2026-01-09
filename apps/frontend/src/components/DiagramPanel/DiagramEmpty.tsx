@@ -1,10 +1,8 @@
 "use client";
 
 import { Box, Button, Paper, Stack, Typography } from "@mui/material";
-import { FolderOpen, Grid, Pencil, HelpCircle } from "lucide-react";
+import { FolderOpen, Grid, Pencil } from "lucide-react";
 import type React from "react";
-import HowToUseDialog from "../HowToUseDialog";
-import { useState } from "react";
 
 interface DiagramEmptyProps {
 	onOpenTemplates?: () => void;
@@ -17,8 +15,6 @@ const DiagramEmpty: React.FC<DiagramEmptyProps> = ({
 	onOpenSavedDiagrams,
 	hasSavedDiagrams = false,
 }) => {
-	const [openHowToUse, setOpenHowToUse] = useState(false);
-
 	const handleOpenTemplates = () => {
 		if (onOpenTemplates) {
 			onOpenTemplates();
@@ -31,10 +27,6 @@ const DiagramEmpty: React.FC<DiagramEmptyProps> = ({
 		if (onOpenSavedDiagrams) {
 			onOpenSavedDiagrams();
 		}
-	};
-
-	const handleOpenHowToUseDialog = () => {
-		setOpenHowToUse(true);
 	};
 
 	return (
@@ -107,24 +99,9 @@ const DiagramEmpty: React.FC<DiagramEmptyProps> = ({
 								Open Saved Diagrams
 							</Button>
 						)}
-
-						<Button
-							variant="outlined"
-							size="large"
-							startIcon={<HelpCircle />}
-							onClick={handleOpenHowToUseDialog}
-							fullWidth
-						>
-							How to Use
-						</Button>
 					</Stack>
 				</Stack>
 			</Paper>
-
-			<HowToUseDialog
-				open={openHowToUse}
-				onClose={() => setOpenHowToUse(false)}
-			/>
 		</Box>
 	);
 };

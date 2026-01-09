@@ -14,11 +14,11 @@ export const APP_TITLE = "Mermaid Live Editor & Viewer | Real-time Diagramming";
 const appMetadata: Metadata = {
 	title: {
 		default: APP_TITLE,
-		template: "%s | Mermaid Editor",
+		template: "%s | Mermaid Live Editor & Viewer | Real-time Diagramming",
 	},
 	description: APP_DESCRIPTION,
 	metadataBase: SITE_URL,
-	applicationName: "Mermaid Editor",
+	applicationName: "Mermaid Live Editor & Viewer | Real-time Diagramming",
 	category: "Development Tools",
 	keywords: [
 		"Mermaid",
@@ -72,11 +72,14 @@ const appMetadata: Metadata = {
 		},
 	},
 	openGraph: {
-		title: APP_TITLE,
+		title: {
+			default: APP_TITLE,
+			template: "%s | Mermaid Live Editor & Viewer | Real-time Diagramming",
+		},
 		description: APP_DESCRIPTION,
 		type: "website",
 		locale: "en_US",
-		siteName: "Mermaid Editor",
+		siteName: "Mermaid Live Editor & Viewer | Real-time Diagramming",
 		url: SITE_URL_STRING,
 		images: [
 			{

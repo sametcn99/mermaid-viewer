@@ -6,7 +6,7 @@
 
 *A powerful, modern web application that transforms your ideas into stunning diagrams with live preview and instant sharing capabilities.*
 
-[Live Demo](https://mermaid.sametcc.me) • [Report Bug](https://github.com/sametcn99/mermaid-viewer/issues) • [Request Feature](https://github.com/sametcn99/mermaid-viewer/issues) • [GitHub Repository](https://sametcc.me/repo/mermaid-viewer)
+[Homepage](https://mermaid.sametcc.me/home) • [Report Bug](https://github.com/sametcn99/mermaid-viewer/issues) • [Request Feature](https://github.com/sametcn99/mermaid-viewer/issues) • [GitHub Repository](https://sametcc.me/repo/mermaid-viewer)
 
 ## Stats
 
@@ -16,24 +16,6 @@
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/sametcn99/mermaid-viewer)
 
 </div>
-
----
-
-## Features
-
-- **AI Assistant:** Chat with **Google Gemini AI** to create, modify, and fix diagrams using natural language. Your API key is stored locally for complete privacy.
-- **Live Preview:** See your diagrams update instantly as you type with our optimized, high-performance rendering engine.
-- **Rich Template Library:** Access over **70+ ready-made templates** across 18 categories to jumpstart your diagrams.
-- **Power Editor:** Built on **Monaco Editor** (VS Code), featuring intelligent syntax highlighting, code completion, and real-time error validation.
-- **Fully Component Responsive:** Adjustable split-view layout that adapts specifically for desktop, tablet, and mobile usage.
-- **Advanced Navigation:** Professional zoom & pan controls with mouse wheel support, pinch-to-zoom, and momentum panning.
-- **Auto-Save & Privacy:** Work is automatically saved to browser storage. No data is sent to servers—everything stays local.
-- **Versatile Exporting:** Download as `.mmd`, export full project `.zip` archives, or copy as SVG/PNG instantly.
-- **Smart Sharing:** Share diagrams instantly via encoded URLs without needing a backend.
-- **Iframe Embedding:** Seamlessly embed your diagrams into external websites or documentation using generated HTML.
-- **Personal Collections:** Save and organize your favorite diagrams into local collections for quick access.
-- **Presentation Mode:** A distraction-free viewer that hides the UI and supports full-screen presentation navigation.
-- **Customizable Settings:** Persistent configuration for themes, colors, and fonts saved directly to your browser.
 
 ---
 
