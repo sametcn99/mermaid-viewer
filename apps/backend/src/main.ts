@@ -41,6 +41,8 @@ class MainApplication {
       .addTag('mermaid-viewer')
       .addBearerAuth()
       .setContact('sametcn99', 'https://sametcc.me', 'sametcn99@gmail.com')
+      .addServer('http://localhost:3001', 'Local server')
+      .addServer('https://mermaid.sametcc.me/api', 'Production server')
       .build();
 
     const document = SwaggerModule.createDocument(this.app, config);
