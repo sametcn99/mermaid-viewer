@@ -5,7 +5,6 @@ import Features from "@/components/home/Features";
 import FAQ from "@/components/home/FAQ";
 import Footer from "@/components/home/Footer";
 import InteractiveDemo from "@/components/home/InteractiveDemo";
-import SupportSection from "@/components/home/SupportSection";
 import LearnMermaidSyntax from "@/components/home/LearnMermaidSyntax";
 import HowItWorks from "@/components/home/HowItWorks";
 import OpenSourceBanner from "@/components/home/OpenSourceBanner";
@@ -33,7 +32,6 @@ export default function HomePage() {
 			<LearnMermaidSyntax />
 			<FAQ />
 			<OpenSourceBanner />
-			<SupportSection />
 			<Footer />
 		</Box>
 	);

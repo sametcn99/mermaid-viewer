@@ -9,6 +9,7 @@ import {
 	useTheme,
 	keyframes,
 } from "@mui/material";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, Zap, Shield, Sparkles } from "lucide-react";
@@ -25,6 +26,11 @@ const gradientText = keyframes`
 
 export default function Hero() {
 	const theme = useTheme();
+	const [mounted, setMounted] = useState(false);
+
+	useEffect(() => {
+		setMounted(true);
+	}, []);
 
 	const badges = [
 		{ icon: <Zap size={14} />, text: "Real-time Preview" },
@@ -88,32 +94,33 @@ export default function Hero() {
 			/>
 
 			{/* Floating particles */}
-			{[...Array(15)].map((_, i) => (
-				<MotionBox
-					key={i}
-					animate={{
-						y: [0, -30, 0],
-						x: [0, Math.sin(i) * 20, 0],
-						opacity: [0.2, 0.5, 0.2],
-					}}
-					transition={{
-						duration: 4 + Math.random() * 4,
-						repeat: Number.POSITIVE_INFINITY,
-						delay: Math.random() * 2,
-						ease: "easeInOut",
-					}}
-					sx={{
-						position: "absolute",
-						width: 4 + Math.random() * 6,
-						height: 4 + Math.random() * 6,
-						borderRadius: "50%",
-						bgcolor: theme.palette.primary.main,
-						left: `${Math.random() * 100}%`,
-						top: `${Math.random() * 100}%`,
-						pointerEvents: "none",
-					}}
-				/>
-			))}
+			{mounted &&
+				[...Array(15)].map((_, i) => (
+					<MotionBox
+						key={i}
+						animate={{
+							y: [0, -30, 0],
+							x: [0, Math.sin(i) * 20, 0],
+							opacity: [0.2, 0.5, 0.2],
+						}}
+						transition={{
+							duration: 4 + Math.random() * 4,
+							repeat: Number.POSITIVE_INFINITY,
+							delay: Math.random() * 2,
+							ease: "easeInOut",
+						}}
+						sx={{
+							position: "absolute",
+							width: 4 + Math.random() * 6,
+							height: 4 + Math.random() * 6,
+							borderRadius: "50%",
+							bgcolor: theme.palette.primary.main,
+							left: `${Math.random() * 100}%`,
+							top: `${Math.random() * 100}%`,
+							pointerEvents: "none",
+						}}
+					/>
+				))}
 
 			<Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
 				<Stack spacing={5} alignItems="center" textAlign="center">
