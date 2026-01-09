@@ -490,20 +490,13 @@ export default function AppBar() {
 
 							{!authInitialized ? (
 								<CircularProgress size={24} />
-							) : isAuthenticated ? (
+							) : isAuthenticated || isLocalOnly ? (
 								<UserMenu
 									onOpenSettings={() => setIsAccountSettingsOpen(true)}
+									onSignIn={() => setIsLoginDialogOpen(true)}
 								/>
 							) : (
 								<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-									{isLocalOnly && (
-										<Chip
-											label="Local storage only"
-											size="small"
-											variant="outlined"
-											color="default"
-										/>
-									)}
 									<Button
 										variant="contained"
 										size="small"
@@ -553,20 +546,13 @@ export default function AppBar() {
 
 							{!authInitialized ? (
 								<CircularProgress size={20} />
-							) : isAuthenticated ? (
+							) : isAuthenticated || isLocalOnly ? (
 								<UserMenu
 									onOpenSettings={() => setIsAccountSettingsOpen(true)}
+									onSignIn={() => setIsLoginDialogOpen(true)}
 								/>
 							) : (
 								<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-									{isLocalOnly && (
-										<Chip
-											label="Local storage only"
-											size="small"
-											variant="outlined"
-											color="default"
-										/>
-									)}
 									<Button
 										variant="contained"
 										size="small"
@@ -658,7 +644,7 @@ export default function AppBar() {
 
 				<Divider />
 
-				{authInitialized && !isAuthenticated && (
+				{authInitialized && !isAuthenticated && !isLocalOnly && (
 					<MenuItem
 						onClick={() => {
 							handleMobileMenuClose();

@@ -15,17 +15,35 @@ import {
 	Box,
 	CircularProgress,
 } from "@mui/material";
-import { User, LogOut, Settings, RefreshCw } from "lucide-react";
+import {
+	User,
+	LogOut,
+	Settings,
+	RefreshCw,
+	Database,
+	HardDrive,
+	LogIn,
+} from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { logout, selectUser, selectAuthLoading } from "@/store/authSlice";
+import {
+	logout,
+	selectUser,
+	selectAuthLoading,
+	selectIsLocalOnly,
+} from "@/store/authSlice";
 
 interface UserMenuProps {
 	onOpenSettings?: () => void;
+	onSignIn?: () => void;
 }
 
-export default function UserMenu({ onOpenSettings }: UserMenuProps) {
+export default function UserMenu({
+	onOpenSettings,
+	onSignIn,
+}: UserMenuProps) {
 	const dispatch = useAppDispatch();
 	const user = useAppSelector(selectUser);
+	const isLocalOnly = useAppSelector(selectIsLocalOnly);
 	const isLoading = useAppSelector(selectAuthLoading);
 
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -50,9 +68,16 @@ export default function UserMenu({ onOpenSettings }: UserMenuProps) {
 		onOpenSettings?.();
 	}, [handleClose, onOpenSettings]);
 
-	if (!user) return null;
+	const handleSignIn = useCallback(() => {
+		handleClose();
+		onSignIn?.();
+	}, [handleClose, onSignIn]);
 
-	const displayName = user.displayName || user.email.split("@")[0];
+	if (!user && !isLocalOnly) return null;
+
+	const displayName = user
+		? user.displayName || user.email.split("@")[0]
+		: "Local User";
 	const initials = displayName
 		.split(" ")
 		.map((n) => n[0])
@@ -62,7 +87,7 @@ export default function UserMenu({ onOpenSettings }: UserMenuProps) {
 
 	return (
 		<>
-			<Tooltip title="Account">
+			<Tooltip title={user ? "Account" : "Local Account"}>
 				<IconButton
 					onClick={handleOpen}
 					size="small"
@@ -76,10 +101,10 @@ export default function UserMenu({ onOpenSettings }: UserMenuProps) {
 							width: 32,
 							height: 32,
 							fontSize: "0.875rem",
-							bgcolor: "primary.main",
+							bgcolor: isLocalOnly ? "action.active" : "primary.main",
 						}}
 					>
-						{initials}
+						{isLocalOnly ? <HardDrive size={16} /> : initials}
 					</Avatar>
 				</IconButton>
 			</Tooltip>
@@ -102,7 +127,7 @@ export default function UserMenu({ onOpenSettings }: UserMenuProps) {
 						{displayName}
 					</Typography>
 					<Typography variant="body2" color="text.secondary" noWrap>
-						{user.email}
+						{user ? user.email : "Local storage"}
 					</Typography>
 				</Box>
 
@@ -119,12 +144,21 @@ export default function UserMenu({ onOpenSettings }: UserMenuProps) {
 
 				<Divider />
 
-				<MenuItem onClick={handleLogout} disabled={isLoading}>
-					<ListItemIcon>
-						<LogOut size={18} />
-					</ListItemIcon>
-					<ListItemText>Sign Out</ListItemText>
-				</MenuItem>
+				{user ? (
+					<MenuItem onClick={handleLogout} disabled={isLoading}>
+						<ListItemIcon>
+							<LogOut size={18} />
+						</ListItemIcon>
+						<ListItemText>Sign Out</ListItemText>
+					</MenuItem>
+				) : (
+					<MenuItem onClick={handleSignIn} disabled={isLoading}>
+						<ListItemIcon>
+							<LogIn size={18} />
+						</ListItemIcon>
+						<ListItemText>Sign In</ListItemText>
+					</MenuItem>
+				)}
 			</Menu>
 		</>
 	);

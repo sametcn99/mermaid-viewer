@@ -30,8 +30,13 @@ import {
 	selectUser,
 	selectAuthLoading,
 	selectAuthError,
+	selectIsLocalOnly,
+	selectIsAuthenticated,
 } from "@/store/authSlice";
 import { deleteAccount } from "@/lib/api";
+import { resetAllStores } from "@/lib/indexed-db";
+import { requestImmediateSync } from "@/lib/sync";
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/lib/api/client";
 
 interface AccountSettingsDialogProps {
 	open: boolean;
@@ -46,6 +51,8 @@ export default function AccountSettingsDialog({
 	const user = useAppSelector(selectUser);
 	const isLoading = useAppSelector(selectAuthLoading);
 	const error = useAppSelector(selectAuthError);
+	const isLocalOnly = useAppSelector(selectIsLocalOnly);
+	const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
 	const [displayName, setDisplayName] = useState(user?.displayName || "");
 	const [currentPassword, setCurrentPassword] = useState("");
@@ -63,9 +70,6 @@ export default function AccountSettingsDialog({
 
 	const handleClose = useCallback(() => {
 		setCurrentPassword("");
-		setNewPassword("");
-		setConfirmPassword("");
-		setShowPasswords(false);
 		setNewPassword("");
 		setConfirmPassword("");
 		setShowPasswords(false);
@@ -151,9 +155,15 @@ export default function AccountSettingsDialog({
 	);
 
 	const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
+	const [resetConfirmationOpen, setResetConfirmationOpen] = useState(false);
+	const [isResetting, setIsResetting] = useState(false);
 
 	const handleDeleteCountClick = () => {
 		setDeleteConfirmationOpen(true);
+	};
+
+	const handleResetStorageClick = () => {
+		setResetConfirmationOpen(true);
 	};
 
 	const handleDeleteConfirm = useCallback(async () => {
@@ -173,13 +183,45 @@ export default function AccountSettingsDialog({
 		}
 	}, [dispatch, handleClose]);
 
-	if (!user) return null;
+	const handleResetConfirm = useCallback(async () => {
+		setResetConfirmationOpen(false);
+		setIsResetting(true);
+		setDeleteError(null);
+
+		try {
+			await resetAllStores();
+			if (typeof window !== "undefined") {
+				const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
+				const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+
+				window.localStorage.clear();
+
+				if (accessToken) localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+				if (refreshToken) localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+			}
+
+			if (isAuthenticated) {
+				requestImmediateSync("auth-success");
+				setSuccess("Local storage cleared and sync requested.");
+			} else {
+				setSuccess("Local storage cleared.");
+			}
+		} catch (err) {
+			setDeleteError(
+				err instanceof Error ? err.message : "Failed to reset local storage",
+			);
+		} finally {
+			setIsResetting(false);
+		}
+	}, [isAuthenticated]);
+
+	if (!user && !isLocalOnly) return null;
 
 	return (
 		<Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
 			<DialogTitle>
 				<Typography variant="h5" fontWeight={600} component="div">
-					Account Settings
+					{user ? "Account Settings" : "Local Settings"}
 				</Typography>
 			</DialogTitle>
 
@@ -196,139 +238,148 @@ export default function AccountSettingsDialog({
 					</Alert>
 				)}
 
-				<Box
-					component="form"
-					onSubmit={handleUpdateProfile}
-					sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}
-				>
-					<TextField
-						label="Email"
-						value={user.email}
-						disabled
-						fullWidth
-						helperText="Email cannot be changed"
-					/>
+				{!user && isLocalOnly && (
+					<Alert severity="info" sx={{ mb: 2 }}>
+						You are currently using local storage mode. Your data is stored only
+						on this device. Sign in to sync your data across devices.
+					</Alert>
+				)}
 
-					<TextField
-						label="Display Name"
-						value={displayName}
-						onChange={(e) => setDisplayName(e.target.value)}
-						disabled={isLoading}
-						fullWidth
-					/>
-
+				{user && (
 					<Box
-						sx={{
-							display: "flex",
-							alignItems: "center",
-							gap: 2,
-							p: 2,
-							bgcolor: "action.hover",
-							borderRadius: 1,
-						}}
+						component="form"
+						onSubmit={handleUpdateProfile}
+						sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}
 					>
-						<Typography variant="body2" color="text.secondary">
-							Signed in with:
-						</Typography>
-						{user.googleId ? (
-							<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-								<FontAwesomeIcon icon={faGoogle} />
-								<Typography variant="body2" fontWeight={500}>
-									Google
-								</Typography>
-							</Box>
-						) : user.githubId ? (
-							<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-								<FontAwesomeIcon icon={faGithub} />
-								<Typography variant="body2" fontWeight={500}>
-									GitHub
-								</Typography>
-							</Box>
-						) : (
-							<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-								<Mail size={16} />
-								<Typography variant="body2" fontWeight={500}>
-									Email
-								</Typography>
-							</Box>
+						<TextField
+							label="Email"
+							value={user.email}
+							disabled
+							fullWidth
+							helperText="Email cannot be changed"
+						/>
+
+						<TextField
+							label="Display Name"
+							value={displayName}
+							onChange={(e) => setDisplayName(e.target.value)}
+							disabled={isLoading}
+							fullWidth
+						/>
+
+						<Box
+							sx={{
+								display: "flex",
+								alignItems: "center",
+								gap: 2,
+								p: 2,
+								bgcolor: "action.hover",
+								borderRadius: 1,
+							}}
+						>
+							<Typography variant="body2" color="text.secondary">
+								Signed in with:
+							</Typography>
+							{user.googleId ? (
+								<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+									<FontAwesomeIcon icon={faGoogle} />
+									<Typography variant="body2" fontWeight={500}>
+										Google
+									</Typography>
+								</Box>
+							) : user.githubId ? (
+								<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+									<FontAwesomeIcon icon={faGithub} />
+									<Typography variant="body2" fontWeight={500}>
+										GitHub
+									</Typography>
+								</Box>
+							) : (
+								<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+									<Mail size={16} />
+									<Typography variant="body2" fontWeight={500}>
+										Email
+									</Typography>
+								</Box>
+							)}
+						</Box>
+
+						{!user.googleId && !user.githubId && (
+							<>
+								<Divider sx={{ my: 1 }}>
+									<Typography variant="caption" color="text.secondary">
+										Change Password
+									</Typography>
+								</Divider>
+
+								<TextField
+									label="Current Password"
+									type={showPasswords ? "text" : "password"}
+									value={currentPassword}
+									onChange={(e) => setCurrentPassword(e.target.value)}
+									error={!!validationErrors.currentPassword}
+									helperText={validationErrors.currentPassword}
+									disabled={isLoading}
+									fullWidth
+									autoComplete="current-password"
+									InputProps={{
+										endAdornment: (
+											<InputAdornment position="end">
+												<IconButton
+													onClick={() => setShowPasswords(!showPasswords)}
+													edge="end"
+													size="small"
+													tabIndex={-1}
+												>
+													{showPasswords ? (
+														<EyeOff size={18} />
+													) : (
+														<Eye size={18} />
+													)}
+												</IconButton>
+											</InputAdornment>
+										),
+									}}
+								/>
+
+								<TextField
+									label="New Password"
+									type={showPasswords ? "text" : "password"}
+									value={newPassword}
+									onChange={(e) => setNewPassword(e.target.value)}
+									error={!!validationErrors.newPassword}
+									helperText={
+										validationErrors.newPassword || "At least 8 characters"
+									}
+									disabled={isLoading}
+									fullWidth
+									autoComplete="new-password"
+								/>
+
+								<TextField
+									label="Confirm New Password"
+									type={showPasswords ? "text" : "password"}
+									value={confirmPassword}
+									onChange={(e) => setConfirmPassword(e.target.value)}
+									error={!!validationErrors.confirmPassword}
+									helperText={validationErrors.confirmPassword}
+									disabled={isLoading}
+									fullWidth
+									autoComplete="new-password"
+								/>
+							</>
 						)}
+
+						<Button
+							type="submit"
+							variant="contained"
+							disabled={isLoading}
+							sx={{ mt: 1 }}
+						>
+							{isLoading ? <CircularProgress size={24} /> : "Save Changes"}
+						</Button>
 					</Box>
-
-					{!user.googleId && !user.githubId && (
-						<>
-							<Divider sx={{ my: 1 }}>
-								<Typography variant="caption" color="text.secondary">
-									Change Password
-								</Typography>
-							</Divider>
-
-							<TextField
-								label="Current Password"
-								type={showPasswords ? "text" : "password"}
-								value={currentPassword}
-								onChange={(e) => setCurrentPassword(e.target.value)}
-								error={!!validationErrors.currentPassword}
-								helperText={validationErrors.currentPassword}
-								disabled={isLoading}
-								fullWidth
-								autoComplete="current-password"
-								InputProps={{
-									endAdornment: (
-										<InputAdornment position="end">
-											<IconButton
-												onClick={() => setShowPasswords(!showPasswords)}
-												edge="end"
-												size="small"
-												tabIndex={-1}
-											>
-												{showPasswords ? (
-													<EyeOff size={18} />
-												) : (
-													<Eye size={18} />
-												)}
-											</IconButton>
-										</InputAdornment>
-									),
-								}}
-							/>
-
-							<TextField
-								label="New Password"
-								type={showPasswords ? "text" : "password"}
-								value={newPassword}
-								onChange={(e) => setNewPassword(e.target.value)}
-								error={!!validationErrors.newPassword}
-								helperText={
-									validationErrors.newPassword || "At least 8 characters"
-								}
-								disabled={isLoading}
-								fullWidth
-								autoComplete="new-password"
-							/>
-
-							<TextField
-								label="Confirm New Password"
-								type={showPasswords ? "text" : "password"}
-								value={confirmPassword}
-								onChange={(e) => setConfirmPassword(e.target.value)}
-								error={!!validationErrors.confirmPassword}
-								helperText={validationErrors.confirmPassword}
-								disabled={isLoading}
-								fullWidth
-								autoComplete="new-password"
-							/>
-						</>
-					)}
-
-					<Button
-						type="submit"
-						variant="contained"
-						disabled={isLoading}
-						sx={{ mt: 1 }}
-					>
-						{isLoading ? <CircularProgress size={24} /> : "Save Changes"}
-					</Button>
-				</Box>
+				)}
 
 				<Accordion
 					sx={{ mt: 3, bgcolor: "error.main", color: "error.contrastText" }}
@@ -346,31 +397,83 @@ export default function AccountSettingsDialog({
 						<Typography fontWeight={500}>Danger Zone</Typography>
 					</AccordionSummary>
 					<AccordionDetails sx={{ bgcolor: "background.paper" }}>
-						<Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-							Deleting your account will permanently remove all your data,
-							including diagrams, templates, and settings. This action cannot be
-							undone.
-						</Typography>
+						<Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+							{user && (
+								<Box>
+									<Typography
+										variant="subtitle2"
+										color="error.main"
+										fontWeight={600}
+									>
+										Delete Account
+									</Typography>
+									<Typography
+										variant="body2"
+										color="text.secondary"
+										sx={{ mb: 1 }}
+									>
+										Deleting your account will permanently remove all your data
+										from our servers, including diagrams, templates, and
+										settings. This action cannot be undone.
+									</Typography>
+									<Button
+										variant="outlined"
+										color="error"
+										onClick={handleDeleteCountClick}
+										disabled={isDeleting}
+										fullWidth
+									>
+										{isDeleting ? (
+											<CircularProgress size={24} color="inherit" />
+										) : (
+											"Delete My Account"
+										)}
+									</Button>
+								</Box>
+							)}
+
+							{user && <Divider />}
+
+							<Box>
+								<Typography
+									variant="subtitle2"
+									color="error.main"
+									fontWeight={600}
+								>
+									Reset Local Storage
+								</Typography>
+								<Typography
+									variant="body2"
+									color="text.secondary"
+									sx={{ mb: 1 }}
+								>
+									This will clear all data stored locally on this device
+									(diagrams, cache, etc.).
+									{user
+										? " Your data on the server will not be deleted, and will be re-synced."
+										: " Since you are not signed in, this will permanently delete all your diagrams and settings."}
+								</Typography>
+								<Button
+									variant="outlined"
+									color="error"
+									onClick={handleResetStorageClick}
+									disabled={isResetting}
+									fullWidth
+								>
+									{isResetting ? (
+										<CircularProgress size={24} color="inherit" />
+									) : (
+										"Reset Local Storage"
+									)}
+								</Button>
+							</Box>
+						</Box>
 
 						{deleteError && (
-							<Alert severity="error" sx={{ mb: 2 }}>
+							<Alert severity="error" sx={{ mt: 2 }}>
 								{deleteError}
 							</Alert>
 						)}
-
-						<Button
-							variant="contained"
-							color="error"
-							onClick={handleDeleteCountClick}
-							disabled={isDeleting}
-							fullWidth
-						>
-							{isDeleting ? (
-								<CircularProgress size={24} color="inherit" />
-							) : (
-								"Delete My Account"
-							)}
-						</Button>
 					</AccordionDetails>
 				</Accordion>
 			</DialogContent>
@@ -381,7 +484,7 @@ export default function AccountSettingsDialog({
 				</Button>
 			</DialogActions>
 
-			{/* Confirmation Dialog */}
+			{/* Delete Account Confirmation Dialog */}
 			<Dialog
 				open={deleteConfirmationOpen}
 				onClose={() => setDeleteConfirmationOpen(false)}
@@ -403,6 +506,34 @@ export default function AccountSettingsDialog({
 						variant="contained"
 					>
 						Delete
+					</Button>
+				</DialogActions>
+			</Dialog>
+
+			{/* Reset Storage Confirmation Dialog */}
+			<Dialog
+				open={resetConfirmationOpen}
+				onClose={() => setResetConfirmationOpen(false)}
+			>
+				<DialogTitle>Confirm Local Storage Reset</DialogTitle>
+				<DialogContent>
+					<Typography>
+						Are you sure you want to reset your local storage?
+						{user
+							? " All local data will be cleared and re-synced from the server."
+							: " All your diagrams and settings will be permanently lost as you are not signed in."}
+					</Typography>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={() => setResetConfirmationOpen(false)}>
+						Cancel
+					</Button>
+					<Button
+						onClick={handleResetConfirm}
+						color="error"
+						variant="contained"
+					>
+						Reset Local Storage
 					</Button>
 				</DialogActions>
 			</Dialog>
