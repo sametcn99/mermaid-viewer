@@ -29,6 +29,10 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
       callbackURL: callbackURL || 'NOT_DEFINED',
       scope: ['user:email'],
       userAgent: 'MermaidViewer', // Explicit User-Agent header required by GitHub API
+      customHeaders: {
+        'User-Agent': 'MermaidViewer',
+      },
+      proxy: true,
     });
   }
 
