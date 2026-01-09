@@ -53,12 +53,12 @@ services:
       - "3000"
 
   nginx:
-    image: nginx:alpine
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
     restart: always
     expose:
       - "80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - frontend
       - backend
