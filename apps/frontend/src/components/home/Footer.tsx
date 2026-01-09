@@ -18,13 +18,8 @@ const footerLinks = {
 		title: "Resources",
 		links: [
 			{
-				label: "Documentation",
-				href: "https://mermaid.js.org/intro/",
-				external: true,
-			},
-			{
-				label: "Mermaid Syntax",
-				href: "https://mermaid.js.org/syntax/flowchart.html",
+				label: "Mermaid Documentation",
+				href: "https://mermaid.js.org/intro/getting-started.html",
 				external: true,
 			},
 			{
