@@ -1,20 +1,34 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-github2';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from '../auth.service';
 
 @Injectable()
 export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
+  private readonly logger = new Logger(GithubStrategy.name);
+
   constructor(
     private configService: ConfigService,
     private authService: AuthService,
   ) {
+    const clientID = configService.get<string>('GITHUB_CLIENT_ID');
+    const clientSecret = configService.get<string>('GITHUB_CLIENT_SECRET');
+    const callbackURL = configService.get<string>('GITHUB_CALLBACK_URL');
+
+    if (!clientID || !clientSecret || !callbackURL) {
+      const logger = new Logger(GithubStrategy.name);
+      if (!clientID) logger.error('GITHUB_CLIENT_ID is not defined');
+      if (!clientSecret) logger.error('GITHUB_CLIENT_SECRET is not defined');
+      if (!callbackURL) logger.error('GITHUB_CALLBACK_URL is not defined');
+    }
+
     super({
-      clientID: configService.get<string>('GITHUB_CLIENT_ID') || '',
-      clientSecret: configService.get<string>('GITHUB_CLIENT_SECRET') || '',
-      callbackURL: configService.get<string>('GITHUB_CALLBACK_URL') || '',
+      clientID: clientID || 'NOT_DEFINED',
+      clientSecret: clientSecret || 'NOT_DEFINED',
+      callbackURL: callbackURL || 'NOT_DEFINED',
       scope: ['user:email'],
+      userAgent: 'MermaidViewer', // Explicit User-Agent header required by GitHub API
     });
   }
 
