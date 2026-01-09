@@ -36,8 +36,8 @@ import {
   CurrentUserData,
 } from './decorators/current-user.decorator';
 import { OAuthExceptionFilter } from './filters/oauth-exception.filter';
-import { environment } from '../config/environment';
 import { User } from './entities/user.entity';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -141,7 +141,7 @@ export class AuthController {
     await this.authService.updateRefreshToken(user.id, tokens.refreshToken);
 
     // Redirect to frontend with tokens
-    const frontendUrl = environment.frontendUrl;
+    const frontendUrl = new ConfigService().get<string>('FRONTEND_URL');
     res.redirect(
       `${frontendUrl}/auth/callback?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`,
     );
@@ -165,7 +165,7 @@ export class AuthController {
     await this.authService.updateRefreshToken(user.id, tokens.refreshToken);
 
     // Redirect to frontend with tokens
-    const frontendUrl = environment.frontendUrl;
+    const frontendUrl = new ConfigService().get<string>('FRONTEND_URL');
     res.redirect(
       `${frontendUrl}/auth/callback?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`,
     );

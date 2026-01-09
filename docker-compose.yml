@@ -2,11 +2,11 @@ services:
   postgres:
     image: postgres:16-alpine
     restart: always
-    env_file: .env
+    # Using internal environment config instead of root .env
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mermaid_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -15,33 +15,9 @@ services:
       context: .
       dockerfile: apps/backend/Dockerfile
     restart: always
-    env_file: .env
-    environment:
-      # Database connection for NestJS (Postgres)
-      DB_HOST: ${DATABASE_HOST}
-      DB_PORT: ${DATABASE_PORT}
-      DB_USERNAME: ${POSTGRES_USER}
-      DB_PASSWORD: ${POSTGRES_PASSWORD}
-      DB_NAME: ${POSTGRES_DB}
-      
-      # App Config
-      PORT: 3001
-      NODE_ENV: ${NODE_ENV}
-
-      # Auth Configuration
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
-
-      # OAuth Providers
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
-      GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL}
-      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
-      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
-      GITHUB_CALLBACK_URL: ${GITHUB_CALLBACK_URL}
-
-      # Frontend URL for CORS and Redirects
-      FRONTEND_URL: ${FRONTEND_URL}
+    # Load backend-specific env file
+    env_file:
+      - ./apps/backend/.env
     depends_on:
       - postgres
     ports:
@@ -52,11 +28,9 @@ services:
       context: .
       dockerfile: apps/frontend/Dockerfile
     restart: always
-    env_file: .env
-    environment:
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
-      PORT: 3000
+    # Load frontend-specific env file
+    env_file:
+      - ./apps/frontend/.env
     depends_on:
       - backend
     ports:

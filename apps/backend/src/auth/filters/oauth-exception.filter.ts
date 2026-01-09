@@ -5,7 +5,7 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { environment } from '../../config/environment';
+import { ConfigService } from '@nestjs/config';
 
 @Catch(HttpException)
 export class OAuthExceptionFilter implements ExceptionFilter {
@@ -25,7 +25,7 @@ export class OAuthExceptionFilter implements ExceptionFilter {
       message = exceptionResponse;
     }
 
-    const frontendUrl = environment.frontendUrl;
+    const frontendUrl = new ConfigService().get<string>('FRONTEND_URL');
 
     // Check if message is array (class-validator)
     if (Array.isArray(message)) {
