@@ -18,6 +18,7 @@ RUN bun install
 ENV BUILD_CPU_LIMIT=1
 ENV DISABLE_SOURCE_MAPS=true
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
 
 # Add ARGs for Next.js build time variables
 ARG NEXT_PUBLIC_SITE_URL

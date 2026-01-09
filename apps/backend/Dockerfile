@@ -19,6 +19,9 @@ RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt
 # Install dependencies
 RUN bun install
 
+# Set environment to production for build
+ENV NODE_ENV=production
+
 # Build the backend
 WORKDIR /app/apps/backend
 RUN bun run build
