@@ -338,7 +338,7 @@ export default function Hero() {
 							>
 								<Button
 									component="a"
-									href="https://github.com/sametcn99/mermaid-viewer"
+									href="https://sametcc.me/repo/mermaid-viewer"
 									target="_blank"
 									variant="outlined"
 									size="large"

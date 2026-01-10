@@ -131,7 +131,7 @@ export default function OpenSourceBanner() {
 						{/* CTA Button */}
 						<MotionBox whileTap={{ scale: 0.95 }}>
 							<Link
-								href="https://github.com/sametcn99/mermaid-viewer"
+								href="https://sametcc.me/repo/mermaid-viewer"
 								target="_blank"
 								rel="noopener noreferrer"
 								underline="none"
