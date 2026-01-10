@@ -108,28 +108,7 @@ export default function InteractiveDemo() {
 						<Box
 							sx={{
 								flex: 1,
-								bgcolor: isDark
-									? alpha(theme.palette.background.paper, 0.5)
-									: "#1e1e1e", // Keep dark editor for contrast even in light mode, or match theme?
-								// Usually editors are dark. Let's make it theme's paper color simply darkened.
-								// Actually, standard code editors are usually dark. Let's keep it dark but tinted with primary.
-								// Or just let it be a standard dark editor. To be "theme aware", maybe the border or accents?
-								// Let's use a very dark version of the primary color for background?
-								// No, readability is key. Let's stick to a dark background but maybe derive it.
-								// Let's us a dark grey/black.
-
-								// Re-evaluating: user wants "theme color compatible".
-								// The previous hardcoded #1e1e1e is fine for an editor, but let's check text color.
-								// Let's try to match the app theme more.
 								bgcolor: alpha(theme.palette.text.primary, 0.05), // This would be light in light mode.
-								// Code editors are often dark.
-								// If I want it to look like THE app's editor, I should check what the editor looks like.
-								// But here it's a demo.
-								// Let's stick to a dark editor look as it contrasts well, but use theme-based gray
-								bgcolor:
-									theme.palette.mode === "dark"
-										? alpha(theme.palette.common.white, 0.05)
-										: "#1e1e1e",
 								color:
 									theme.palette.mode === "dark"
 										? theme.palette.text.secondary
