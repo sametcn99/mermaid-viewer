@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
 	Accordion,
 	AccordionSummary,
@@ -11,6 +12,8 @@ import {
 import { ChevronDown } from "lucide-react";
 
 export default function FAQ() {
+	const [expanded, setExpanded] = useState<number | false>(false);
+
 	const faqs = [
 		{
 			question: "Is Mermaid Editor free to use?",
@@ -54,6 +57,10 @@ export default function FAQ() {
 					<Accordion
 						key={index}
 						elevation={0}
+						expanded={expanded === index}
+						onChange={(_e, isExpanded) =>
+							setExpanded(isExpanded ? index : false)
+						}
 						sx={{
 							bgcolor: "transparent",
 							mb: 2,

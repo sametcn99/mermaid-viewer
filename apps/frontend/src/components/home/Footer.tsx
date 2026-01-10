@@ -64,11 +64,11 @@ export default function Footer() {
 				pb: 4,
 				borderTop: 1,
 				borderColor: "divider",
-				bgcolor: "background.paper",
+				bgcolor: "transparent",
 				background: (theme) =>
 					theme.palette.mode === "dark"
-						? "linear-gradient(180deg, rgba(30,30,30,1) 0%, rgba(18,18,18,1) 100%)"
-						: "linear-gradient(180deg, rgba(250,250,250,1) 0%, rgba(255,255,255,1) 100%)",
+						? "linear-gradient(180deg, rgba(30,30,30,0.4) 0%, rgba(18,18,18,0.8) 100%)"
+						: "linear-gradient(180deg, rgba(222, 234, 250, 0.4) 0%, rgba(236, 250, 249, 0.8) 100%)",
 			}}
 		>
 			<Container maxWidth="lg">

@@ -8,12 +8,15 @@ import {
 	Typography,
 	useTheme,
 	keyframes,
+	IconButton,
+	Tooltip,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, Zap, Shield, Sparkles } from "lucide-react";
+import { ArrowRight, Zap, Shield, Sparkles, Palette } from "lucide-react";
 import GitHub from "@mui/icons-material/GitHub";
+import ThemeSettingsDialog from "../ThemeSettingsDialog";
 
 const MotionBox = motion.create(Box);
 const MotionTypography = motion.create(Typography);
@@ -27,6 +30,7 @@ const gradientText = keyframes`
 export default function Hero() {
 	const theme = useTheme();
 	const [mounted, setMounted] = useState(false);
+	const [themeSettingsOpen, setThemeSettingsOpen] = useState(false);
 
 	useEffect(() => {
 		setMounted(true);
@@ -47,6 +51,47 @@ export default function Hero() {
 				overflow: "hidden",
 			}}
 		>
+			<Box
+				component={motion.div}
+				initial={{ opacity: 0, y: -20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ duration: 0.5, delay: 0.2 }}
+				sx={{
+					position: "absolute",
+					top: { xs: 16, md: 24 },
+					right: { xs: 16, md: 24 },
+					zIndex: 10,
+				}}
+			>
+				<Tooltip title="Theme Settings">
+					<IconButton
+						onClick={() => setThemeSettingsOpen(true)}
+						sx={{
+							bgcolor:
+								theme.palette.mode === "dark"
+									? "rgba(255,255,255,0.05)"
+									: "rgba(0,0,0,0.05)",
+							backdropFilter: "blur(8px)",
+							border: "1px solid",
+							borderColor: "divider",
+							color: "text.secondary",
+							transition: "all 0.2s",
+							"&:hover": {
+								bgcolor:
+									theme.palette.mode === "dark"
+										? "rgba(255,255,255,0.1)"
+										: "rgba(0,0,0,0.1)",
+								transform: "translateY(-2px)",
+								color: "primary.main",
+								borderColor: "primary.main",
+							},
+						}}
+					>
+						<Palette size={20} />
+					</IconButton>
+				</Tooltip>
+			</Box>
+
 			{/* Animated background gradient orbs */}
 			<MotionBox
 				animate={{
@@ -363,6 +408,11 @@ export default function Hero() {
 					</MotionBox>
 				</Stack>
 			</Container>
+
+			<ThemeSettingsDialog
+				open={themeSettingsOpen}
+				onClose={() => setThemeSettingsOpen(false)}
+			/>
 		</Box>
 	);
 }

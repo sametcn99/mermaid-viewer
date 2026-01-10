@@ -34,8 +34,8 @@ export default function OpenSourceBanner() {
 						overflow: "hidden",
 						background:
 							theme.palette.mode === "dark"
-								? "linear-gradient(135deg, #0d1117 0%, #161b22 100%)"
-								: "linear-gradient(135deg, #24292f 0%, #1c2128 100%)",
+								? "linear-gradient(135deg, rgba(13, 17, 23, 0.3) 0%, rgba(22, 27, 34, 0.3) 100%)"
+								: "linear-gradient(135deg, rgba(36, 41, 47, 0.3) 0%, rgba(28, 33, 40, 0.3) 100%)",
 						boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
 					}}
 				>
