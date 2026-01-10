@@ -32,10 +32,6 @@ export default function OpenSourceBanner() {
 						borderRadius: 6,
 						position: "relative",
 						overflow: "hidden",
-						background:
-							theme.palette.mode === "dark"
-								? "linear-gradient(135deg, rgba(13, 17, 23, 0.3) 0%, rgba(22, 27, 34, 0.3) 100%)"
-								: "linear-gradient(135deg, rgba(36, 41, 47, 0.3) 0%, rgba(28, 33, 40, 0.3) 100%)",
 						boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
 					}}
 				>
@@ -47,10 +43,7 @@ export default function OpenSourceBanner() {
 							left: 0,
 							right: 0,
 							bottom: 0,
-							backgroundImage: `
-								linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-								linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)
-							`,
+							backgroundImage: `radial-gradient(${theme.palette.mode === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"} 1px, transparent 1px), radial-gradient(${theme.palette.mode === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"} 1px, transparent 1px)`,
 							backgroundSize: "50px 50px",
 							pointerEvents: "none",
 						}}
@@ -73,7 +66,7 @@ export default function OpenSourceBanner() {
 							}}
 							sx={{
 								position: "absolute",
-								color: "white",
+								color: "text.secondary",
 								opacity: 0.05,
 								left: `${15 + i * 15}%`,
 								top: `${20 + (i % 3) * 25}%`,
@@ -115,13 +108,9 @@ export default function OpenSourceBanner() {
 										justifyContent: "center",
 									}}
 								>
-									<GitHub sx={{ fontSize: 32, color: "white" }} />
+									<GitHub sx={{ fontSize: 32 }} />
 								</Box>
-								<Typography
-									variant="h4"
-									fontWeight="bold"
-									sx={{ color: "white" }}
-								>
+								<Typography variant="h4" fontWeight="bold">
 									Open Source
 								</Typography>
 							</Box>
@@ -129,7 +118,6 @@ export default function OpenSourceBanner() {
 							<Typography
 								variant="h6"
 								sx={{
-									color: "rgba(255,255,255,0.8)",
 									mb: 3,
 									lineHeight: 1.7,
 									maxWidth: 500,
@@ -141,7 +129,7 @@ export default function OpenSourceBanner() {
 						</Box>
 
 						{/* CTA Button */}
-						<MotionBox whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+						<MotionBox whileTap={{ scale: 0.95 }}>
 							<Link
 								href="https://github.com/sametcn99/mermaid-viewer"
 								target="_blank"
@@ -153,21 +141,15 @@ export default function OpenSourceBanner() {
 									gap: 1.5,
 									px: 4,
 									py: 2,
+									color: "text.primary",
 									borderRadius: "50px",
-									bgcolor: "white",
-									color: "#24292f",
 									fontWeight: 700,
 									fontSize: "1.1rem",
-									boxShadow: "0 8px 30px rgba(0,0,0,0.3)",
-									"&:hover": {
-										bgcolor: "#f6f8fa",
-									},
 									transition: "all 0.2s",
 								}}
 							>
 								<GitHub sx={{ fontSize: 24 }} />
 								View on GitHub
-								<ExternalLink size={18} />
 							</Link>
 						</MotionBox>
 					</Box>
