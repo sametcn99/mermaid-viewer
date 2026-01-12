@@ -26,6 +26,7 @@ import {
 } from "@mui/material";
 import { Key, Minus, Send, Sparkles, Trash2, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import ApiKeySection from "./ApiKeySection";
 import ChatMessages from "./ChatMessages";
 
@@ -52,12 +53,20 @@ export default function AiAssistantChat({
 	onUpdateDiagram,
 	onUpdateConfig,
 }: AiAssistantChatProps) {
+	const { track } = useAnalytics();
 	const [apiKeyDialogOpen, setApiKeyDialogOpen] = useState(false);
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const [snapshots, setSnapshots] = useState<DiagramSnapshot[]>([]);
 	const [inputValue, setInputValue] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+
+	// Track chat open
+	useEffect(() => {
+		if (open) {
+			track("ai_chat_opened");
+		}
+	}, [open, track]);
 
 	// Load chat history and snapshots on mount
 	useEffect(() => {
@@ -98,6 +107,8 @@ export default function AiAssistantChat({
 		setLoading(true);
 		setError(null);
 
+		track("ai_message_sent");
+
 		try {
 			await addMessageToAiChatHistory(userMessage);
 
@@ -135,6 +146,8 @@ export default function AiAssistantChat({
 				timestamp: Date.now(),
 			};
 
+			track("ai_message_received");
+
 			setMessages((prev) => [...prev, assistantMessage]);
 			await addMessageToAiChatHistory(assistantMessage);
 
@@ -168,6 +181,7 @@ export default function AiAssistantChat({
 		config.selectedModel,
 		snapshots,
 		onUpdateDiagram,
+		track,
 	]);
 
 	const handleRestoreSnapshot = useCallback(
@@ -185,12 +199,15 @@ export default function AiAssistantChat({
 				selectedModel: model,
 			};
 			await onUpdateConfig(newConfig);
+
+			track("ai_api_key_set", { model });
+
 			// Notify other components about the config change
 			window.dispatchEvent(new CustomEvent("aiConfigChanged"));
 			setApiKeyDialogOpen(false);
 			setError(null);
 		},
-		[config, onUpdateConfig],
+		[config, onUpdateConfig, track],
 	);
 
 	const handleTestApiKey = useCallback(
@@ -221,12 +238,13 @@ export default function AiAssistantChat({
 
 	const handleClearHistory = useCallback(async () => {
 		if (confirm("Are you sure you want to clear all chat history?")) {
+			track("ai_chat_cleared");
 			setMessages([]);
 			setSnapshots([]);
 			await clearAiChatHistory();
 			await clearDiagramSnapshots();
 		}
-	}, []);
+	}, [track]);
 
 	const handleKeyDown = useCallback(
 		(e: React.KeyboardEvent) => {
@@ -285,6 +303,7 @@ export default function AiAssistantChat({
 							}}
 							onClick={(e) => {
 								e.stopPropagation();
+								track("ai_chat_closed");
 								onClose();
 							}}
 						>
@@ -383,7 +402,10 @@ export default function AiAssistantChat({
 									transition: "transform 0.2s",
 									"&:hover": { transform: "scale(1.1)" },
 								}}
-								onClick={onClose}
+								onClick={() => {
+									track("ai_chat_closed");
+									onClose();
+								}}
 							>
 								<X size={16} />
 							</IconButton>

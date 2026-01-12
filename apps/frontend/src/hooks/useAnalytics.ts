@@ -11,15 +11,17 @@ declare global {
 	}
 }
 
+import { useCallback } from "react";
+
 export const useAnalytics = () => {
-	const track = (
-		eventName: string,
-		eventData?: Record<string, string | number>,
-	) => {
-		if (typeof window !== "undefined" && window.umami) {
-			window.umami.track(eventName, eventData);
-		}
-	};
+	const track = useCallback(
+		(eventName: string, eventData?: Record<string, string | number>) => {
+			if (typeof window !== "undefined" && window.umami) {
+				window.umami.track(eventName, eventData);
+			}
+		},
+		[],
+	);
 
 	return { track };
 };

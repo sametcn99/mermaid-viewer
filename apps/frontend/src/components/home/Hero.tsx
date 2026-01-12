@@ -16,6 +16,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, Zap, Shield, Sparkles, Palette } from "lucide-react";
 import GitHub from "@mui/icons-material/GitHub";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import ThemeSettingsDialog from "../ThemeSettingsDialog";
 
 const MotionBox = motion.create(Box);
@@ -28,6 +29,7 @@ const gradientText = keyframes`
 `;
 
 export default function Hero() {
+	const { track } = useAnalytics();
 	const theme = useTheme();
 	const [mounted, setMounted] = useState(false);
 	const [themeSettingsOpen, setThemeSettingsOpen] = useState(false);
@@ -65,7 +67,10 @@ export default function Hero() {
 			>
 				<Tooltip title="Theme Settings">
 					<IconButton
-						onClick={() => setThemeSettingsOpen(true)}
+						onClick={() => {
+							track("hero_theme_settings_click");
+							setThemeSettingsOpen(true);
+						}}
 						sx={{
 							bgcolor:
 								theme.palette.mode === "dark"
@@ -299,6 +304,7 @@ export default function Hero() {
 								<Button
 									component={Link}
 									href="/"
+									onClick={() => track("hero_start_creating_click")}
 									variant="contained"
 									size="large"
 									sx={{
@@ -340,6 +346,7 @@ export default function Hero() {
 									component="a"
 									href="https://sametcc.me/repo/mermaid-viewer"
 									target="_blank"
+									onClick={() => track("hero_github_click")}
 									variant="outlined"
 									size="large"
 									sx={{

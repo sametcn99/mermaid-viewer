@@ -216,6 +216,7 @@ export default function AppBar() {
 	}, [handleRequireAuth]);
 
 	const handleSave = useCallback(() => {
+		track("appbar_save_click");
 		if (!canUseLocalData) {
 			handleRequireAuth("Sign in or continue locally to save diagrams.");
 			return;
@@ -234,6 +235,7 @@ export default function AppBar() {
 		dispatch,
 		handleRequireAuth,
 		savedDiagrams.length,
+		track,
 	]);
 
 	const handleSaveSubmit = useCallback(async () => {
@@ -263,9 +265,10 @@ export default function AppBar() {
 
 	const handleMobileMenuOpen = useCallback(
 		(event: React.MouseEvent<HTMLElement>) => {
+			track("appbar_mobile_menu_open");
 			setMobileMenuAnchor(event.currentTarget);
 		},
-		[],
+		[track],
 	);
 
 	const handleMobileMenuClose = useCallback(() => {
@@ -287,20 +290,23 @@ export default function AppBar() {
 	}, [mermaidCode, presentationSearch]);
 
 	const createDiagram = useCallback(() => {
+		track("appbar_new_diagram_click");
 		dispatch(createNewDiagram());
-	}, [dispatch]);
+	}, [dispatch, track]);
 
 	const showTemplateDialog = useCallback(() => {
+		track("appbar_templates_click");
 		setIsTemplateDialogOpen(true);
-	}, []);
+	}, [track]);
 
 	const openLoadDialog = useCallback(() => {
+		track("appbar_open_saved_click");
 		if (!canUseLocalData) {
 			handleRequireAuth("Sign in or continue locally to open saved diagrams.");
 			return;
 		}
 		dispatch(setLoadDialogOpen(true));
-	}, [canUseLocalData, dispatch, handleRequireAuth]);
+	}, [canUseLocalData, dispatch, handleRequireAuth, track]);
 
 	const enterPresentation = useCallback(() => {
 		router.push(presentationHref);
@@ -455,6 +461,7 @@ export default function AppBar() {
 								<IconButton
 									component={Link}
 									href={presentationHref}
+									onClick={() => track("appbar_presentation_click")}
 									aria-label="Enter Presentation"
 									size="medium"
 								>
@@ -464,7 +471,10 @@ export default function AppBar() {
 
 							<Tooltip title="Theme Settings">
 								<IconButton
-									onClick={() => setIsThemeDialogOpen(true)}
+									onClick={() => {
+										track("appbar_theme_settings_click");
+										setIsThemeDialogOpen(true);
+									}}
 									aria-label="Theme Settings"
 									size="medium"
 								>
@@ -476,6 +486,7 @@ export default function AppBar() {
 								<IconButton
 									component={Link}
 									href="/home"
+									onClick={() => track("appbar_home_click")}
 									aria-label="Home"
 									size="medium"
 								>

@@ -23,6 +23,7 @@ import {
 } from "@mui/material";
 import { Monitor, Sun, Moon, Palette, RotateCcw, X } from "lucide-react";
 import { useState, useCallback, useEffect } from "react";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import { useThemeSettings } from "./ThemeRegistry";
 import {
 	defaultCustomColors,
@@ -207,6 +208,7 @@ export default function ThemeSettingsDialog({
 	open,
 	onClose,
 }: ThemeSettingsDialogProps) {
+	const { track } = useAnalytics();
 	const {
 		themeMode,
 		customColors,
@@ -223,14 +225,17 @@ export default function ThemeSettingsDialog({
 	useEffect(() => {
 		if (open) {
 			setLocalColors(customColors);
+			track("theme_settings_opened");
 		}
-	}, [open, customColors]);
+	}, [open, customColors, track]);
 
 	const handleThemeModeChange = useCallback(
 		(event: React.ChangeEvent<HTMLInputElement>) => {
-			setThemeMode(event.target.value as ThemeMode);
+			const newMode = event.target.value as ThemeMode;
+			setThemeMode(newMode);
+			track("theme_mode_changed", { mode: newMode });
 		},
-		[setThemeMode],
+		[setThemeMode, track],
 	);
 
 	const handleColorChange = useCallback(
@@ -246,17 +251,20 @@ export default function ThemeSettingsDialog({
 			const newMode = event.target.checked ? "dark" : "light";
 			const newColors = { ...localColors, mode: newMode } as CustomThemeColors;
 			setLocalColors(newColors);
+			track("theme_base_mode_changed", { mode: newMode });
 		},
-		[localColors],
+		[localColors, track],
 	);
 
 	const handleResetColors = useCallback(() => {
 		setLocalColors(defaultCustomColors);
-	}, []);
+		track("theme_colors_reset");
+	}, [track]);
 
 	const handleApplyCustomColors = useCallback(() => {
 		setCustomColors(localColors);
-	}, [localColors, setCustomColors]);
+		track("theme_custom_colors_applied");
+	}, [localColors, setCustomColors, track]);
 
 	const isCustomMode = themeMode === "custom";
 	const hasChanges =

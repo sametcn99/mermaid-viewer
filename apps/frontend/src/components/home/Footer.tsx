@@ -11,6 +11,7 @@ import {
 	Divider,
 	Chip,
 } from "@mui/material";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import { GitHub, Email, Coffee } from "@mui/icons-material";
 
 const footerLinks = {
@@ -54,6 +55,7 @@ const socialLinks = [
 ];
 
 export default function Footer() {
+	const { track } = useAnalytics();
 	const currentYear = new Date().getFullYear();
 
 	return (
@@ -98,6 +100,9 @@ export default function Footer() {
 										href={social.href}
 										target="_blank"
 										rel="noopener noreferrer"
+										onClick={() =>
+											track("footer_social_click", { label: social.label })
+										}
 										aria-label={social.label}
 										size="small"
 										sx={{
@@ -134,6 +139,12 @@ export default function Footer() {
 										href={link.href}
 										target={link.external ? "_blank" : undefined}
 										rel={link.external ? "noopener noreferrer" : undefined}
+										onClick={() =>
+											track("footer_link_click", {
+												label: link.label,
+												section: section.title,
+											})
+										}
 										underline="none"
 										color="text.secondary"
 										sx={{
@@ -173,6 +184,7 @@ export default function Footer() {
 						<Stack spacing={1.5}>
 							<MuiLink
 								href="/"
+								onClick={() => track("footer_cta_click")}
 								underline="none"
 								sx={{
 									display: "inline-flex",
@@ -238,6 +250,7 @@ export default function Footer() {
 							href="https://buymeacoffee.com/sametcn99"
 							target="_blank"
 							rel="noopener noreferrer"
+							onClick={() => track("footer_coffee_click")}
 							underline="none"
 							sx={{
 								fontWeight: 600,
@@ -269,6 +282,7 @@ export default function Footer() {
 							href="https://sametcc.me"
 							target="_blank"
 							rel="noopener noreferrer"
+							onClick={() => track("footer_author_click")}
 							underline="hover"
 							sx={{ fontWeight: 600 }}
 						>

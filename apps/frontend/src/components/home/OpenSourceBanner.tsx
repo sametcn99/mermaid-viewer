@@ -3,12 +3,14 @@
 import { Box, Container, Typography, useTheme, Link } from "@mui/material";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import GitHub from "@mui/icons-material/GitHub";
 import { Star, GitFork, Eye, ExternalLink } from "lucide-react";
 
 const MotionBox = motion.create(Box);
 
 export default function OpenSourceBanner() {
+	const { track } = useAnalytics();
 	const theme = useTheme();
 	const ref = useRef(null);
 	const isInView = useInView(ref, { once: true, margin: "-50px" });
@@ -134,6 +136,7 @@ export default function OpenSourceBanner() {
 								href="https://sametcc.me/repo/mermaid-viewer"
 								target="_blank"
 								rel="noopener noreferrer"
+								onClick={() => track("opensource_banner_github_click")}
 								underline="none"
 								sx={{
 									display: "inline-flex",
