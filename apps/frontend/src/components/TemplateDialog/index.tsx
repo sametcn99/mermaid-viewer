@@ -7,6 +7,7 @@ import {
 	useState,
 	type MouseEvent,
 } from "react";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 import {
 	Box,
@@ -73,6 +74,7 @@ export default function TemplateDialog({
 		(state: RootState) => state.templateCollections.collections,
 	);
 	const canUseLocalData = useSelector(selectCanUseLocalData);
+	const { track } = useAnalytics();
 
 	const requestAuthentication = useCallback((message: string) => {
 		window.dispatchEvent(
@@ -156,8 +158,9 @@ export default function TemplateDialog({
 	useEffect(() => {
 		if (open) {
 			void dispatch(refreshTemplateCollections());
+			track("template_dialog_opened");
 		}
-	}, [dispatch, open]);
+	}, [dispatch, open, track]);
 
 	const [selectedCategory, setSelectedCategory] =
 		useState<DialogCategory>("All");
@@ -419,11 +422,12 @@ export default function TemplateDialog({
 	const handleSelectTemplateByCode = useCallback(
 		(code: string, name: string) => {
 			onSelectTemplate(code, name);
+			track("template_selected", { name });
 			onClose();
 			setSearchQuery("");
 			setSelectedCategory("All");
 		},
-		[onClose, onSelectTemplate],
+		[onClose, onSelectTemplate, track],
 	);
 
 	const handleSelectTemplate = useCallback(
