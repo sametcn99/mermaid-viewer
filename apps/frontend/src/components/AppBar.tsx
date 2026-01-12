@@ -462,6 +462,16 @@ export default function AppBar() {
 								</IconButton>
 							</Tooltip>
 
+							<Tooltip title="Theme Settings">
+								<IconButton
+									onClick={() => setIsThemeDialogOpen(true)}
+									aria-label="Theme Settings"
+									size="medium"
+								>
+									<Palette size={20} />
+								</IconButton>
+							</Tooltip>
+
 							<Tooltip title={`Home (${shortcuts.help})`}>
 								<IconButton
 									component={Link}
