@@ -50,28 +50,12 @@ export default function TermsOfServicePage() {
 								<ListItemText primary="Do not misuse the service, interfere with others' use, or attempt to access systems without authorization." />
 							</ListItem>
 							<ListItem disableGutters>
-								<ListItemText primary="Do not upload unlawful, infringing, or harmful content, including malicious code." />
-							</ListItem>
-							<ListItem disableGutters>
 								<ListItemText primary="Respect intellectual property rights when creating or sharing diagrams." />
 							</ListItem>
 							<ListItem disableGutters>
 								<ListItemText primary="Comply with all applicable laws, regulations, and third-party terms (for example, AI model providers)." />
 							</ListItem>
 						</List>
-					</Box>
-
-					<Box>
-						<Typography variant="h6" component="h2" gutterBottom>
-							Intellectual Property
-						</Typography>
-						<Typography variant="body1">
-							Mermaid Viewer and its content, features, and functionality are
-							owned by the project maintainers and licensed contributors. You
-							retain ownership of diagrams and materials you create; by
-							submitting content, you grant us a limited license to host and
-							display it for the purpose of operating the service.
-						</Typography>
 					</Box>
 
 					<Box>
@@ -133,18 +117,6 @@ export default function TermsOfServicePage() {
 
 					<Box>
 						<Typography variant="h6" component="h2" gutterBottom>
-							Termination
-						</Typography>
-						<Typography variant="body1">
-							We may suspend or terminate access if you breach these terms or
-							misuse the service. Upon termination, your right to use the
-							service ceases immediately, but relevant provisions that by their
-							nature should survive will remain in effect.
-						</Typography>
-					</Box>
-
-					<Box>
-						<Typography variant="h6" component="h2" gutterBottom>
 							Changes to These Terms
 						</Typography>
 						<Typography variant="body1">
@@ -152,20 +124,6 @@ export default function TermsOfServicePage() {
 							updated version will be indicated by the "Last updated" date.
 							Continued use after changes become effective constitutes
 							acceptance.
-						</Typography>
-					</Box>
-
-					<Divider />
-
-					<Box>
-						<Typography variant="h6" component="h2" gutterBottom>
-							Governing Law and Contact
-						</Typography>
-						<Typography variant="body1">
-							These terms are governed by the laws applicable in your place of
-							residence unless local law requires otherwise. For questions about
-							these terms, contact our support team and we will respond within a
-							reasonable timeframe.
 						</Typography>
 					</Box>
 				</Stack>

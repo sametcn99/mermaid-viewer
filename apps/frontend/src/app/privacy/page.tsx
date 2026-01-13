@@ -43,12 +43,6 @@ export default function PrivacyPolicyPage() {
 							</ListItem>
 							<ListItem disableGutters>
 								<ListItemText
-									primary="Content you provide"
-									secondary="Diagrams, prompts, or configuration you intentionally submit while using the app."
-								/>
-							</ListItem>
-							<ListItem disableGutters>
-								<ListItemText
 									primary="Device and technical metadata"
 									secondary="Browser type, operating system, and non-identifying diagnostic information used to support compatibility and debugging."
 								/>
@@ -61,8 +55,8 @@ export default function PrivacyPolicyPage() {
 							How We Use Information
 						</Typography>
 						<Typography variant="body1" paragraph>
-							We process information to operate, maintain, and improve Mermaid
-							Viewer, including stability, performance, and user experience
+							We process information to operate, maintain, and improve the app,
+							including stability, performance, and user experience
 							enhancements.
 						</Typography>
 						<Typography variant="body1">
@@ -103,35 +97,6 @@ export default function PrivacyPolicyPage() {
 							We may rely on trusted vendors for hosting, analytics, or AI
 							processing. These providers are contractually required to
 							safeguard data and use it only to deliver the services we request.
-						</Typography>
-					</Box>
-
-					<Box>
-						<Typography variant="h6" component="h2" gutterBottom>
-							Your Choices
-						</Typography>
-						<List dense disablePadding>
-							<ListItem disableGutters>
-								<ListItemText primary="You can clear local data and saved diagrams at any time from the app settings." />
-							</ListItem>
-							<ListItem disableGutters>
-								<ListItemText primary="You may opt out of non-essential analytics where provided." />
-							</ListItem>
-							<ListItem disableGutters>
-								<ListItemText primary="You can request clarification about how we handle data by contacting us." />
-							</ListItem>
-						</List>
-					</Box>
-
-					<Box>
-						<Typography variant="h6" component="h2" gutterBottom>
-							Children's Privacy
-						</Typography>
-						<Typography variant="body1">
-							Mermaid Viewer is not directed to children under 13. We do not
-							knowingly collect personal information from children. If you
-							believe a child has provided us with personal data, please contact
-							us so we can take appropriate action.
 						</Typography>
 					</Box>
 
