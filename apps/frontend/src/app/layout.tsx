@@ -93,6 +93,7 @@ export default function RootLayout({
 					defer
 					src="https://umami.sametcc.me/script.js"
 					data-website-id="ec5d2947-854f-4175-b053-766a35fede0f"
+					data-exclude-search="true"
 				></script>
 				<script
 					type="application/ld+json"
