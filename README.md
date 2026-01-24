@@ -7,27 +7,11 @@
 *A powerful, modern web application that transforms your ideas into stunning diagrams with live preview and instant sharing capabilities.*
 
 [Homepage](https://mermaid.sametcc.me/home) • [Report Bug](https://github.com/sametcn99/mermaid-viewer/issues) • [Request Feature](https://github.com/sametcn99/mermaid-viewer/issues) • [GitHub Repository](https://sametcc.me/repo/mermaid-viewer)
-
-## Stats
-
-![GitHub stars](https://img.shields.io/github/stars/sametcn99/mermaid-viewer?style=social)
-![GitHub forks](https://img.shields.io/github/forks/sametcn99/mermaid-viewer?style=social)
-![GitHub issues](https://img.shields.io/github/issues/sametcn99/mermaid-viewer)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/sametcn99/mermaid-viewer)
-
 </div>
 
 ---
 
 ## Quick Start
-
-### Prerequisites
-
-Ensure you have the following installed on your system:
-
-- **Node.js** (v18.17.0 or higher)
-- **Bun** (Recommended package manager) or npm/yarn/pnpm
-- **Git**
 
 ### Installation
 
@@ -61,8 +45,6 @@ Ensure you have the following installed on your system:
 You can easily deploy the application using Docker Compose. This setup includes the frontend, backend, PostgreSQL database, and Nginx as a reverse proxy.
 
 ### Prerequisites
-
-- **Docker** and **Docker Compose** installed on your machine.
 
 ### Running with Docker
 
@@ -143,11 +125,3 @@ We welcome contributions from the community! Whether you're fixing a bug, adding
    ```
 
 7. **Open a Pull Request:** submit your changes for review.
-
----
-
-<div align="center">
-
-**Star this repo if you found it helpful!**
-
-</div>
