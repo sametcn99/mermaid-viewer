@@ -5,16 +5,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
 	return [
 		{
-			url: baseUrl[baseUrl.length - 1] === "/" ? baseUrl.slice(0, -1) : baseUrl,
-			lastModified: new Date(),
-			changeFrequency: "weekly",
-			priority: 1,
-		},
-		{
 			url: `${baseUrl}/home`,
 			lastModified: new Date(),
-			changeFrequency: "weekly",
-			priority: 0.8,
+			changeFrequency: "monthly",
+			priority: 1,
 		},
 	];
 }

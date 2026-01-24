@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 
-const OG_IMAGE_PATH = "/window.svg";
+const OG_IMAGE_PATH = "/favicon.png";
 
 export const SITE_URL = "https://mermaid.sametcc.me";
 export const SITE_URL_STRING = "https://mermaid.sametcc.me";
@@ -64,13 +64,6 @@ const appMetadata: Metadata = {
 		address: false,
 		telephone: false,
 	},
-	alternates: {
-		canonical: "/",
-		languages: {
-			"en-US": "/",
-			"en-GB": "/",
-		},
-	},
 	openGraph: {
 		title: {
 			default: APP_TITLE,
@@ -87,7 +80,7 @@ const appMetadata: Metadata = {
 				width: 1200,
 				height: 630,
 				alt: "Mermaid diagram editor showing synchronized code and rendered chart preview",
-				type: "image/svg+xml",
+				type: "image/png",
 			},
 		],
 	},
