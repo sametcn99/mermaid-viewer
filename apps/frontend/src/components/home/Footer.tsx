@@ -244,13 +244,13 @@ export default function Footer() {
 					>
 						<Coffee sx={{ color: "#FFCA28", fontSize: 20 }} />
 						<Typography variant="body2" color="text.secondary">
-							Enjoying Mermaid Editor?
+							Find this tool useful?
 						</Typography>
 						<MuiLink
-							href="https://buymeacoffee.com/sametcn99"
+							href="https://sametcc.me/support"
 							target="_blank"
 							rel="noopener noreferrer"
-							onClick={() => track("footer_coffee_click")}
+							onClick={() => track("footer_support_click")}
 							underline="none"
 							sx={{
 								fontWeight: 600,
@@ -262,10 +262,31 @@ export default function Footer() {
 								},
 							}}
 						>
-							Buy me a coffee ☕
+							Support me directly
 						</MuiLink>
 						<Typography variant="body2" color="text.secondary">
-							to help ship faster and keep features free!
+							or
+						</Typography>
+						<MuiLink
+							href="https://github.com/sametcn99/mermaid-viewer"
+							target="_blank"
+							rel="noopener noreferrer"
+							onClick={() => track("footer_github_star_click")}
+							underline="none"
+							sx={{
+								fontWeight: 600,
+								color: "text.primary",
+								transition: "all 0.2s ease-in-out",
+								"&:hover": {
+									textDecoration: "underline",
+									color: "primary.main",
+								},
+							}}
+						>
+							star the repo
+						</MuiLink>
+						<Typography variant="body2" color="text.secondary">
+							to help me maintain and improve it!
 						</Typography>
 					</Stack>
 				</Box>

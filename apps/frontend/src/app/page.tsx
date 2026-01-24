@@ -18,6 +18,7 @@ import {
 	updateMermaidFromEditor,
 } from "@/store/mermaidSlice";
 import LoadDiagramDialog from "@/components/LoadDiagramDialog";
+import SupportToast from "@/components/SupportToast";
 
 export default function Home() {
 	const theme = useTheme();
@@ -194,6 +195,7 @@ export default function Home() {
 				currentDiagramCode={mermaidCode}
 				onUpdateDiagram={handleEditorChange}
 			/>
+			<SupportToast />
 		</Box>
 	);
 }
