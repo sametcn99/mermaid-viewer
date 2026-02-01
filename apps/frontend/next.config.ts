@@ -7,14 +7,6 @@ const nextConfig: NextConfig = {
 	// Enable standalone output for Docker builds
 	output: "standalone",
 
-	// Experimental options to control build resource usage
-	experimental: {
-		// Limit workers during build to avoid OOM on limited hardware (e.g. CI/CD, Docker)
-		cpus: process.env.BUILD_CPU_LIMIT
-			? Number.parseInt(process.env.BUILD_CPU_LIMIT, 10)
-			: 1,
-	},
-
 	// Explicitly define environment variables for client-side access
 	env: {
 		NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
