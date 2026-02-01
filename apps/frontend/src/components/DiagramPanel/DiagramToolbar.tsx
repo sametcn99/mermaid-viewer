@@ -1,5 +1,5 @@
 import { Box, Chip, IconButton, Tooltip } from "@mui/material";
-import { Download, RotateCcw, Settings, Share2, CodeXml } from "lucide-react";
+import { CodeXml, Download, RotateCcw, Settings, Share2 } from "lucide-react";
 import { useState } from "react";
 import ShareIframeDialog from "./ShareIframeDialog";
 

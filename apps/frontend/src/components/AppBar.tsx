@@ -1,53 +1,62 @@
 "use client";
 
-import { saveDiagramToStorage } from "@/lib/indexed-db/diagrams.storage";
-import { getRawItem, setRawItem } from "@/lib/indexed-db";
 import {
+	Badge,
 	Box,
+	Button,
+	Chip,
+	CircularProgress,
+	Divider,
 	IconButton,
+	ListItemIcon,
+	ListItemText,
+	Menu,
+	MenuItem,
 	AppBar as MuiAppBar,
 	Toolbar,
 	Tooltip,
 	Typography,
 	useMediaQuery,
 	useTheme,
-	Menu,
-	MenuItem,
-	ListItemIcon,
-	ListItemText,
-	Chip,
-	Divider,
-	Badge,
-	Button,
-	CircularProgress,
 } from "@mui/material";
 import {
+	Check,
+	FileText,
 	FolderOpen,
+	Home,
+	LogIn,
+	MenuIcon,
+	Monitor,
+	Palette,
 	Plus,
 	Save,
-	HelpCircle,
-	FileText,
-	MenuIcon,
-	Check,
-	Palette,
-	LogIn,
-	Home,
 } from "lucide-react";
-import type React from "react";
-import {
-	useEffect,
-	useMemo,
-	useState,
-	useId,
-	useCallback,
-	useRef,
-} from "react";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Monitor } from "lucide-react";
-import SaveDiagramDialog from "./SaveDiagramDialog";
-import TemplateDialog from "./TemplateDialog";
+import type React from "react";
+import {
+	useCallback,
+	useEffect,
+	useId,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
+import { useAnalytics } from "@/hooks/useAnalytics";
+import { useAppShortcuts } from "@/hooks/useAppShortcuts";
+import { loadStoredDiagramSettings } from "@/lib/diagram-settings";
+import { saveDiagramToStorage } from "@/lib/indexed-db/diagrams.storage";
+import { requestImmediateSync } from "@/lib/sync";
+import { compressToBase64 } from "@/lib/utils/compression.utils";
+import { subscribeToUrlUpdates } from "@/lib/utils/url.utils";
+import {
+	initializeAuth,
+	selectAuthInitialized,
+	selectCanUseLocalData,
+	selectIsAuthenticated,
+	selectIsLocalOnly,
+} from "@/store/authSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
 	createNewDiagram,
 	saveDiagramChanges,
@@ -57,31 +66,20 @@ import {
 	setCustomUnsavedChanges,
 	setLoadDialogOpen,
 } from "@/store/mermaidSlice";
-import { compressToBase64 } from "@/lib/utils/compression.utils";
 import {
 	refreshSavedDiagrams,
 	selectSavedDiagrams,
 } from "@/store/savedDiagramsSlice";
-import LoadDiagramDialog from "./LoadDiagramDialog";
-import ThemeSettingsDialog from "./ThemeSettingsDialog";
-import { useAppShortcuts } from "@/hooks/useAppShortcuts";
 import {
+	AccountSettingsDialog,
 	LoginDialog,
 	RegisterDialog,
 	UserMenu,
-	AccountSettingsDialog,
 } from "./Auth";
-import {
-	selectIsAuthenticated,
-	selectCanUseLocalData,
-	selectIsLocalOnly,
-	selectAuthInitialized,
-	initializeAuth,
-} from "@/store/authSlice";
-import { requestImmediateSync } from "@/lib/sync";
-import { loadStoredDiagramSettings } from "@/lib/diagram-settings";
-import { subscribeToUrlUpdates } from "@/lib/utils/url.utils";
-import { useAnalytics } from "@/hooks/useAnalytics";
+import LoadDiagramDialog from "./LoadDiagramDialog";
+import SaveDiagramDialog from "./SaveDiagramDialog";
+import TemplateDialog from "./TemplateDialog";
+import ThemeSettingsDialog from "./ThemeSettingsDialog";
 
 export default function AppBar() {
 	const theme = useTheme();
@@ -120,16 +118,12 @@ export default function AppBar() {
 	}, [authInitialized, dispatch]);
 
 	useEffect(() => {
-		let isMounted = true;
 		const loadData = async () => {
 			if (typeof window !== "undefined") {
 				void dispatch(refreshSavedDiagrams());
 			}
 		};
 		loadData();
-		return () => {
-			isMounted = false;
-		};
 	}, [dispatch]);
 
 	// Listen for requests from other components (e.g. DiagramEmpty) to open
@@ -340,11 +334,6 @@ export default function AppBar() {
 		handleMobileMenuClose();
 		handleSave();
 	}, [handleMobileMenuClose, handleSave]);
-
-	const handleOpenHelp = useCallback(() => {
-		handleMobileMenuClose();
-		goToHome();
-	}, [handleMobileMenuClose, goToHome]);
 
 	const handleOpenLogin = useCallback(() => {
 		track("signin_nav_click");

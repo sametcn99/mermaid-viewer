@@ -13,6 +13,13 @@
 
 ## Quick Start
 
+This project is a monorepo managed by **[Turborepo](https://turbo.build/)**, which provides an incredibly fast and efficient development experience by orchestrating the frontend and backend services.
+
+### Project Architecture
+
+- **`apps/frontend`**: A modern **Next.js** application providing the user interface and real-time diagram rendering.
+- **`apps/backend`**: A robust **NestJS** API handling persistence, sharing logic, and external integrations.
+
 ### Installation
 
 1. **Clone the repository**
@@ -24,21 +31,50 @@
 
 2. **Install dependencies**
 
-   We recommend using Bun for the fastest installation experience.
+   We use **[Bun](https://bun.sh/)** as our package manager for lightning-fast installations and execution.
 
    ```bash
    bun install
    ```
 
-3. **Start the development server**
+3. **Configure Environment Variables**
+
+   Copy the example environment file and update the values as needed.
+
+   ```bash
+   cp .env.example .env
+   ```
+
+4. **Start Development Environment**
+
+   Turborepo will start both the frontend and backend in parallel with a single command:
 
    ```bash
    bun dev
    ```
 
-4. **Open in Browser**
+5. **Access the Services**
 
-   Navigate to [http://localhost:3000](http://localhost:3000) to start using the application.
+   - **Frontend:** [http://localhost:3000](http://localhost:3000)
+   - **Backend API:** [http://localhost:3001](http://localhost:3001)
+   - **API Documentation:** [http://localhost:3001/docs](http://localhost:3001/docs)
+
+---
+
+## Available Scripts
+
+Managed by Turborepo, these commands run across all applications:
+
+| Command | Description |
+| :--- | :--- |
+| `bun dev` | Starts all applications in development mode with hot-reloading. |
+| `bun build` | Builds all applications for production. |
+| `bun lint` | Runs linting checks across the entire codebase. |
+| `bun format` | Automatically formats code using Biome and Prettier. |
+| `bun test` | Executes unit and integration tests. |
+| `bun type-check` | Performs TypeScript type checking across all packages. |
+
+<br/>
 
 ## Docker Deployment
 

@@ -1,22 +1,22 @@
 import {
-	createSlice,
 	createAsyncThunk,
+	createSlice,
 	type PayloadAction,
 } from "@reduxjs/toolkit";
 import {
+	ApiRequestError,
 	login as apiLogin,
-	register as apiRegister,
 	logout as apiLogout,
-	getCurrentUser,
+	register as apiRegister,
 	updateProfile as apiUpdateProfile,
+	getCurrentUser,
 	hasTokens,
-	type User,
 	type LoginRequest,
 	type RegisterRequest,
 	type UpdateProfileRequest,
-	ApiRequestError,
+	type User,
 } from "@/lib/api";
-import { performFullSync, clearLocalSyncData } from "@/lib/sync";
+import { clearLocalSyncData, performFullSync } from "@/lib/sync";
 
 const LOCAL_MODE_STORAGE_KEY = "mermaid-viewer-auth-mode";
 const LOCAL_MODE_STORAGE_VALUE = "local-only";

@@ -1,21 +1,21 @@
 "use client";
 
+import GitHub from "@mui/icons-material/GitHub";
 import {
 	Box,
 	Button,
 	Container,
+	IconButton,
+	keyframes,
 	Stack,
+	Tooltip,
 	Typography,
 	useTheme,
-	keyframes,
-	IconButton,
-	Tooltip,
 } from "@mui/material";
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { ArrowRight, Palette, Shield, Sparkles, Zap } from "lucide-react";
 import Link from "next/link";
-import { ArrowRight, Zap, Shield, Sparkles, Palette } from "lucide-react";
-import GitHub from "@mui/icons-material/GitHub";
+import { useEffect, useState } from "react";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import ThemeSettingsDialog from "../ThemeSettingsDialog";
 

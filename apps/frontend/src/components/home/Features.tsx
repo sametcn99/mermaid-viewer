@@ -1,17 +1,17 @@
 "use client";
 
-import { Container, Typography, Box, useTheme } from "@mui/material";
+import { Box, Container, Typography, useTheme } from "@mui/material";
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
 import {
-	Zap,
 	Bot,
 	Cloud,
-	Moon,
-	Share2,
 	LayoutTemplate,
 	Monitor,
+	Moon,
+	Share2,
+	Zap,
 } from "lucide-react";
+import { useRef } from "react";
 import FeatureCard from "./FeatureCard";
 
 const MotionBox = motion.create(Box);

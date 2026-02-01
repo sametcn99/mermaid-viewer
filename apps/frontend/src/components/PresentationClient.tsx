@@ -1,13 +1,14 @@
 "use client";
 
-import DiagramPanel from "@/components/DiagramPanel/DiagramPanel";
-import LoadDiagramDialog from "@/components/LoadDiagramDialog";
-import TemplateDialog from "@/components/TemplateDialog";
 import { Box, Fab, Tooltip } from "@mui/material";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import DiagramPanel from "@/components/DiagramPanel/DiagramPanel";
+import LoadDiagramDialog from "@/components/LoadDiagramDialog";
+import TemplateDialog from "@/components/TemplateDialog";
+import { applyDiagramSettings } from "@/lib/diagram-settings";
 import {
 	compressToBase64,
 	decompressFromBase64,
@@ -21,7 +22,6 @@ import {
 	setMermaidCode,
 } from "@/store/mermaidSlice";
 import { selectSavedDiagrams } from "@/store/savedDiagramsSlice";
-import { applyDiagramSettings } from "@/lib/diagram-settings";
 
 interface PresentationClientProps {
 	encodedDiagram?: string;

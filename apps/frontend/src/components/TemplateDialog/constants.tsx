@@ -6,6 +6,7 @@ import {
 	Brain,
 	Building,
 	Calendar,
+	Clock,
 	Database,
 	FileCheck,
 	GitBranch,
@@ -17,7 +18,6 @@ import {
 	PieChart,
 	UserCircle,
 	Workflow,
-	Clock,
 } from "lucide-react";
 
 import type { TemplateCategory } from "@/lib/templates";

@@ -40,7 +40,8 @@
 		"lint": "biome lint --write",
 		"format": "biome format --write",
 		"type-check": "tsc --noEmit",
-		"test": "vitest run"
+		"test": "vitest run",
+		"check": "bun run lint && bun run format && biome check --write && bun run type-check"
 	},
 	"dependencies": {
 		"@emotion/cache": "^11.14.0",

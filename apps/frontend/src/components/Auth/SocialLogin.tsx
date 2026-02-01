@@ -1,9 +1,8 @@
 "use client";
 
-import { Box, Button } from "@mui/material";
 import { faGithub, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import appConfig from "@/lib/config";
+import { Box, Button } from "@mui/material";
 import { useAnalytics } from "@/hooks/useAnalytics";
 
 export const SocialLogin = () => {

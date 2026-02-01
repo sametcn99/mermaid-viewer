@@ -1,35 +1,35 @@
 "use client";
 
 import {
-	Dialog,
-	DialogTitle,
-	DialogContent,
-	DialogActions,
-	Button,
+	alpha,
 	Box,
-	Typography,
+	Button,
+	Collapse,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogTitle,
+	Divider,
 	FormControl,
 	FormControlLabel,
+	IconButton,
+	Paper,
 	Radio,
 	RadioGroup,
-	Divider,
-	Collapse,
 	Stack,
-	IconButton,
-	Tooltip,
 	Switch,
-	Paper,
-	alpha,
+	Tooltip,
+	Typography,
 } from "@mui/material";
-import { Monitor, Sun, Moon, Palette, RotateCcw, X } from "lucide-react";
-import { useState, useCallback, useEffect } from "react";
+import { Monitor, Moon, Palette, RotateCcw, Sun, X } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { useAnalytics } from "@/hooks/useAnalytics";
-import { useThemeSettings } from "./ThemeRegistry";
 import {
-	defaultCustomColors,
 	type CustomThemeColors,
+	defaultCustomColors,
 	type ThemeMode,
 } from "@/lib/theme";
+import { useThemeSettings } from "./ThemeRegistry";
 
 interface ThemeSettingsDialogProps {
 	open: boolean;
@@ -209,13 +209,8 @@ export default function ThemeSettingsDialog({
 	onClose,
 }: ThemeSettingsDialogProps) {
 	const { track } = useAnalytics();
-	const {
-		themeMode,
-		customColors,
-		setThemeMode,
-		setCustomColors,
-		resetCustomColors,
-	} = useThemeSettings();
+	const { themeMode, customColors, setThemeMode, setCustomColors } =
+		useThemeSettings();
 
 	const [localColors, setLocalColors] =
 		useState<CustomThemeColors>(customColors);

@@ -12,8 +12,8 @@ import { Folder } from "lucide-react";
 
 import {
 	DIAGRAM_TEMPLATES,
-	TEMPLATE_CATEGORIES,
 	getTemplateCategoryCount,
+	TEMPLATE_CATEGORIES,
 	type TemplateCategory,
 } from "@/lib/templates";
 import { CATEGORY_ICONS } from "./constants";

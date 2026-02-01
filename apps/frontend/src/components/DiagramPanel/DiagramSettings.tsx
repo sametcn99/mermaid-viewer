@@ -13,17 +13,17 @@ import {
 	InputLabel,
 	MenuItem,
 	Select,
-	TextField,
 	type SelectChangeEvent,
+	TextField,
 } from "@mui/material";
 import type React from "react";
 import { useEffect, useState } from "react";
-import { saveMermaidConfig } from "@/lib/indexed-db/mermaid-config.storage";
 import type { DiagramSettingsConfig } from "@/lib/diagram-settings";
 import {
 	defaultDiagramSettings,
 	mergeDiagramSettings,
 } from "@/lib/diagram-settings";
+import { saveMermaidConfig } from "@/lib/indexed-db/mermaid-config.storage";
 
 interface DiagramSettingsProps {
 	open: boolean;

@@ -1,19 +1,5 @@
 "use client";
 
-import type {
-	AiAssistantConfig,
-	ChatMessage,
-	DiagramSnapshot,
-} from "@/types/ai-assistant.types";
-import {
-	addMessageToAiChatHistory,
-	clearAiChatHistory,
-	clearDiagramSnapshots,
-	getAiChatHistory,
-	getDiagramSnapshots,
-	saveDiagramSnapshots,
-} from "@/lib/indexed-db/ai-assistant.storage";
-import appConfig from "@/lib/config";
 import {
 	Alert,
 	Box,
@@ -27,6 +13,20 @@ import {
 import { Key, Minus, Send, Sparkles, Trash2, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useAnalytics } from "@/hooks/useAnalytics";
+import appConfig from "@/lib/config";
+import {
+	addMessageToAiChatHistory,
+	clearAiChatHistory,
+	clearDiagramSnapshots,
+	getAiChatHistory,
+	getDiagramSnapshots,
+	saveDiagramSnapshots,
+} from "@/lib/indexed-db/ai-assistant.storage";
+import type {
+	AiAssistantConfig,
+	ChatMessage,
+	DiagramSnapshot,
+} from "@/types/ai-assistant.types";
 import ApiKeySection from "./ApiKeySection";
 import ChatMessages from "./ChatMessages";
 

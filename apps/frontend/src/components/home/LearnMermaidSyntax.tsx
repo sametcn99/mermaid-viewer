@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Container, Link, Paper, Typography } from "@mui/material";
+import { Container, Link, Typography } from "@mui/material";
 
 export default function LearnMermaidSyntax() {
 	return (

@@ -1,15 +1,16 @@
 "use client";
 
-import AiAssistantFab from "@/components/AiAssistant/AiAssistantFab";
-import AlertSnackbar from "@/components/AlertSnackbar";
-import ResizablePanels from "@/components/ResizablePanels";
-import { getAiAssistantConfig } from "@/lib/indexed-db/ai-assistant.storage";
-import appConfig from "@/lib/config";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
-import type { AiAssistantConfig } from "@/types/ai-assistant.types";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import AiAssistantFab from "@/components/AiAssistant/AiAssistantFab";
+import AlertSnackbar from "@/components/AlertSnackbar";
 import AppBar from "@/components/AppBar";
+import LoadDiagramDialog from "@/components/LoadDiagramDialog";
+import ResizablePanels from "@/components/ResizablePanels";
+import SupportToast from "@/components/SupportToast";
+import appConfig from "@/lib/config";
+import { getAiAssistantConfig } from "@/lib/indexed-db/ai-assistant.storage";
 import type { AppDispatch, RootState } from "@/store";
 import {
 	cancelMermaidDebounce,
@@ -17,8 +18,7 @@ import {
 	initializeMermaidState,
 	updateMermaidFromEditor,
 } from "@/store/mermaidSlice";
-import LoadDiagramDialog from "@/components/LoadDiagramDialog";
-import SupportToast from "@/components/SupportToast";
+import type { AiAssistantConfig } from "@/types/ai-assistant.types";
 
 export default function Home() {
 	const theme = useTheme();

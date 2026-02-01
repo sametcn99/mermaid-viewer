@@ -1,24 +1,3 @@
-import type { SavedDiagram } from "@/lib/indexed-db/diagrams.storage";
-import { updateDiagram } from "@/lib/indexed-db/diagrams.storage";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import {
-	deleteSavedDiagram,
-	importSavedDiagrams,
-	refreshSavedDiagrams,
-	selectSavedDiagrams,
-	type ImportedDiagramInput,
-} from "@/store/savedDiagramsSlice";
-import {
-	closeLoadDialog,
-	createNewDiagram,
-	loadDiagramFromStorage,
-	setCustomAlertMessage,
-} from "@/store/mermaidSlice";
-import { selectCanUseLocalData } from "@/store/authSlice";
-import {
-	compressToBase64,
-	decompressFromBase64,
-} from "@/lib/utils/compression.utils";
 import {
 	Box,
 	Button,
@@ -34,15 +13,44 @@ import {
 	ListItemSecondaryAction,
 	ListItemText,
 	Snackbar,
+	TextField,
 	Tooltip,
 	Typography,
-	TextField,
 } from "@mui/material";
-import { Plus, Share2, Trash, Download, Upload } from "lucide-react";
 import JSZip from "jszip";
+import {
+	Check,
+	Download,
+	Edit,
+	Plus,
+	Share2,
+	Trash,
+	Upload,
+	X,
+} from "lucide-react";
 import type React from "react";
-import { useRef, useState, useEffect } from "react";
-import { Check, X, Edit } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import type { SavedDiagram } from "@/lib/indexed-db/diagrams.storage";
+import { updateDiagram } from "@/lib/indexed-db/diagrams.storage";
+import {
+	compressToBase64,
+	decompressFromBase64,
+} from "@/lib/utils/compression.utils";
+import { selectCanUseLocalData } from "@/store/authSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+	closeLoadDialog,
+	createNewDiagram,
+	loadDiagramFromStorage,
+	setCustomAlertMessage,
+} from "@/store/mermaidSlice";
+import {
+	deleteSavedDiagram,
+	type ImportedDiagramInput,
+	importSavedDiagrams,
+	refreshSavedDiagrams,
+	selectSavedDiagrams,
+} from "@/store/savedDiagramsSlice";
 
 const LoadDiagramDialog: React.FC = () => {
 	const dispatch = useAppDispatch();

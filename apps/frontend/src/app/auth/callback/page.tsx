@@ -1,11 +1,11 @@
 "use client";
 
-import { CircularProgress, Box, Typography } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect } from "react";
-import { useAppDispatch } from "@/store/hooks";
-import { initializeAuth } from "@/store/authSlice";
+import { useEffect } from "react";
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/lib/api/client";
+import { initializeAuth } from "@/store/authSlice";
+import { useAppDispatch } from "@/store/hooks";
 
 export default function AuthCallbackPage() {
 	const router = useRouter();

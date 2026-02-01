@@ -1,37 +1,28 @@
 "use client";
 
-import type React from "react";
-import { useState, useCallback } from "react";
 import {
-	Menu,
-	MenuItem,
+	Avatar,
+	Box,
+	Divider,
+	IconButton,
 	ListItemIcon,
 	ListItemText,
-	Divider,
-	Avatar,
-	IconButton,
+	Menu,
+	MenuItem,
 	Tooltip,
 	Typography,
-	Box,
-	CircularProgress,
 } from "@mui/material";
-import {
-	User,
-	LogOut,
-	Settings,
-	RefreshCw,
-	Database,
-	HardDrive,
-	LogIn,
-} from "lucide-react";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { HardDrive, LogIn, LogOut, Settings } from "lucide-react";
+import type React from "react";
+import { useCallback, useState } from "react";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import {
 	logout,
-	selectUser,
 	selectAuthLoading,
 	selectIsLocalOnly,
+	selectUser,
 } from "@/store/authSlice";
-import { useAnalytics } from "@/hooks/useAnalytics";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 interface UserMenuProps {
 	onOpenSettings?: () => void;
@@ -46,7 +37,6 @@ export default function UserMenu({ onOpenSettings, onSignIn }: UserMenuProps) {
 	const { track } = useAnalytics();
 
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-	const [isSyncing, setIsSyncing] = useState(false);
 	const open = Boolean(anchorEl);
 
 	const handleOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {

@@ -5,8 +5,8 @@
  */
 /** biome-ignore-all lint/suspicious/noExplicitAny: . */
 
-import type * as monaco from "monaco-editor";
 import mermaid from "mermaid";
+import type * as monaco from "monaco-editor";
 
 // Debounce utility
 function debounce<T extends (...args: any[]) => any>(

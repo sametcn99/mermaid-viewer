@@ -1,15 +1,6 @@
 "use client";
 
 import {
-	useCallback,
-	useEffect,
-	useMemo,
-	useState,
-	type MouseEvent,
-} from "react";
-import { useAnalytics } from "@/hooks/useAnalytics";
-
-import {
 	Box,
 	Button,
 	Dialog,
@@ -19,19 +10,26 @@ import {
 	useTheme,
 } from "@mui/material";
 import { ArrowLeft } from "lucide-react";
-
 import {
-	DIAGRAM_TEMPLATES,
-	getTemplateById,
-	searchTemplates,
-	type DiagramTemplate,
-	type TemplateCategory,
-} from "@/lib/templates";
+	type MouseEvent,
+	useCallback,
+	useEffect,
+	useMemo,
+	useState,
+} from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import type {
 	CustomTemplate,
 	TemplateCollection,
 } from "@/lib/indexed-db/templates.storage";
-import { useDispatch, useSelector } from "react-redux";
+import {
+	DIAGRAM_TEMPLATES,
+	type DiagramTemplate,
+	getTemplateById,
+	searchTemplates,
+	type TemplateCategory,
+} from "@/lib/templates";
 import type { AppDispatch, RootState } from "@/store";
 import { selectCanUseLocalData } from "@/store/authSlice";
 import {
@@ -44,15 +42,14 @@ import {
 	removeTemplateFromCollectionThunk,
 	renameTemplateCollectionThunk,
 } from "@/store/templateCollectionsSlice";
-
-import { TemplateCollectionMenu } from "./TemplateCollectionMenu";
-import { TemplateCollectionsView } from "./TemplateCollectionsView";
+import { NEW_COLLECTION_OPTION } from "./constants";
 import { ManageCollectionDialog } from "./ManageCollectionDialog";
 import { SaveCurrentDiagramDialog } from "./SaveCurrentDiagramDialog";
+import { TemplateCollectionMenu } from "./TemplateCollectionMenu";
+import { TemplateCollectionsView } from "./TemplateCollectionsView";
 import { TemplateDialogHeader } from "./TemplateDialogHeader";
 import { TemplateDialogSidebar } from "./TemplateDialogSidebar";
 import { TemplateLibraryView } from "./TemplateLibraryView";
-import { NEW_COLLECTION_OPTION } from "./constants";
 import type {
 	CollectionEntry,
 	CollectionWithEntries,

@@ -1,30 +1,30 @@
 "use client";
 
-import type React from "react";
-import { useState, useCallback } from "react";
 import {
-	Dialog,
-	DialogTitle,
-	DialogContent,
-	DialogActions,
-	TextField,
-	Button,
-	Box,
-	Typography,
 	Alert,
+	Box,
+	Button,
 	CircularProgress,
-	Link,
-	InputAdornment,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogTitle,
 	IconButton,
+	InputAdornment,
+	Link,
+	TextField,
+	Typography,
 } from "@mui/material";
 import { Eye, EyeOff } from "lucide-react";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import type React from "react";
+import { useCallback, useState } from "react";
 import {
-	register,
 	clearError,
-	selectAuthLoading,
+	register,
 	selectAuthError,
+	selectAuthLoading,
 } from "@/store/authSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 interface RegisterDialogProps {
 	open: boolean;

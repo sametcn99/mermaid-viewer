@@ -1,16 +1,16 @@
 "use client";
 
 import {
+	alpha,
 	Box,
 	Container,
 	Paper,
+	Stack,
 	Typography,
 	useTheme,
-	Stack,
-	alpha,
 } from "@mui/material";
-import { useEffect, useState } from "react";
 import { Terminal } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function InteractiveDemo() {
 	const theme = useTheme();

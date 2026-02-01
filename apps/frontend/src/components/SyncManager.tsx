@@ -1,21 +1,21 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+	performFullSync,
+	type SyncRequest,
+	subscribeToSyncRequests,
+} from "@/lib/sync";
 import {
 	selectAuthInitialized,
 	selectIsAuthenticated,
 	selectIsLocalOnly,
 	setLastSyncAt,
 } from "@/store/authSlice";
-import {
-	performFullSync,
-	subscribeToSyncRequests,
-	type SyncRequest,
-} from "@/lib/sync";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setCustomAlertMessage } from "@/store/mermaidSlice";
 import { refreshSavedDiagrams } from "@/store/savedDiagramsSlice";
 import { refreshTemplateCollections } from "@/store/templateCollectionsSlice";
-import { setCustomAlertMessage } from "@/store/mermaidSlice";
 
 const BACKGROUND_DELAY_MS = 1200;
 

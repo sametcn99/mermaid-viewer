@@ -1,5 +1,8 @@
 "use client";
 
+import CloseIcon from "@mui/icons-material/Close";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import StarIcon from "@mui/icons-material/Star";
 import {
 	Box,
 	Button,
@@ -14,9 +17,6 @@ import { useEffect, useState } from "react";
 // or we can use MUI icons if available. Let's use MUI icons for consistency with AlertSnackbar if possible
 // but layout.tsx imports font-awesome. Let's check package.json again.
 import { useAnalytics } from "@/hooks/useAnalytics";
-import CloseIcon from "@mui/icons-material/Close";
-import StarIcon from "@mui/icons-material/Star";
-import FavoriteIcon from "@mui/icons-material/Favorite";
 
 const STORAGE_KEY_FIRST_VISIT = "mermaid_viewer_first_visit";
 const STORAGE_KEY_PREFERENCE = "mermaid_viewer_support_toast_hidden_until";
@@ -29,7 +29,7 @@ export default function SupportToast() {
 
 	useEffect(() => {
 		const checkAndShowToast = () => {
-			const now = new Date().getTime();
+			const now = Date.now();
 			const firstVisit = localStorage.getItem(STORAGE_KEY_FIRST_VISIT);
 			const hiddenUntil = localStorage.getItem(STORAGE_KEY_PREFERENCE);
 
@@ -44,7 +44,7 @@ export default function SupportToast() {
 				return;
 			}
 
-			if (hiddenUntil && Number.parseInt(hiddenUntil) > now) {
+			if (hiddenUntil && Number.parseInt(hiddenUntil, 10) > now) {
 				return;
 			}
 
@@ -68,12 +68,8 @@ export default function SupportToast() {
 
 	const handleDontShowAgain = () => {
 		track("support_toast_dont_show_again");
-		const now = new Date();
-		const futureDate = new Date(now.setDate(now.getDate() + DAYS_TO_HIDE));
-		localStorage.setItem(
-			STORAGE_KEY_PREFERENCE,
-			futureDate.getTime().toString(),
-		);
+		const futureDate = Date.now() + DAYS_TO_HIDE * 24 * 60 * 60 * 1000;
+		localStorage.setItem(STORAGE_KEY_PREFERENCE, futureDate.toString());
 		setOpen(false);
 	};
 

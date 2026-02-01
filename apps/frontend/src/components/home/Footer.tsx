@@ -1,18 +1,18 @@
 "use client";
 
+import { Coffee, Email, GitHub } from "@mui/icons-material";
 import {
 	Box,
+	Chip,
 	Container,
+	Divider,
 	Grid,
 	IconButton,
+	Link as MuiLink,
 	Stack,
 	Typography,
-	Link as MuiLink,
-	Divider,
-	Chip,
 } from "@mui/material";
 import { useAnalytics } from "@/hooks/useAnalytics";
-import { GitHub, Email, Coffee } from "@mui/icons-material";
 
 const footerLinks = {
 	resources: {

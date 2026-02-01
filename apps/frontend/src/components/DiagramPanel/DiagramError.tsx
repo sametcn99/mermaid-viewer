@@ -2,9 +2,9 @@
 import { Alert, Box, Button, CircularProgress } from "@mui/material";
 import { Bot } from "lucide-react";
 import type React from "react";
-import { useState, useEffect } from "react";
-import { getAiAssistantConfig } from "@/lib/indexed-db/ai-assistant.storage";
+import { useEffect, useState } from "react";
 import { useAnalytics } from "@/hooks/useAnalytics";
+import { getAiAssistantConfig } from "@/lib/indexed-db/ai-assistant.storage";
 
 interface DiagramErrorProps {
 	error: string;

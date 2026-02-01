@@ -8,9 +8,8 @@ import {
 	MenuItem,
 } from "@mui/material";
 import { Check, FolderPlus } from "lucide-react";
-
-import type { DiagramTemplate } from "@/lib/templates";
 import type { TemplateCollection } from "@/lib/indexed-db/templates.storage";
+import type { DiagramTemplate } from "@/lib/templates";
 
 interface TemplateCollectionMenuProps {
 	anchorEl: HTMLElement | null;

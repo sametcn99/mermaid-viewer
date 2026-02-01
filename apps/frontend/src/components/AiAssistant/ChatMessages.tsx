@@ -1,6 +1,5 @@
 "use client";
 
-import type { ChatMessage, DiagramSnapshot } from "@/types/ai-assistant.types";
 import {
 	Box,
 	Button,
@@ -13,6 +12,7 @@ import {
 import { RotateCcw, Sparkles, User } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getRawItem, setRawItem } from "@/lib/indexed-db";
+import type { ChatMessage, DiagramSnapshot } from "@/types/ai-assistant.types";
 import TypingText from "./TypingText";
 
 const LAST_AI_MESSAGE_KEY = "lastAiMessageId";

@@ -1,18 +1,11 @@
 "use client";
 
-import {
-	getTheme,
-	defaultThemeSettings,
-	type ThemeMode,
-	type ThemeSettings,
-	type CustomThemeColors,
-} from "@/lib/theme";
 import { CssBaseline, ThemeProvider, useMediaQuery } from "@mui/material";
 import type React from "react";
 import {
 	createContext,
-	useContext,
 	useCallback,
+	useContext,
 	useEffect,
 	useMemo,
 	useState,
@@ -21,6 +14,13 @@ import {
 	getThemeSettings,
 	saveThemeSettings,
 } from "@/lib/indexed-db/theme.storage";
+import {
+	type CustomThemeColors,
+	defaultThemeSettings,
+	getTheme,
+	type ThemeMode,
+	type ThemeSettings,
+} from "@/lib/theme";
 
 // Theme Context Types
 interface ThemeContextType {

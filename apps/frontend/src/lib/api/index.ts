@@ -2,32 +2,33 @@
  * API Module Exports
  */
 
-// Client
-export { api, apiRequest, ApiRequestError } from "./client";
-export {
-	getAccessToken,
-	getRefreshToken,
-	setTokens,
-	clearTokens,
-	hasTokens,
-} from "./client";
-
 // Auth
 export {
-	register,
+	deleteAccount,
+	getCurrentUser,
 	login,
 	logout,
-	getCurrentUser,
+	register,
 	updateProfile,
-	deleteAccount,
 } from "./auth";
+// Client
+export {
+	ApiRequestError,
+	api,
+	apiRequest,
+	clearTokens,
+	getAccessToken,
+	getRefreshToken,
+	hasTokens,
+	setTokens,
+} from "./client";
 
 // Sync
 export {
-	syncDiagrams,
-	syncTemplates,
-	syncSettings,
 	fullSync,
+	syncDiagrams,
+	syncSettings,
+	syncTemplates,
 } from "./sync";
 
 // Types

@@ -1,7 +1,7 @@
 import {
+	type AnyAction,
 	configureStore,
 	type ThunkAction,
-	type AnyAction,
 } from "@reduxjs/toolkit";
 import authReducer from "./authSlice";
 import deviceReducer from "./deviceSlice";

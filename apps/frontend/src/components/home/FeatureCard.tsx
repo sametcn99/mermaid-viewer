@@ -1,6 +1,6 @@
 "use client";
+import { Box, Paper, Typography, useTheme } from "@mui/material";
 import type { ReactNode } from "react";
-import { Paper, Typography, Box, useTheme } from "@mui/material";
 
 interface FeatureCardProps {
 	icon: ReactNode;

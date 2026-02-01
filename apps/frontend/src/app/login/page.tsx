@@ -1,9 +1,9 @@
 "use client";
 
-import { Box, Card, CardContent, Typography, Alert } from "@mui/material";
+import { Alert, Box, Card, CardContent, Typography } from "@mui/material";
 import { useSearchParams } from "next/navigation";
-import { SocialLogin } from "@/components/Auth/SocialLogin";
 import { Suspense } from "react";
+import { SocialLogin } from "@/components/Auth/SocialLogin";
 
 function LoginForm() {
 	const searchParams = useSearchParams();

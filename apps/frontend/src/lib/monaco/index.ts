@@ -10,11 +10,11 @@
  * - Material-UI dark theme integration
  */
 
-import { mermaidTokensProvider } from "./mermaid-tokens";
-import { mermaidLanguageConfig } from "./mermaid-language";
 import { mermaidCompletionProvider } from "./mermaid-completions";
-import { setupMermaidValidation } from "./mermaid-validation";
 import { mermaidHoverProvider } from "./mermaid-hover";
+import { mermaidLanguageConfig } from "./mermaid-language";
+import { mermaidTokensProvider } from "./mermaid-tokens";
+import { setupMermaidValidation } from "./mermaid-validation";
 
 /**
  * Register Mermaid language with Monaco Editor
@@ -143,10 +143,10 @@ export function registerMermaidLanguage(
 	};
 }
 
+export { mermaidCompletionProvider } from "./mermaid-completions";
+export { mermaidLanguageConfig } from "./mermaid-language";
 // Export all sub-modules for advanced usage
 export { mermaidTokensProvider } from "./mermaid-tokens";
-export { mermaidLanguageConfig } from "./mermaid-language";
-export { mermaidCompletionProvider } from "./mermaid-completions";
 export {
 	setupMermaidValidation,
 	validateMermaidCode,

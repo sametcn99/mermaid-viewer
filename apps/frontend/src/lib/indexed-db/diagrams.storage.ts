@@ -1,5 +1,5 @@
-import { STORE_NAMES, withDatabase } from ".";
 import type { DiagramSettingsConfig } from "@/lib/diagram-settings";
+import { STORE_NAMES, withDatabase } from ".";
 
 export interface SavedDiagram {
 	id: string;

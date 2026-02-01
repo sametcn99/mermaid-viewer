@@ -1,16 +1,9 @@
 "use client";
 
-import {
-	Box,
-	Container,
-	Typography,
-	useTheme,
-	Paper,
-	Stack,
-} from "@mui/material";
+import { Box, Container, Paper, Typography, useTheme } from "@mui/material";
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
 import { Code2, Eye, Share2, Sparkles } from "lucide-react";
+import { useRef } from "react";
 
 const MotionBox = motion.create(Box);
 const MotionPaper = motion.create(Paper);

@@ -3,47 +3,42 @@
  */
 
 import {
-	fullSync,
 	type FullSyncRequest,
 	type FullSyncResponse,
+	fullSync,
 } from "@/lib/api";
+import type {
+	DiagramDto,
+	FavoriteTemplateDto,
+	SettingsDto,
+	TemplateCollectionDto,
+} from "@/lib/api/types";
+import {
+	getAllKeys,
+	getRawItem,
+	resetAllStores,
+	STORE_NAMES,
+	setRawItem,
+	withDatabase,
+} from "@/lib/indexed-db";
 import {
 	getAllDiagramsFromStorage,
 	saveDiagramToStorage,
-	type SavedDiagram,
 } from "@/lib/indexed-db/diagrams.storage";
-import {
-	getFavoriteTemplates,
-	getTemplateCollections,
-	saveFavoriteTemplate,
-	removeFavoriteTemplate,
-	type TemplateCollection,
-	type FavoriteTemplate,
-	type CustomTemplate,
-} from "@/lib/indexed-db/templates.storage";
 import {
 	getMermaidConfig,
 	saveMermaidConfig,
 } from "@/lib/indexed-db/mermaid-config.storage";
 import {
+	getFavoriteTemplates,
+	getTemplateCollections,
+	removeFavoriteTemplate,
+	saveFavoriteTemplate,
+} from "@/lib/indexed-db/templates.storage";
+import {
 	getThemeSettings,
 	saveThemeSettings,
 } from "@/lib/indexed-db/theme.storage";
-import {
-	getRawItem,
-	setRawItem,
-	getAllKeys,
-	withDatabase,
-	STORE_NAMES,
-	resetAllStores,
-} from "@/lib/indexed-db";
-import type {
-	DiagramDto,
-	TemplateCollectionDto,
-	FavoriteTemplateDto,
-	SettingsDto,
-	CustomTemplateDto,
-} from "@/lib/api/types";
 import type { ThemeSettings } from "@/lib/theme";
 
 export type SyncRequestPriority = "immediate" | "background";

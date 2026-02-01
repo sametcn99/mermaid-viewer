@@ -3,45 +3,45 @@
  * Provides categorized collection of ready-to-use diagram templates
  */
 
-export * from "./types";
-export * from "./flowchart";
-export * from "./sequence";
+export * from "./block";
+export * from "./c4-diagram";
 export * from "./class";
 export * from "./er-diagram";
+export * from "./flowchart";
 export * from "./gantt";
-export * from "./state";
-export * from "./pie-chart";
 export * from "./git-graph";
 export * from "./mindmap";
-export * from "./timeline";
-export * from "./quadrant-chart";
-export * from "./user-journey";
-export * from "./c4-diagram";
-export * from "./sankey";
-export * from "./requirement";
-export * from "./xy-chart";
-export * from "./block";
 export * from "./packet";
+export * from "./pie-chart";
+export * from "./quadrant-chart";
+export * from "./requirement";
+export * from "./sankey";
+export * from "./sequence";
+export * from "./state";
+export * from "./timeline";
+export * from "./types";
+export * from "./user-journey";
+export * from "./xy-chart";
 
-import type { DiagramTemplate, TemplateCategory } from "./types";
-import { flowchartTemplates } from "./flowchart";
-import { sequenceTemplates } from "./sequence";
+import { blockTemplates } from "./block";
+import { c4DiagramTemplates } from "./c4-diagram";
 import { classTemplates } from "./class";
 import { erDiagramTemplates } from "./er-diagram";
+import { flowchartTemplates } from "./flowchart";
 import { ganttTemplates } from "./gantt";
-import { stateTemplates } from "./state";
-import { pieChartTemplates } from "./pie-chart";
 import { gitGraphTemplates } from "./git-graph";
 import { mindmapTemplates } from "./mindmap";
-import { timelineTemplates } from "./timeline";
-import { quadrantChartTemplates } from "./quadrant-chart";
-import { userJourneyTemplates } from "./user-journey";
-import { c4DiagramTemplates } from "./c4-diagram";
-import { sankeyTemplates } from "./sankey";
-import { requirementTemplates } from "./requirement";
-import { xyChartTemplates } from "./xy-chart";
-import { blockTemplates } from "./block";
 import { packetTemplates } from "./packet";
+import { pieChartTemplates } from "./pie-chart";
+import { quadrantChartTemplates } from "./quadrant-chart";
+import { requirementTemplates } from "./requirement";
+import { sankeyTemplates } from "./sankey";
+import { sequenceTemplates } from "./sequence";
+import { stateTemplates } from "./state";
+import { timelineTemplates } from "./timeline";
+import type { DiagramTemplate, TemplateCategory } from "./types";
+import { userJourneyTemplates } from "./user-journey";
+import { xyChartTemplates } from "./xy-chart";
 
 /**
  * All diagram templates combined

@@ -60,13 +60,6 @@ const brandDark = {
 	ring: zinc[300],
 };
 
-const brandLight = {
-	white: zinc[950],
-	black: zinc[50],
-	border: zinc[300],
-	ring: zinc[600],
-};
-
 // Base theme options shared between themes
 const baseThemeOptions: ThemeOptions = {
 	cssVariables: true,
@@ -961,7 +954,6 @@ export function getTheme(
 			return darkTheme;
 		case "custom":
 			return createCustomTheme(customColors);
-		case "default":
 		default:
 			return systemPrefersDark ? darkTheme : lightTheme;
 	}

@@ -1,9 +1,9 @@
 import Editor, { type OnMount, useMonaco } from "@monaco-editor/react";
-import { useRef, useCallback, useEffect } from "react";
+import { useTheme } from "@mui/material";
 import type * as monaco from "monaco-editor";
+import { useCallback, useEffect, useRef } from "react";
 import { registerMermaidLanguage } from "@/lib/monaco";
 import EditorLoadingSpinner from "./EditorLoadingSpinner";
-import { useTheme } from "@mui/material";
 
 interface MonacoEditorWrapperProps {
 	value: string;

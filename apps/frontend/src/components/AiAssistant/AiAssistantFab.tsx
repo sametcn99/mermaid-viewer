@@ -1,13 +1,13 @@
 "use client";
 
-import type { AiAssistantConfig } from "@/types/ai-assistant.types";
+import { Fab, Tooltip } from "@mui/material";
+import { Sparkles } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import {
 	getAiAssistantConfig,
 	saveAiAssistantConfig,
 } from "@/lib/indexed-db/ai-assistant.storage";
-import { Fab, Tooltip } from "@mui/material";
-import { Sparkles } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import type { AiAssistantConfig } from "@/types/ai-assistant.types";
 import AiAssistantChat from "./AiAssistantChat";
 import AiConsentDialog from "./AiConsentDialog";
 

@@ -4,6 +4,13 @@ import { Box } from "@mui/material";
 import mermaid from "mermaid";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
+import type { DiagramSettingsConfig } from "@/lib/diagram-settings";
+import {
+	DIAGRAM_SETTINGS_EVENT,
+	defaultDiagramSettings,
+	isDefaultDiagramSettings,
+	mergeDiagramSettings,
+} from "@/lib/diagram-settings";
 import {
 	getMermaidConfig,
 	saveMermaidConfig,
@@ -13,11 +20,12 @@ import {
 	updateBrowserUrlWithDiagramSettings,
 } from "@/lib/utils/url.utils";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setLoadDialogOpen } from "@/store/mermaidSlice";
 import {
 	refreshSavedDiagrams,
 	selectSavedDiagrams,
 } from "@/store/savedDiagramsSlice";
-import { setLoadDialogOpen } from "@/store/mermaidSlice";
+import type { AiAssistantConfig } from "@/types/ai-assistant.types";
 import CopyNotification from "./CopyNotification";
 import DiagramEmpty from "./DiagramEmpty";
 import DiagramError from "./DiagramError";
@@ -25,14 +33,6 @@ import DiagramLoading from "./DiagramLoading";
 import DiagramSettings from "./DiagramSettings";
 import DiagramSVGViewer from "./DiagramSVGViewer";
 import DiagramToolbar from "./DiagramToolbar";
-import type { AiAssistantConfig } from "@/types/ai-assistant.types";
-import type { DiagramSettingsConfig } from "@/lib/diagram-settings";
-import {
-	DIAGRAM_SETTINGS_EVENT,
-	defaultDiagramSettings,
-	isDefaultDiagramSettings,
-	mergeDiagramSettings,
-} from "@/lib/diagram-settings";
 
 interface DiagramPanelProps {
 	mermaidCode: string;

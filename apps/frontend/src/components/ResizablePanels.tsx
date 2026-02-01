@@ -1,8 +1,8 @@
-import DiagramPanel from "@/components/DiagramPanel/DiagramPanel";
-import EditorPanel from "@/components/EditorPanel/EditorPanel";
 import { Box } from "@mui/material";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import DiagramPanel from "@/components/DiagramPanel/DiagramPanel";
+import EditorPanel from "@/components/EditorPanel/EditorPanel";
 import type { AppDispatch, RootState } from "@/store";
 import {
 	clampPanelSize,

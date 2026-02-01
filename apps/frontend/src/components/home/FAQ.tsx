@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import {
 	Accordion,
-	AccordionSummary,
 	AccordionDetails,
-	Typography,
-	Container,
+	AccordionSummary,
 	Box,
+	Container,
+	Typography,
 } from "@mui/material";
 import { ChevronDown } from "lucide-react";
+import { useState } from "react";
 
 export default function FAQ() {
 	const [expanded, setExpanded] = useState<number | false>(false);

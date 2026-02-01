@@ -1,6 +1,5 @@
 "use client";
 
-import { useId } from "react";
 import {
 	Button,
 	Dialog,
@@ -14,6 +13,7 @@ import {
 	Stack,
 	TextField,
 } from "@mui/material";
+import { useId } from "react";
 
 import type { TemplateCollection } from "@/lib/indexed-db/templates.storage";
 import { NEW_COLLECTION_OPTION } from "./constants";

@@ -1,4 +1,3 @@
-import { useEffect, useMemo, useState, type ChangeEvent, type FC } from "react";
 import {
 	Alert,
 	Box,
@@ -15,14 +14,15 @@ import {
 	TextField,
 	Typography,
 } from "@mui/material";
-import { retrieveDiagramCodeFromUrl } from "@/lib/utils/url.utils";
+import { type ChangeEvent, type FC, useEffect, useMemo, useState } from "react";
 import {
 	buildIframeOptionsQuery,
 	DEFAULT_IFRAME_OPTIONS,
-	isValidIframeBackground,
 	type IframeOptions,
+	isValidIframeBackground,
 } from "@/lib/iframeOptions";
 import { compressToBase64 } from "@/lib/utils/compression.utils";
+import { retrieveDiagramCodeFromUrl } from "@/lib/utils/url.utils";
 
 interface ShareIframeDialogProps {
 	open: boolean;

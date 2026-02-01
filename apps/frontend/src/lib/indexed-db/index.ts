@@ -4,8 +4,8 @@
  * for non-browser environments.
  */
 
-import { deleteDB, openDB } from "idb";
 import type { DBSchema, IDBPDatabase, IDBPTransaction } from "idb";
+import { deleteDB, openDB } from "idb";
 
 const DB_NAME = "mermaid-viewer-db";
 const DB_VERSION = 3;

@@ -1,10 +1,10 @@
 "use client";
 
-import type { DiagramTemplate, TemplateCategory } from "@/lib/templates";
 import type {
 	CustomTemplate,
 	TemplateCollection,
 } from "@/lib/indexed-db/templates.storage";
+import type { DiagramTemplate, TemplateCategory } from "@/lib/templates";
 
 export type DialogCategory = TemplateCategory | "All" | "Collections";
 

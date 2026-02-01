@@ -1,10 +1,10 @@
-import { STORE_NAMES, withDatabase } from ".";
 import type {
 	AiAssistantConfig,
 	ChatHistory,
 	ChatMessage,
 	DiagramSnapshot,
 } from "@/types/ai-assistant.types";
+import { STORE_NAMES, withDatabase } from ".";
 
 const AI_CHAT_HISTORY_STORE = STORE_NAMES.AI_CHAT_HISTORY;
 const AI_ASSISTANT_CONFIG_STORE = STORE_NAMES.AI_ASSISTANT_CONFIG;

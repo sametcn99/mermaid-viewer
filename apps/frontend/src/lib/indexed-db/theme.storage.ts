@@ -1,5 +1,5 @@
-import { STORE_NAMES, withDatabase } from ".";
 import type { ThemeSettings } from "@/lib/theme";
+import { STORE_NAMES, withDatabase } from ".";
 
 const THEME_SETTINGS_STORE = STORE_NAMES.THEME_SETTINGS;
 const THEME_SETTINGS_ID = "global";

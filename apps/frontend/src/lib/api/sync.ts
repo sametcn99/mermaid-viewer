@@ -8,10 +8,10 @@ import type {
 	FullSyncResponse,
 	SyncDiagramsRequest,
 	SyncDiagramsResponse,
-	SyncTemplatesRequest,
-	SyncTemplatesResponse,
 	SyncSettingsRequest,
 	SyncSettingsResponse,
+	SyncTemplatesRequest,
+	SyncTemplatesResponse,
 } from "./types";
 
 /**

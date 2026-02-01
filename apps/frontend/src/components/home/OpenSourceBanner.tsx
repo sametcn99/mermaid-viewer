@@ -1,11 +1,10 @@
 "use client";
 
-import { Box, Container, Typography, useTheme, Link } from "@mui/material";
+import GitHub from "@mui/icons-material/GitHub";
+import { Box, Container, Link, Typography, useTheme } from "@mui/material";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { useAnalytics } from "@/hooks/useAnalytics";
-import GitHub from "@mui/icons-material/GitHub";
-import { Star, GitFork, Eye, ExternalLink } from "lucide-react";
 
 const MotionBox = motion.create(Box);
 

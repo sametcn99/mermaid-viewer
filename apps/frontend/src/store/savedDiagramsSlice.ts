@@ -1,13 +1,13 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { AppThunk, RootState } from "./index";
+import type { DiagramSettingsConfig } from "@/lib/diagram-settings";
 import {
 	deleteDiagram as deleteDiagramFromStorage,
 	getAllDiagramsFromStorage,
-	saveDiagramToStorage,
 	type SavedDiagram,
+	saveDiagramToStorage,
 } from "@/lib/indexed-db/diagrams.storage";
 import { requestImmediateSync } from "@/lib/sync";
-import type { DiagramSettingsConfig } from "@/lib/diagram-settings";
+import type { AppThunk, RootState } from "./index";
 import { setCustomAlertMessage } from "./mermaidSlice";
 
 export interface ImportedDiagramInput {

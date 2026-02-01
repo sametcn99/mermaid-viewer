@@ -1,21 +1,21 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import debounce from "lodash.debounce";
 import {
-	findMatchingDiagramId,
-	getAllDiagramsFromStorage,
-	type SavedDiagram,
-	updateDiagram,
-	getDiagramById,
-} from "@/lib/indexed-db/diagrams.storage";
-import {
-	updateBrowserUrlWithDiagramCode,
-	retrieveDiagramCodeFromUrl,
-} from "@/lib/utils/url.utils";
-import {
 	applyDiagramSettings,
 	loadStoredDiagramSettings,
 } from "@/lib/diagram-settings";
+import {
+	findMatchingDiagramId,
+	getAllDiagramsFromStorage,
+	getDiagramById,
+	type SavedDiagram,
+	updateDiagram,
+} from "@/lib/indexed-db/diagrams.storage";
 import { requestImmediateSync } from "@/lib/sync";
+import {
+	retrieveDiagramCodeFromUrl,
+	updateBrowserUrlWithDiagramCode,
+} from "@/lib/utils/url.utils";
 import type { AppDispatch, AppThunk, RootState } from "./index";
 
 export interface MermaidState {

@@ -17,7 +17,7 @@ import type {
 	CustomTemplate,
 	TemplateCollection,
 } from "@/lib/indexed-db/templates.storage";
-import type { CollectionWithEntries, CollectionEntry } from "./types";
+import type { CollectionEntry, CollectionWithEntries } from "./types";
 
 interface TemplateCollectionsViewProps {
 	collections: CollectionWithEntries[];

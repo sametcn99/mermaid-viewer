@@ -4,8 +4,8 @@ import type {
 	TemplateCollection,
 } from "@/lib/indexed-db/templates.storage";
 import {
-	addTemplateToCollection,
 	addCustomTemplateToCollection,
+	addTemplateToCollection,
 	createTemplateCollection,
 	deleteTemplateCollection,
 	getTemplateCollections,

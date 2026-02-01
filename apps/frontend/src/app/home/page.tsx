@@ -1,12 +1,12 @@
-import type { Metadata } from "next";
 import { Box } from "@mui/material";
-import Hero from "@/components/home/Hero";
-import Features from "@/components/home/Features";
+import type { Metadata } from "next";
 import FAQ from "@/components/home/FAQ";
+import Features from "@/components/home/Features";
 import Footer from "@/components/home/Footer";
+import Hero from "@/components/home/Hero";
+import HowItWorks from "@/components/home/HowItWorks";
 import InteractiveDemo from "@/components/home/InteractiveDemo";
 import LearnMermaidSyntax from "@/components/home/LearnMermaidSyntax";
-import HowItWorks from "@/components/home/HowItWorks";
 import OpenSourceBanner from "@/components/home/OpenSourceBanner";
 
 export const metadata: Metadata = {

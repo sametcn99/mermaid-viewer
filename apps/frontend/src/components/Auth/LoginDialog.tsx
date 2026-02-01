@@ -1,33 +1,27 @@
 "use client";
 
-import type React from "react";
-import { useState, useCallback } from "react";
 import {
-	Dialog,
-	DialogTitle,
-	DialogContent,
-	DialogActions,
-	TextField,
-	Button,
-	Box,
-	Typography,
 	Alert,
-	CircularProgress,
-	Link,
-	InputAdornment,
-	IconButton,
+	Box,
+	Button,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogTitle,
+	Typography,
 } from "@mui/material";
-import { Eye, EyeOff } from "lucide-react";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import type React from "react";
+import { useCallback, useState } from "react";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import {
+	clearError,
 	continueWithLocalMode,
 	login,
-	clearError,
-	selectAuthLoading,
 	selectAuthError,
+	selectAuthLoading,
 } from "@/store/authSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { SocialLogin } from "./SocialLogin";
-import { useAnalytics } from "@/hooks/useAnalytics";
 
 interface LoginDialogProps {
 	open: boolean;
@@ -39,7 +33,7 @@ interface LoginDialogProps {
 export default function LoginDialog({
 	open,
 	onClose,
-	onSwitchToRegister,
+	onSwitchToRegister: _onSwitchToRegister,
 	onLoginSuccess,
 }: LoginDialogProps) {
 	const dispatch = useAppDispatch();
@@ -49,17 +43,11 @@ export default function LoginDialog({
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [showPassword, setShowPassword] = useState(false);
-	const [validationErrors, setValidationErrors] = useState<{
-		email?: string;
-		password?: string;
-	}>({});
 
 	const handleClose = useCallback(() => {
 		setEmail("");
 		setPassword("");
-		setShowPassword(false);
-		setValidationErrors({});
+
 		dispatch(clearError());
 		onClose();
 	}, [dispatch, onClose]);
@@ -70,22 +58,7 @@ export default function LoginDialog({
 		handleClose();
 	}, [dispatch, handleClose, track]);
 
-	const validate = useCallback(() => {
-		const errors: { email?: string; password?: string } = {};
-
-		if (!email) {
-			errors.email = "Email is required";
-		} else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-			errors.email = "Please enter a valid email";
-		}
-
-		if (!password) {
-			errors.password = "Password is required";
-		}
-
-		setValidationErrors(errors);
-		return Object.keys(errors).length === 0;
-	}, [email, password]);
+	const validate = useCallback(() => true, []);
 
 	const handleSubmit = useCallback(
 		async (e: React.FormEvent) => {
@@ -102,11 +75,6 @@ export default function LoginDialog({
 		},
 		[dispatch, email, password, validate, handleClose, onLoginSuccess],
 	);
-
-	const handleSwitchToRegister = useCallback(() => {
-		handleClose();
-		onSwitchToRegister();
-	}, [handleClose, onSwitchToRegister]);
 
 	return (
 		<Dialog

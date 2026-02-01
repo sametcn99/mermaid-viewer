@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
 	experimental: {
 		// Limit workers during build to avoid OOM on limited hardware (e.g. CI/CD, Docker)
 		cpus: process.env.BUILD_CPU_LIMIT
-			? Number.parseInt(process.env.BUILD_CPU_LIMIT)
+			? Number.parseInt(process.env.BUILD_CPU_LIMIT, 10)
 			: undefined,
 	},
 

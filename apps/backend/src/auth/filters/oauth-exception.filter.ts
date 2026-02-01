@@ -17,8 +17,15 @@ export class OAuthExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
 
     this.logger.error('OAuth Exception caught', exception);
-    if (exception.oauthError) {
-      this.logger.error('OAuth Provider Error Data:', exception.oauthError);
+    if (
+      typeof exception === 'object' &&
+      exception !== null &&
+      'oauthError' in exception
+    ) {
+      this.logger.error(
+        'OAuth Provider Error Data:',
+        (exception as Record<string, unknown>).oauthError,
+      );
     }
 
     let message = 'Authentication failed';

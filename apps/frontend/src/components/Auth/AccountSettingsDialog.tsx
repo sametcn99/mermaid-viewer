@@ -1,42 +1,42 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
-import {
-	Dialog,
-	DialogTitle,
-	DialogContent,
-	DialogActions,
-	TextField,
-	Button,
-	Box,
-	Typography,
-	Alert,
-	CircularProgress,
-	Divider,
-	InputAdornment,
-	IconButton,
-	Accordion,
-	AccordionSummary,
-	AccordionDetails,
-} from "@mui/material";
-import { Eye, EyeOff, ChevronDown, AlertTriangle, Mail } from "lucide-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub, faGoogle } from "@fortawesome/free-brands-svg-icons";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-	updateProfile,
-	logout,
-	clearError,
-	selectUser,
-	selectAuthLoading,
-	selectAuthError,
-	selectIsLocalOnly,
-	selectIsAuthenticated,
-} from "@/store/authSlice";
+	Accordion,
+	AccordionDetails,
+	AccordionSummary,
+	Alert,
+	Box,
+	Button,
+	CircularProgress,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogTitle,
+	Divider,
+	IconButton,
+	InputAdornment,
+	TextField,
+	Typography,
+} from "@mui/material";
+import { AlertTriangle, ChevronDown, Eye, EyeOff, Mail } from "lucide-react";
+import React, { useCallback, useState } from "react";
 import { deleteAccount } from "@/lib/api";
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/lib/api/client";
 import { resetAllStores } from "@/lib/indexed-db";
 import { requestImmediateSync } from "@/lib/sync";
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/lib/api/client";
+import {
+	clearError,
+	logout,
+	selectAuthError,
+	selectAuthLoading,
+	selectIsAuthenticated,
+	selectIsLocalOnly,
+	selectUser,
+	updateProfile,
+} from "@/store/authSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 interface AccountSettingsDialogProps {
 	open: boolean;

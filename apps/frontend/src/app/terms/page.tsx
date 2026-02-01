@@ -1,7 +1,6 @@
 import {
 	Box,
 	Container,
-	Divider,
 	List,
 	ListItem,
 	ListItemText,

@@ -1,17 +1,17 @@
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
-import ThemeRegistry from "@/components/ThemeRegistry";
+import type { Metadata, Viewport } from "next";
+import { Inter } from "next/font/google";
 import DeviceStateInitializer from "@/components/DeviceStateInitializer";
 import SyncManager from "@/components/SyncManager";
-import StoreProvider from "@/store/StoreProvider";
+import ThemeRegistry from "@/components/ThemeRegistry";
 import appMetadata, {
 	APP_DESCRIPTION,
 	APP_TITLE,
+	appViewport,
 	OG_IMAGE_URL,
 	SITE_URL_STRING,
-	appViewport,
 } from "@/lib/metadata";
-import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import StoreProvider from "@/store/StoreProvider";
 import "./globals.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";

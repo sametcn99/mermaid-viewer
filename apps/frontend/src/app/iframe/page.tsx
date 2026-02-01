@@ -1,21 +1,21 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import mermaid from "mermaid";
-import {
-	DEFAULT_IFRAME_OPTIONS,
-	parseIframeOptions,
-	type IframeOptionParseResult,
-} from "@/lib/iframeOptions";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
+import mermaid from "mermaid";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import type { RootState } from "@/store";
+import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
+import {
+	DEFAULT_IFRAME_OPTIONS,
+	type IframeOptionParseResult,
+	parseIframeOptions,
+} from "@/lib/iframeOptions";
 import { decompressFromBase64 } from "@/lib/utils/compression.utils";
+import type { RootState } from "@/store";
 
 function getMermaidCodeFromSearchParams(): string {
 	if (typeof window === "undefined") return "";
