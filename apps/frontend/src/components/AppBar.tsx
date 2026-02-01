@@ -343,22 +343,32 @@ export default function AppBar() {
 	return (
 		<>
 			<MuiAppBar position="static" color="default" elevation={2}>
-				<Toolbar variant="dense" sx={{ gap: { xs: 1, sm: 2 } }}>
+				<Toolbar
+					variant="dense"
+					sx={{
+						gap: 1,
+						minHeight: { xs: 48, md: 40 },
+						height: { md: 40 },
+						".MuiButtonBase-root": {
+							padding: { md: "4px" },
+						},
+					}}
+				>
 					<Box sx={{ flexGrow: 1, minWidth: 0 }}>
 						<Typography
-							variant="h6"
+							variant="subtitle1"
 							sx={{
 								userSelect: "none",
-								fontWeight: 700,
-								fontSize: { xs: "1.1rem", sm: "1.5rem" },
+								fontWeight: 900,
+								letterSpacing: "-0.03em",
 								color: "text.primary",
-								letterSpacing: "-0.02em",
 								fontFamily:
 									'"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
 								display: "flex",
 								alignItems: "center",
 								gap: 1,
 								flexWrap: "wrap",
+								textTransform: "uppercase",
 							}}
 						>
 							<span>Mermaid Editor</span>
@@ -395,7 +405,7 @@ export default function AppBar() {
 								<IconButton
 									onClick={createDiagram}
 									aria-label="New Diagram"
-									size="medium"
+									size="small"
 								>
 									<Plus size={20} />
 								</IconButton>
@@ -405,7 +415,7 @@ export default function AppBar() {
 								<IconButton
 									onClick={showTemplateDialog}
 									aria-label="Browse Templates"
-									size="medium"
+									size="small"
 								>
 									<FileText size={20} />
 								</IconButton>
@@ -415,7 +425,7 @@ export default function AppBar() {
 								<Tooltip title={`Open Saved Diagram (${shortcuts.openSaved})`}>
 									<IconButton
 										aria-label="Open Saved Diagram"
-										size="medium"
+										size="small"
 										onClick={openLoadDialog}
 									>
 										<Badge badgeContent={savedDiagrams.length} color="primary">
@@ -439,7 +449,7 @@ export default function AppBar() {
 									aria-label={
 										currentDiagramId ? "Update Saved Diagram" : "Save Diagram"
 									}
-									size="medium"
+									size="small"
 									color={hasUnsavedChanges ? "warning" : "default"}
 								>
 									<Save size={20} />
@@ -452,7 +462,7 @@ export default function AppBar() {
 									href={presentationHref}
 									onClick={() => track("appbar_presentation_click")}
 									aria-label="Enter Presentation"
-									size="medium"
+									size="small"
 								>
 									<Monitor size={20} />
 								</IconButton>
@@ -465,7 +475,7 @@ export default function AppBar() {
 										setIsThemeDialogOpen(true);
 									}}
 									aria-label="Theme Settings"
-									size="medium"
+									size="small"
 								>
 									<Palette size={20} />
 								</IconButton>
@@ -477,7 +487,7 @@ export default function AppBar() {
 									href="/home"
 									onClick={() => track("appbar_home_click")}
 									aria-label="Home"
-									size="medium"
+									size="small"
 								>
 									<Home size={20} />
 								</IconButton>

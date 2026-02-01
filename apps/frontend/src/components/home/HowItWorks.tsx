@@ -129,9 +129,23 @@ export default function HowItWorks() {
 					{steps.map((step, index) => (
 						<MotionPaper
 							key={step.title}
-							initial={{ opacity: 0, y: 50 }}
-							animate={isInView ? { opacity: 1, y: 0 } : {}}
-							transition={{ duration: 0.5, delay: index * 0.15 }}
+							initial="hidden"
+							animate={isInView ? "visible" : "hidden"}
+							whileHover="hover"
+							variants={{
+								hidden: { opacity: 0, y: 50 },
+								visible: {
+									opacity: 1,
+									y: 0,
+									transition: { duration: 0.5, delay: index * 0.15 },
+								},
+								hover: {
+									y: -8,
+									borderColor: step.color,
+									boxShadow: `0 20px 40px -20px ${step.color}40`,
+									transition: { duration: 0.3, delay: 0 },
+								},
+							}}
 							elevation={0}
 							sx={{
 								p: 4,
@@ -142,12 +156,6 @@ export default function HowItWorks() {
 								borderColor: "divider",
 								position: "relative",
 								zIndex: 1,
-								"&:hover": {
-									borderColor: step.color,
-									transform: "translateY(-8px)",
-									boxShadow: `0 20px 40px -20px ${step.color}40`,
-								},
-								transition: "all 0.3s ease",
 							}}
 						>
 							{/* Step number */}
