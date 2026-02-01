@@ -1,6 +1,7 @@
 import { INestApplication, Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { apiReference } from '@scalar/nestjs-api-reference';
 import { AppModule } from './app/app.module';
 
 class MainApplication {
@@ -41,16 +42,20 @@ class MainApplication {
       .addTag('mermaid-viewer')
       .addBearerAuth()
       .setContact('sametcn99', 'https://sametcc.me', 'sametcn99@gmail.com')
+      .addServer('http://localhost:3000', 'Frontend server')
       .addServer('http://localhost:3001', 'Local server')
       .addServer('https://mermaid.sametcc.me/api', 'Production server')
       .build();
 
     const document = SwaggerModule.createDocument(this.app, config);
-    SwaggerModule.setup('docs', this.app, document, {
-      swaggerOptions: {
-        persistAuthorization: true,
-      },
-    });
+    this.app.use(
+      '/docs',
+      apiReference({
+        spec: {
+          content: document,
+        },
+      }),
+    );
   }
 
   private configureGlobalPipes(): void {
@@ -65,6 +70,9 @@ class MainApplication {
 
   private async startServer(): Promise<void> {
     await this.app.listen(3001, '0.0.0.0');
+    this.logger.log(
+      `Application started successfully on http://localhost:3001`,
+    );
   }
 }
 
