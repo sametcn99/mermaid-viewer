@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
 		// Limit workers during build to avoid OOM on limited hardware (e.g. CI/CD, Docker)
 		cpus: process.env.BUILD_CPU_LIMIT
 			? Number.parseInt(process.env.BUILD_CPU_LIMIT, 10)
-			: undefined,
+			: 1,
 	},
 
 	// Explicitly define environment variables for client-side access
