@@ -16,7 +16,6 @@ RUN bun install
 
 # Set environment variables for build
 ENV BUILD_CPU_LIMIT=1
-ENV DISABLE_SOURCE_MAPS=true
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 

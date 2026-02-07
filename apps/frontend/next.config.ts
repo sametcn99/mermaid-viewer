@@ -1,8 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-	// Enable source maps in production for better debugging
-	productionBrowserSourceMaps: process.env.DISABLE_SOURCE_MAPS !== "true",
+	// Disable source maps in production by default to improve build performance
+	// Set ENABLE_SOURCE_MAPS=true to enable them for debugging
+	productionBrowserSourceMaps: process.env.ENABLE_SOURCE_MAPS === "true",
 
 	// Enable standalone output for Docker builds
 	output: "standalone",
@@ -14,12 +15,7 @@ const nextConfig: NextConfig = {
 	},
 
 	// Optimize webpack configuration
-	webpack: (config, { dev, isServer }) => {
-		// Enable source maps in production only if not disabled
-		if (!dev && !isServer && process.env.DISABLE_SOURCE_MAPS !== "true") {
-			config.devtool = "source-map";
-		}
-
+	webpack: (config) => {
 		return config;
 	},
 };
