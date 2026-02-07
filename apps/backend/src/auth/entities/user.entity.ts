@@ -14,9 +14,6 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column({ nullable: true })
-  passwordHash: string;
-
   @Column({ type: 'varchar', length: 120, nullable: true })
   displayName: string | null;
 

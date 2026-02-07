@@ -10,13 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { User } from './entities/user.entity';
-import {
-  RegisterDto,
-  LoginDto,
-  TokenResponseDto,
-  AuthResponseDto,
-  UpdateProfileDto,
-} from './dto';
+import { TokenResponseDto, UpdateProfileDto } from './dto';
 
 export interface JwtPayload {
   sub: string;
@@ -31,69 +25,6 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
-
-  async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
-    const existingUser = await this.userRepository.findOne({
-      where: { email: registerDto.email.toLowerCase() },
-    });
-
-    if (existingUser) {
-      throw new ConflictException('Email already registered');
-    }
-
-    const passwordHash = await this.hashPassword(registerDto.password);
-    const normalizedEmail = registerDto.email.toLowerCase();
-    const trimmedDisplayName = registerDto.displayName?.trim();
-
-    const user = this.userRepository.create({
-      email: normalizedEmail,
-      passwordHash,
-      displayName:
-        trimmedDisplayName && trimmedDisplayName.length > 0
-          ? trimmedDisplayName
-          : normalizedEmail.split('@')[0],
-    });
-
-    await this.userRepository.save(user);
-
-    const tokens = await this.generateTokens(user);
-    await this.updateRefreshToken(user.id, tokens.refreshToken);
-
-    return {
-      ...tokens,
-      user: {
-        id: user.id,
-        email: user.email,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-        displayName: user.displayName,
-        googleId: user.googleId,
-        githubId: user.githubId,
-      },
-    };
-  }
-
-  async login(loginDto: LoginDto): Promise<AuthResponseDto> {
-    const user = await this.validateUser(loginDto.email, loginDto.password);
-
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    const tokens = await this.generateTokens(user);
-    await this.updateRefreshToken(user.id, tokens.refreshToken);
-
-    return {
-      ...tokens,
-      user: {
-        id: user.id,
-        email: user.email,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-        displayName: user.displayName,
-      },
-    };
-  }
 
   async refreshTokens(refreshToken: string): Promise<TokenResponseDto> {
     try {
@@ -127,30 +58,8 @@ export class AuthService {
     await this.userRepository.update(userId, { refreshToken: undefined });
   }
 
-  async validateUser(email: string, password: string): Promise<User | null> {
-    const user = await this.userRepository.findOne({
-      where: { email: email.toLowerCase() },
-    });
-
-    if (!user) {
-      return null;
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
-    if (!isPasswordValid) {
-      return null;
-    }
-
-    return user;
-  }
-
   async findById(id: string): Promise<User | null> {
     return this.userRepository.findOne({ where: { id } });
-  }
-
-  private async hashPassword(password: string): Promise<string> {
-    const saltRounds = 12;
-    return bcrypt.hash(password, saltRounds);
   }
 
   async generateTokens(user: User): Promise<TokenResponseDto> {
@@ -279,25 +188,6 @@ export class AuthService {
 
     if (dto.displayName !== undefined) {
       user.displayName = dto.displayName;
-    }
-
-    if (dto.newPassword) {
-      if (!user.passwordHash) {
-        throw new ConflictException(
-          'Cannot update password for social login account',
-        );
-      }
-      if (!dto.currentPassword) {
-        throw new UnauthorizedException('Current password is required');
-      }
-      const isPasswordValid = await bcrypt.compare(
-        dto.currentPassword,
-        user.passwordHash,
-      );
-      if (!isPasswordValid) {
-        throw new UnauthorizedException('Invalid current password');
-      }
-      user.passwordHash = await this.hashPassword(dto.newPassword);
     }
 
     return this.userRepository.save(user);

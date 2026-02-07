@@ -22,11 +22,8 @@ import {
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import {
-  RegisterDto,
-  LoginDto,
   RefreshTokenDto,
   TokenResponseDto,
-  AuthResponseDto,
   UserResponseDto,
   UpdateProfileDto,
 } from './dto';
@@ -42,34 +39,10 @@ import { ConfigService } from '@nestjs/config';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
-
-  @Public()
-  @Post('register')
-  @ApiOperation({ summary: 'Register a new user' })
-  @ApiResponse({
-    status: 201,
-    description: 'User registered successfully',
-    type: AuthResponseDto,
-  })
-  @ApiResponse({ status: 409, description: 'Email already registered' })
-  async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
-    return this.authService.register(registerDto);
-  }
-
-  @Public()
-  @Post('login')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Login with email and password' })
-  @ApiResponse({
-    status: 200,
-    description: 'Login successful',
-    type: AuthResponseDto,
-  })
-  @ApiResponse({ status: 401, description: 'Invalid credentials' })
-  async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
-    return this.authService.login(loginDto);
-  }
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Public()
   @Post('refresh')
@@ -140,11 +113,16 @@ export class AuthController {
     const tokens = await this.authService.generateTokens(user);
     await this.authService.updateRefreshToken(user.id, tokens.refreshToken);
 
-    // Redirect to frontend with tokens
-    const frontendUrl = new ConfigService().get<string>('FRONTEND_URL');
-    res.redirect(
-      `${frontendUrl}/auth/callback?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`,
-    );
+    // Securely transfer tokens via cookies
+    res.cookie('auth_transfer', JSON.stringify(tokens), {
+      httpOnly: true,
+      secure: this.configService.get<string>('NODE_ENV') === 'production',
+      sameSite: 'lax',
+      maxAge: 5 * 60 * 1000, // 5 minutes
+    });
+
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL');
+    res.redirect(`${frontendUrl}/auth/callback`);
   }
 
   @Public()
@@ -164,11 +142,16 @@ export class AuthController {
     const tokens = await this.authService.generateTokens(user);
     await this.authService.updateRefreshToken(user.id, tokens.refreshToken);
 
-    // Redirect to frontend with tokens
-    const frontendUrl = new ConfigService().get<string>('FRONTEND_URL');
-    res.redirect(
-      `${frontendUrl}/auth/callback?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`,
-    );
+    // Securely transfer tokens via cookies
+    res.cookie('auth_transfer', JSON.stringify(tokens), {
+      httpOnly: true,
+      secure: this.configService.get<string>('NODE_ENV') === 'production',
+      sameSite: 'lax',
+      maxAge: 5 * 60 * 1000, // 5 minutes
+    });
+
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL');
+    res.redirect(`${frontendUrl}/auth/callback`);
   }
 
   @Post('account')

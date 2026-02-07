@@ -1,10 +1,5 @@
 "use client";
 
-import { Inter } from "next/font/google";
-import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
-
 export default function GlobalError({
 	error,
 	reset,
@@ -14,7 +9,7 @@ export default function GlobalError({
 }) {
 	return (
 		<html lang="en">
-			<body className={inter.className}>
+			<body style={{ fontFamily: "'Inter', sans-serif", margin: 0 }}>
 				<div className="flex min-h-screen flex-col items-center justify-center p-4 text-center">
 					<h2 className="mb-4 text-2xl font-bold">Something went wrong!</h2>
 					<p className="mb-8 text-sm text-gray-500">

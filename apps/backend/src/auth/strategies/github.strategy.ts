@@ -43,7 +43,9 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
     done: (error: unknown, user?: unknown) => void,
   ): Promise<void> {
     const { id, displayName, username, emails, photos } = profile;
-    const primaryEmail = emails?.[0]?.value;
+    const primaryEmail = emails?.find(
+      (e) => (e as unknown as { verified: boolean }).verified,
+    )?.value;
     const resolvedDisplayName =
       displayName ?? username ?? primaryEmail?.split('@')[0] ?? 'GitHub User';
     const avatarUrl = photos?.[0]?.value;
