@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
-import { Box, Button, Typography, Container } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
+import { Box, Button, Container, Typography } from "@mui/material";
+import Link from "next/link";
 
 export default function NotFound() {
 	return (
@@ -17,7 +17,12 @@ export default function NotFound() {
 				textAlign: "center",
 			}}
 		>
-			<Typography variant="h1" component="h1" gutterBottom sx={{ fontSize: "6rem", fontWeight: "bold", color: "text.secondary" }}>
+			<Typography
+				variant="h1"
+				component="h1"
+				gutterBottom
+				sx={{ fontSize: "6rem", fontWeight: "bold", color: "text.secondary" }}
+			>
 				404
 			</Typography>
 			<Typography variant="h5" component="h2" gutterBottom>
