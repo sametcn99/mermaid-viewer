@@ -4,11 +4,13 @@ import {
   ArgumentsHost,
   HttpException,
   Logger,
+  Injectable,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 
 @Catch()
+@Injectable()
 export class OAuthExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(OAuthExceptionFilter.name);
 

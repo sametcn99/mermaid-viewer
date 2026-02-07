@@ -113,16 +113,10 @@ export class AuthController {
     const tokens = await this.authService.generateTokens(user);
     await this.authService.updateRefreshToken(user.id, tokens.refreshToken);
 
-    // Securely transfer tokens via cookies
-    res.cookie('auth_transfer', JSON.stringify(tokens), {
-      httpOnly: true,
-      secure: this.configService.get<string>('NODE_ENV') === 'production',
-      sameSite: 'lax',
-      maxAge: 5 * 60 * 1000, // 5 minutes
-    });
-
     const frontendUrl = this.configService.get<string>('FRONTEND_URL');
-    res.redirect(`${frontendUrl}/auth/callback`);
+    res.redirect(
+      `${frontendUrl}/auth/callback?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`,
+    );
   }
 
   @Public()
@@ -142,16 +136,10 @@ export class AuthController {
     const tokens = await this.authService.generateTokens(user);
     await this.authService.updateRefreshToken(user.id, tokens.refreshToken);
 
-    // Securely transfer tokens via cookies
-    res.cookie('auth_transfer', JSON.stringify(tokens), {
-      httpOnly: true,
-      secure: this.configService.get<string>('NODE_ENV') === 'production',
-      sameSite: 'lax',
-      maxAge: 5 * 60 * 1000, // 5 minutes
-    });
-
     const frontendUrl = this.configService.get<string>('FRONTEND_URL');
-    res.redirect(`${frontendUrl}/auth/callback`);
+    res.redirect(
+      `${frontendUrl}/auth/callback?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`,
+    );
   }
 
   @Post('account')
