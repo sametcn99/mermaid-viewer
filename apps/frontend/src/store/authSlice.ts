@@ -10,7 +10,6 @@ import {
 	register as apiRegister,
 	updateProfile as apiUpdateProfile,
 	getCurrentUser,
-	hasTokens,
 	type LoginRequest,
 	type RegisterRequest,
 	type UpdateProfileRequest,
@@ -72,7 +71,7 @@ export const initializeAuth = createAsyncThunk<
 >("auth/initialize", async (_, { rejectWithValue }) => {
 	try {
 		const isLocalOnly = readLocalModePreference();
-		if (!hasTokens()) {
+		if (isLocalOnly) {
 			return { user: null, isLocalOnly } satisfies InitializeAuthResult;
 		}
 		const user = await getCurrentUser();
@@ -128,7 +127,7 @@ export const logout = createAsyncThunk(
 	"auth/logout",
 	async (_, { getState }) => {
 		const state = getState() as { auth: AuthState };
-		const wasAuthenticated = state.auth.isAuthenticated && hasTokens();
+		const wasAuthenticated = state.auth.isAuthenticated;
 
 		let syncCompleted = false;
 		if (wasAuthenticated) {

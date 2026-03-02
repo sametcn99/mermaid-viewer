@@ -16,11 +16,6 @@ export {
 	ApiRequestError,
 	api,
 	apiRequest,
-	clearTokens,
-	getAccessToken,
-	getRefreshToken,
-	hasTokens,
-	setTokens,
 } from "./client";
 
 // Sync

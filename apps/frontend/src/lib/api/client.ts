@@ -1,44 +1,13 @@
 /**
  * API Client for Backend Communication
- * Handles authentication tokens, request/response, and error handling
+ * Handles cookie-based auth sessions, request/response, and error handling
  */
 
 import { appConfig } from "../config";
-import type { ApiError, AuthTokens } from "./types";
+import type { ApiError } from "./types";
 
 // Normalize base URL to avoid double slashes when concatenating endpoints
 const API_URL = appConfig.api.baseUrl.replace(/\/+$/, "");
-
-// Token storage keys
-export const ACCESS_TOKEN_KEY = "mermaid-viewer-access-token";
-export const REFRESH_TOKEN_KEY = "mermaid-viewer-refresh-token";
-
-// Token management
-export function getAccessToken(): string | null {
-	if (typeof window === "undefined") return null;
-	return localStorage.getItem(ACCESS_TOKEN_KEY);
-}
-
-export function getRefreshToken(): string | null {
-	if (typeof window === "undefined") return null;
-	return localStorage.getItem(REFRESH_TOKEN_KEY);
-}
-
-export function setTokens(tokens: AuthTokens): void {
-	if (typeof window === "undefined") return;
-	localStorage.setItem(ACCESS_TOKEN_KEY, tokens.accessToken);
-	localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
-}
-
-export function clearTokens(): void {
-	if (typeof window === "undefined") return;
-	localStorage.removeItem(ACCESS_TOKEN_KEY);
-	localStorage.removeItem(REFRESH_TOKEN_KEY);
-}
-
-export function hasTokens(): boolean {
-	return !!getAccessToken() && !!getRefreshToken();
-}
 
 // Request options type
 interface RequestOptions extends Omit<RequestInit, "body"> {
@@ -60,30 +29,23 @@ export class ApiRequestError extends Error {
 }
 
 // Token refresh function
-async function refreshAccessToken(): Promise<string | null> {
-	const refreshToken = getRefreshToken();
-	if (!refreshToken) return null;
-
+async function refreshAccessToken(): Promise<boolean> {
 	try {
 		const response = await fetch(`${API_URL}/auth/refresh`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify({ refreshToken }),
+			credentials: "include",
 		});
 
 		if (!response.ok) {
-			clearTokens();
-			return null;
+			return false;
 		}
 
-		const data = (await response.json()) as AuthTokens;
-		setTokens(data);
-		return data.accessToken;
+		return true;
 	} catch {
-		clearTokens();
-		return null;
+		return false;
 	}
 }
 
@@ -102,18 +64,10 @@ export async function apiRequest<T>(
 		...options.headers,
 	};
 
-	// Add auth header if not skipped
-	if (!skipAuth) {
-		const accessToken = getAccessToken();
-		if (accessToken) {
-			(headers as Record<string, string>).Authorization =
-				`Bearer ${accessToken}`;
-		}
-	}
-
 	const config: RequestInit = {
 		...fetchOptions,
 		headers,
+		credentials: "include",
 	};
 
 	if (body !== undefined) {
@@ -124,9 +78,8 @@ export async function apiRequest<T>(
 
 	// If unauthorized, try to refresh token
 	if (response.status === 401 && !skipAuth) {
-		const newToken = await refreshAccessToken();
-		if (newToken) {
-			(headers as Record<string, string>).Authorization = `Bearer ${newToken}`;
+		const refreshed = await refreshAccessToken();
+		if (refreshed) {
 			response = await fetch(`${API_URL}${normalizedEndpoint}`, {
 				...config,
 				headers,

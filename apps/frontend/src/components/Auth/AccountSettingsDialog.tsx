@@ -23,7 +23,6 @@ import {
 import { AlertTriangle, ChevronDown, Eye, EyeOff, Mail } from "lucide-react";
 import React, { useCallback, useState } from "react";
 import { deleteAccount } from "@/lib/api";
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/lib/api/client";
 import { resetAllStores } from "@/lib/indexed-db";
 import { requestImmediateSync } from "@/lib/sync";
 import {
@@ -191,13 +190,7 @@ export default function AccountSettingsDialog({
 		try {
 			await resetAllStores();
 			if (typeof window !== "undefined") {
-				const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
-				const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
-
 				window.localStorage.clear();
-
-				if (accessToken) localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
-				if (refreshToken) localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
 			}
 
 			if (isAuthenticated) {

@@ -102,21 +102,26 @@ User request: ${message}`;
         errorMessage.includes('API_KEY_INVALID') ||
         errorMessage.includes('API key')
       ) {
-        throw new UnauthorizedException({
-          message: 'Invalid API key. Please check your Gemini API key.',
-          needsApiKey: true,
-        });
+        throw new UnauthorizedException(
+          {
+            message: 'Invalid API key. Please check your Gemini API key.',
+            needsApiKey: true,
+          },
+          { cause: error },
+        );
       }
 
       if (errorMessage.includes('quota') || errorMessage.includes('limit')) {
         // We can throw specific exception or handle it
         throw new Error(
           'API quota exceeded. Please use your own API key to continue.',
+          { cause: error },
         ); // Ideally throw HttpException with 429 status but NestJS generic 429 needs implementation or Throttler
       }
 
       throw new InternalServerErrorException(
         errorMessage || 'Failed to generate response',
+        { cause: error },
       );
     }
   }

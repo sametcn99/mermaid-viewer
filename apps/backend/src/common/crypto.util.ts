@@ -14,7 +14,9 @@ export function encryptContent(value?: string | null): string | undefined {
       .replace(/\//g, '_')
       .replace(/=+$/, '');
   } catch (error) {
-    throw new Error(`Compression failed: ${(error as Error).message}`);
+    throw new Error(`Compression failed: ${(error as Error).message}`, {
+      cause: error,
+    });
   }
 }
 
@@ -34,6 +36,8 @@ export function decryptContent(value?: string | null): string | undefined {
     const decompressed = inflateSync(buffer);
     return decompressed.toString('utf8');
   } catch (error) {
-    throw new Error(`Decompression failed: ${(error as Error).message}`);
+    throw new Error(`Decompression failed: ${(error as Error).message}`, {
+      cause: error,
+    });
   }
 }

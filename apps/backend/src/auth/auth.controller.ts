@@ -11,8 +11,9 @@ import {
   UseGuards,
   Res,
   UseFilters,
+  Req,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import {
   ApiTags,
@@ -21,12 +22,7 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import {
-  RefreshTokenDto,
-  TokenResponseDto,
-  UserResponseDto,
-  UpdateProfileDto,
-} from './dto';
+import { UserResponseDto, UpdateProfileDto } from './dto';
 import { Public } from './decorators/public.decorator';
 import {
   CurrentUser,
@@ -39,25 +35,83 @@ import { ConfigService } from '@nestjs/config';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
+  private readonly accessTokenCookieName = 'mv_access_token';
+  private readonly refreshTokenCookieName = 'mv_refresh_token';
+
+  private readonly accessTokenMaxAgeMs = 15 * 60 * 1000;
+  private readonly refreshTokenMaxAgeMs = 7 * 24 * 60 * 60 * 1000;
+
   constructor(
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
   ) {}
 
+  private get isProduction(): boolean {
+    return this.configService.get<string>('NODE_ENV') === 'production';
+  }
+
+  private setAuthCookies(
+    response: Response,
+    tokens: {
+      accessToken: string;
+      refreshToken: string;
+    },
+  ): void {
+    response.cookie(this.accessTokenCookieName, tokens.accessToken, {
+      httpOnly: true,
+      secure: this.isProduction,
+      sameSite: 'lax',
+      maxAge: this.accessTokenMaxAgeMs,
+      path: '/',
+    });
+
+    response.cookie(this.refreshTokenCookieName, tokens.refreshToken, {
+      httpOnly: true,
+      secure: this.isProduction,
+      sameSite: 'lax',
+      maxAge: this.refreshTokenMaxAgeMs,
+      path: '/auth/refresh',
+    });
+  }
+
+  private clearAuthCookies(response: Response): void {
+    response.clearCookie(this.accessTokenCookieName, {
+      httpOnly: true,
+      secure: this.isProduction,
+      sameSite: 'lax',
+      path: '/',
+    });
+
+    response.clearCookie(this.refreshTokenCookieName, {
+      httpOnly: true,
+      secure: this.isProduction,
+      sameSite: 'lax',
+      path: '/auth/refresh',
+    });
+  }
+
   @Public()
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Refresh access token' })
+  @ApiOperation({ summary: 'Refresh auth cookies from refresh token cookie' })
   @ApiResponse({
     status: 200,
-    description: 'Tokens refreshed successfully',
-    type: TokenResponseDto,
+    description: 'Auth cookies refreshed successfully',
   })
   @ApiResponse({ status: 401, description: 'Invalid refresh token' })
   async refresh(
-    @Body() refreshTokenDto: RefreshTokenDto,
-  ): Promise<TokenResponseDto> {
-    return this.authService.refreshTokens(refreshTokenDto.refreshToken);
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<{ message: string }> {
+    const refreshToken = this.authService.extractCookie(
+      request,
+      this.refreshTokenCookieName,
+    );
+
+    const tokens = await this.authService.refreshTokens(refreshToken);
+    this.setAuthCookies(response, tokens);
+
+    return { message: 'Tokens refreshed successfully' };
   }
 
   @Post('logout')
@@ -67,8 +121,10 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Logged out successfully' })
   async logout(
     @CurrentUser('id') userId: string,
+    @Res({ passthrough: true }) response: Response,
   ): Promise<{ message: string }> {
     await this.authService.logout(userId);
+    this.clearAuthCookies(response);
     return { message: 'Logged out successfully' };
   }
 
@@ -112,11 +168,10 @@ export class AuthController {
   async googleAuthRedirect(@CurrentUser() user: User, @Res() res: Response) {
     const tokens = await this.authService.generateTokens(user);
     await this.authService.updateRefreshToken(user.id, tokens.refreshToken);
+    this.setAuthCookies(res, tokens);
 
     const frontendUrl = this.configService.get<string>('FRONTEND_URL');
-    res.redirect(
-      `${frontendUrl}/auth/callback?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`,
-    );
+    res.redirect(`${frontendUrl}/auth/callback`);
   }
 
   @Public()
@@ -135,11 +190,10 @@ export class AuthController {
   async githubAuthRedirect(@CurrentUser() user: User, @Res() res: Response) {
     const tokens = await this.authService.generateTokens(user);
     await this.authService.updateRefreshToken(user.id, tokens.refreshToken);
+    this.setAuthCookies(res, tokens);
 
     const frontendUrl = this.configService.get<string>('FRONTEND_URL');
-    res.redirect(
-      `${frontendUrl}/auth/callback?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`,
-    );
+    res.redirect(`${frontendUrl}/auth/callback`);
   }
 
   @Post('account')

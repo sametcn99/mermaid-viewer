@@ -9,6 +9,7 @@ import { Repository, FindOptionsWhere } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
+import { Request } from 'express';
 import { User } from './entities/user.entity';
 import { TokenResponseDto, UpdateProfileDto } from './dto';
 
@@ -26,7 +27,32 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
+  extractCookie(request: Request, cookieName: string): string {
+    const rawCookieHeader = request.headers.cookie;
+    if (!rawCookieHeader) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    const cookiePairs = rawCookieHeader.split(';');
+    for (const pair of cookiePairs) {
+      const [key, ...rest] = pair.trim().split('=');
+      if (key === cookieName) {
+        const value = rest.join('=');
+        if (!value) {
+          break;
+        }
+        return decodeURIComponent(value);
+      }
+    }
+
+    throw new UnauthorizedException('Invalid refresh token');
+  }
+
   async refreshTokens(refreshToken: string): Promise<TokenResponseDto> {
+    if (!refreshToken) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
     try {
       const payload = this.jwtService.verify<JwtPayload>(refreshToken, {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET'),

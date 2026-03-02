@@ -2,7 +2,7 @@
  * Authentication API Functions
  */
 
-import { api, clearTokens, setTokens } from "./client";
+import { api } from "./client";
 import type {
 	AuthResponse,
 	LoginRequest,
@@ -18,10 +18,6 @@ export async function register(data: RegisterRequest): Promise<AuthResponse> {
 	const response = await api.post<AuthResponse>("/auth/register", data, {
 		skipAuth: true,
 	});
-	setTokens({
-		accessToken: response.accessToken,
-		refreshToken: response.refreshToken,
-	});
 	return response;
 }
 
@@ -32,10 +28,6 @@ export async function login(data: LoginRequest): Promise<AuthResponse> {
 	const response = await api.post<AuthResponse>("/auth/login", data, {
 		skipAuth: true,
 	});
-	setTokens({
-		accessToken: response.accessToken,
-		refreshToken: response.refreshToken,
-	});
 	return response;
 }
 
@@ -43,11 +35,7 @@ export async function login(data: LoginRequest): Promise<AuthResponse> {
  * Logout the current user
  */
 export async function logout(): Promise<void> {
-	try {
-		await api.post("/auth/logout");
-	} finally {
-		clearTokens();
-	}
+	await api.post("/auth/logout");
 }
 
 /**
