@@ -296,6 +296,7 @@ export default function DiagramPanel({
 			{!isLoading && !error && svgContent && (
 				<TransformWrapper
 					initialScale={1}
+					maxScale={Number.POSITIVE_INFINITY}
 					centerOnInit={true}
 					wheel={{
 						step: isTouchDevice ? 0.3 : 0.5, // Smaller steps for touch devices
@@ -320,7 +321,6 @@ export default function DiagramPanel({
 					}}
 					limitToBounds={false}
 					minScale={isMobileTouch ? 0.2 : 0.1} // Higher minimum for mobile
-					maxScale={isMobileTouch ? 5 : 10} // Lower maximum for mobile performance
 					onTransformed={(ref) => {
 						setZoomLevel(ref.state.scale);
 					}}

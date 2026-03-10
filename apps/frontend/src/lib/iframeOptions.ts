@@ -5,7 +5,6 @@ export interface IframeOptions {
 	background: string;
 	initialZoom: number;
 	minZoom: number;
-	maxZoom: number;
 }
 
 export interface IframeOptionParseResult {
@@ -33,11 +32,14 @@ export const DEFAULT_IFRAME_OPTIONS: IframeOptions = Object.freeze({
 	background: "#ffffff",
 	initialZoom: 1,
 	minZoom: 0.1,
-	maxZoom: 10,
 });
 
-const clamp = (value: number, min: number, max: number) =>
-	Math.min(Math.max(value, min), max);
+const clamp = (value: number, min: number, max?: number) => {
+	const lowerBounded = Math.max(value, min);
+	return typeof max === "number"
+		? Math.min(lowerBounded, max)
+		: lowerBounded;
+};
 
 export const isValidIframeBackground = (value: string) =>
 	HEX_COLOR_PATTERN.test(value);
@@ -53,7 +55,7 @@ const parseNumeric = (
 	value: string | null,
 	fallback: number,
 	min: number,
-	max: number,
+	max: number | undefined,
 	paramName: string,
 	warnings: string[],
 ): number => {
@@ -65,10 +67,12 @@ const parseNumeric = (
 		);
 		return fallback;
 	}
-	if (parsed < min || parsed > max) {
+	if (parsed < min || (typeof max === "number" && parsed > max)) {
 		const clamped = clamp(parsed, min, max);
+		const boundsLabel =
+			typeof max === "number" ? `${min}-${max}` : `${min}+`;
 		warnings.push(
-			`Parameter "${paramName}" is out of bounds (${min}-${max}). Clamping to ${clamped}.`,
+			`Parameter "${paramName}" is out of bounds (${boundsLabel}). Clamping to ${clamped}.`,
 		);
 		return clamped;
 	}
@@ -114,47 +118,24 @@ export const parseIframeOptions = (
 		params.get("minZoom"),
 		options.minZoom,
 		0.05,
-		50,
+		undefined,
 		"minZoom",
 		warnings,
 	);
-	options.maxZoom = parseNumeric(
-		params.get("maxZoom"),
-		options.maxZoom,
-		0.1,
-		100,
-		"maxZoom",
-		warnings,
-	);
-
-	if (options.minZoom >= options.maxZoom) {
-		warnings.push(
-			`Parameter "minZoom" must be less than "maxZoom". Reverting to defaults ${DEFAULT_IFRAME_OPTIONS.minZoom}/${DEFAULT_IFRAME_OPTIONS.maxZoom}.`,
-		);
-		options.minZoom = DEFAULT_IFRAME_OPTIONS.minZoom;
-		options.maxZoom = DEFAULT_IFRAME_OPTIONS.maxZoom;
-	}
 
 	options.initialZoom = parseNumeric(
 		params.get("initialZoom"),
 		options.initialZoom,
 		options.minZoom,
-		options.maxZoom,
+		undefined,
 		"initialZoom",
 		warnings,
 	);
 
-	if (
-		options.initialZoom < options.minZoom ||
-		options.initialZoom > options.maxZoom
-	) {
-		const clamped = clamp(
-			options.initialZoom,
-			options.minZoom,
-			options.maxZoom,
-		);
+	if (options.initialZoom < options.minZoom) {
+		const clamped = clamp(options.initialZoom, options.minZoom);
 		warnings.push(
-			`Parameter "initialZoom" must be between "minZoom" and "maxZoom". Clamping to ${clamped}.`,
+			`Parameter "initialZoom" must be greater than or equal to "minZoom". Clamping to ${clamped}.`,
 		);
 		options.initialZoom = clamped;
 	}
@@ -188,9 +169,6 @@ export const buildIframeOptionsQuery = (options: IframeOptions): string => {
 	}
 	if (options.minZoom !== DEFAULT_IFRAME_OPTIONS.minZoom) {
 		params.set("minZoom", normalizeNumeric(options.minZoom));
-	}
-	if (options.maxZoom !== DEFAULT_IFRAME_OPTIONS.maxZoom) {
-		params.set("maxZoom", normalizeNumeric(options.maxZoom));
 	}
 
 	return params.toString();

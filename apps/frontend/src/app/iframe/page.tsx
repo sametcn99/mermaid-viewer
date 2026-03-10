@@ -144,7 +144,7 @@ export default function IframeMermaidPage() {
 				<TransformWrapper
 					initialScale={options.initialZoom}
 					minScale={options.minZoom}
-					maxScale={options.maxZoom}
+					maxScale={Number.POSITIVE_INFINITY}
 					wheel={{
 						disabled: !options.enableZoom || isMobileTouch,
 						step: isTouchDevice ? 0.3 : 0.5,

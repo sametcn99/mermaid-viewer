@@ -56,14 +56,8 @@ const ShareIframeDialog: FC<ShareIframeDialogProps> = ({ open, onClose }) => {
 		if (!isValidIframeBackground(options.background)) {
 			errors.background = "Use a valid hex color code (e.g. #ffffff).";
 		}
-		if (options.minZoom >= options.maxZoom) {
-			errors.maxZoom = "Maximum zoom must be greater than minimum zoom.";
-		}
-		if (
-			options.initialZoom < options.minZoom ||
-			options.initialZoom > options.maxZoom
-		) {
-			errors.initialZoom = `Initial zoom must be between ${options.minZoom} and ${options.maxZoom}.`;
+		if (options.initialZoom < options.minZoom) {
+			errors.initialZoom = `Initial zoom must be at least ${options.minZoom}.`;
 		}
 
 		return errors;
@@ -118,7 +112,7 @@ const ShareIframeDialog: FC<ShareIframeDialogProps> = ({ open, onClose }) => {
 		};
 
 	const handleNumericOptionChange =
-		(key: "initialZoom" | "minZoom" | "maxZoom") =>
+		(key: "initialZoom" | "minZoom") =>
 		(event: ChangeEvent<HTMLInputElement>) => {
 			const nextValue = Number.parseFloat(event.target.value);
 			resetCopyState();
@@ -244,7 +238,7 @@ const ShareIframeDialog: FC<ShareIframeDialogProps> = ({ open, onClose }) => {
 										error={Boolean(validationErrors.initialZoom)}
 										helperText={
 											validationErrors.initialZoom ||
-											"Starting scale when the iframe loads."
+											"Starting scale when the iframe loads. Maximum zoom is unlimited."
 										}
 									/>
 									<TextField
@@ -253,22 +247,10 @@ const ShareIframeDialog: FC<ShareIframeDialogProps> = ({ open, onClose }) => {
 										value={options.minZoom}
 										onChange={handleNumericOptionChange("minZoom")}
 										inputProps={{ step: 0.1, min: 0.05 }}
-										error={Boolean(validationErrors.maxZoom)}
+										error={Boolean(validationErrors.initialZoom)}
 										helperText={
-											validationErrors.maxZoom ||
+											validationErrors.initialZoom ||
 											"Lowest scale users can zoom out to."
-										}
-									/>
-									<TextField
-										label="Maximum zoom"
-										type="number"
-										value={options.maxZoom}
-										onChange={handleNumericOptionChange("maxZoom")}
-										inputProps={{ step: 0.1, min: 0.1 }}
-										error={Boolean(validationErrors.maxZoom)}
-										helperText={
-											validationErrors.maxZoom ||
-											"Highest scale users can zoom into."
 										}
 									/>
 								</Stack>
