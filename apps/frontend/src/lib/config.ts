@@ -18,10 +18,21 @@ const rawEnvSchema = z
 	.strip();
 
 type RawEnv = z.infer<typeof rawEnvSchema>;
+type RawEnvSource = Partial<Record<keyof RawEnv, string | undefined>>;
+
+export type AppConfig = Readonly<{
+	api: Readonly<{
+		baseUrl: string;
+	}>;
+	site: Readonly<{
+		url: URL;
+		urlString: string;
+	}>;
+}>;
 
 const freeze = <T>(value: T): Readonly<T> => Object.freeze(value);
-
-const warnings: string[] = [];
+const trimEnv = (value: string | undefined): string | undefined =>
+	value?.trim() || undefined;
 
 const ensureAbsoluteUrl = (value: string | undefined): URL | undefined => {
 	if (!value) {
@@ -67,7 +78,7 @@ const resolveApi = (env: RawEnv) => {
 	};
 };
 
-const resolveSite = (env: RawEnv) => {
+const resolveSite = (env: RawEnv, warnings: string[]) => {
 	if (!env.NEXT_PUBLIC_SITE_URL) {
 		warnings.push(
 			"NEXT_PUBLIC_SITE_URL is not set; using API URL as site URL.",
@@ -97,28 +108,6 @@ const resolveSite = (env: RawEnv) => {
 	};
 };
 
-const rawEnvSource = {
-	NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-	NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
-};
-
-const rawEnvResult = rawEnvSchema.safeParse(rawEnvSource);
-
-if (!rawEnvResult.success) {
-	const aggregated = rawEnvResult.error.issues
-		.map((issue) => `${issue.path.join(".") || "env"}: ${issue.message}`)
-		.join("; ");
-
-	throw new Error(`Invalid environment variables: ${aggregated}`);
-}
-
-const rawEnv = rawEnvResult.data;
-
-const computedConfig = {
-	api: resolveApi(rawEnv),
-	site: resolveSite(rawEnv),
-};
-
 const configSchema = z.object({
 	api: z.object({
 		baseUrl: z.string().url(),
@@ -139,32 +128,115 @@ const configSchema = z.object({
 		}),
 });
 
-const configResult = configSchema.safeParse(computedConfig);
+let cachedConfig: AppConfig | undefined;
 
-if (!configResult.success) {
-	const aggregated = configResult.error.issues
-		.map((issue) => `${issue.path.join(".") || "config"}: ${issue.message}`)
-		.join("; ");
+const getBrowserFallbackEnv = (): {
+	source: RawEnvSource;
+	warnings: string[];
+} => {
+	if (typeof window === "undefined") {
+		return {
+			source: {},
+			warnings: [],
+		};
+	}
 
-	throw new Error(`Invalid application configuration: ${aggregated}`);
-}
+	const fallbackApiUrl =
+		window.location.port === "3000"
+			? `${window.location.protocol}//${window.location.hostname}:3001`
+			: new URL("/api", window.location.origin).toString();
 
-const { data } = configResult;
+	return {
+		source: {
+			NEXT_PUBLIC_API_URL: fallbackApiUrl,
+			NEXT_PUBLIC_SITE_URL: window.location.origin,
+		},
+		warnings: [
+			`NEXT_PUBLIC_API_URL is not set; using browser fallback ${fallbackApiUrl}.`,
+		],
+	};
+};
 
-if (warnings.length) {
-	console.warn(`Environment warnings:\n- ${warnings.join("\n- ")}`);
-}
+const getRawEnvSource = (): { source: RawEnvSource; warnings: string[] } => {
+	const warnings: string[] = [];
+	const browserFallback = getBrowserFallbackEnv();
+	const apiUrl =
+		trimEnv(process.env.NEXT_PUBLIC_API_URL) ??
+		browserFallback.source.NEXT_PUBLIC_API_URL;
+	const siteUrl =
+		trimEnv(process.env.NEXT_PUBLIC_SITE_URL) ??
+		browserFallback.source.NEXT_PUBLIC_SITE_URL;
 
-export const appConfig = freeze({
-	api: freeze({
-		baseUrl: data.api.baseUrl,
-	}),
-	site: freeze({
-		url: data.site.url,
-		urlString: data.site.urlString,
-	}),
-});
+	if (!trimEnv(process.env.NEXT_PUBLIC_API_URL)) {
+		warnings.push(...browserFallback.warnings);
+	}
 
-export type AppConfig = typeof appConfig;
+	return {
+		source: {
+			NEXT_PUBLIC_API_URL: apiUrl,
+			NEXT_PUBLIC_SITE_URL: siteUrl,
+		},
+		warnings,
+	};
+};
+
+export const getAppConfig = (): AppConfig => {
+	if (cachedConfig) {
+		return cachedConfig;
+	}
+
+	const { source, warnings } = getRawEnvSource();
+	const rawEnvResult = rawEnvSchema.safeParse(source);
+
+	if (!rawEnvResult.success) {
+		const aggregated = rawEnvResult.error.issues
+			.map((issue) => `${issue.path.join(".") || "env"}: ${issue.message}`)
+			.join("; ");
+
+		throw new Error(`Invalid environment variables: ${aggregated}`);
+	}
+
+	const rawEnv = rawEnvResult.data;
+	const computedConfig = {
+		api: resolveApi(rawEnv),
+		site: resolveSite(rawEnv, warnings),
+	};
+	const configResult = configSchema.safeParse(computedConfig);
+
+	if (!configResult.success) {
+		const aggregated = configResult.error.issues
+			.map((issue) => `${issue.path.join(".") || "config"}: ${issue.message}`)
+			.join("; ");
+
+		throw new Error(`Invalid application configuration: ${aggregated}`);
+	}
+
+	const { data } = configResult;
+
+	if (warnings.length) {
+		console.warn(`Environment warnings:\n- ${warnings.join("\n- ")}`);
+	}
+
+	cachedConfig = freeze({
+		api: freeze({
+			baseUrl: data.api.baseUrl,
+		}),
+		site: freeze({
+			url: data.site.url,
+			urlString: data.site.urlString,
+		}),
+	});
+
+	return cachedConfig;
+};
+
+export const appConfig = {
+	get api() {
+		return getAppConfig().api;
+	},
+	get site() {
+		return getAppConfig().site;
+	},
+} as AppConfig;
 
 export default appConfig;

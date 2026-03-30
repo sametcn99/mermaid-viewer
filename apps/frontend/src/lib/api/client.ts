@@ -6,8 +6,7 @@
 import { appConfig } from "../config";
 import type { ApiError } from "./types";
 
-// Normalize base URL to avoid double slashes when concatenating endpoints
-const API_URL = appConfig.api.baseUrl.replace(/\/+$/, "");
+const getApiUrl = () => appConfig.api.baseUrl.replace(/\/+$/, "");
 
 // Request options type
 interface RequestOptions extends Omit<RequestInit, "body"> {
@@ -31,7 +30,7 @@ export class ApiRequestError extends Error {
 // Token refresh function
 async function refreshAccessToken(): Promise<boolean> {
 	try {
-		const response = await fetch(`${API_URL}/auth/refresh`, {
+		const response = await fetch(`${getApiUrl()}/auth/refresh`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -69,18 +68,19 @@ export async function apiRequest<T>(
 		headers,
 		credentials: "include",
 	};
+	const apiUrl = getApiUrl();
 
 	if (body !== undefined) {
 		config.body = JSON.stringify(body);
 	}
 
-	let response = await fetch(`${API_URL}${normalizedEndpoint}`, config);
+	let response = await fetch(`${apiUrl}${normalizedEndpoint}`, config);
 
 	// If unauthorized, try to refresh token
 	if (response.status === 401 && !skipAuth) {
 		const refreshed = await refreshAccessToken();
 		if (refreshed) {
-			response = await fetch(`${API_URL}${normalizedEndpoint}`, {
+			response = await fetch(`${apiUrl}${normalizedEndpoint}`, {
 				...config,
 				headers,
 			});
